@@ -1,4 +1,3 @@
-const dotenv = require("dotenv").config();
 const pool = require("../db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -120,7 +119,11 @@ const loginAdmin = async (req, res) => {
       token,
     });
   } catch (error) {
-    res.status(500).json({ message: "Server error", success: false });
+    console.error("Login Error:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server error during login",
+    });
   }
 };
 module.exports = { postData, getData, putData, delData, loginAdmin };
