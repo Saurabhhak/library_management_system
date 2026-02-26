@@ -1,0 +1,11 @@
+Required Metarial
+fronend 
+backend
+DB
+
+STEP 1: Db created  DONE
+STEP 3: backend create
+STEP 2: fronend create
+
+can do auth JWT 
+session 
