@@ -126,4 +126,24 @@ const loginAdmin = async (req, res) => {
     });
   }
 };
-module.exports = { postData, getData, putData, delData, loginAdmin };
+// ---- profile section 
+const profileAdmin = async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT id, name, gmail, phone, address FROM admin WHERE id = $1",
+      [req.user.id]
+    );
+
+    res.status(200).json({
+      success: true,
+      user: result.rows[0],
+    });
+  } catch (error) {
+    console.error("GetMe Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+module.exports = { postData, getData, putData, delData, loginAdmin , profileAdmin};
