@@ -11,6 +11,8 @@ app.get("/", (req, res) => {
   res.send("server is listen API running");
 });
 const PORT = process.env.PORT || 5000;
+app.use("/api/categories", require("./route.js/category.routes"));
+app.use("/api/books", require("./route.js/book.routes"));
 app.use("/api/admin", adminRoute);
 app.listen(PORT, () => {
   console.log(`Server Running On http://localhost:${PORT}`);
