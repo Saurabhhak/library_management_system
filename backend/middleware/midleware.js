@@ -1,3 +1,4 @@
+// Setup Express server and middleware
 const jwt = require("jsonwebtoken");
 
 const authMiddleware = (req, res, next) => {
