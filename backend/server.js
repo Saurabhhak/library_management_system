@@ -6,6 +6,7 @@ const express = require("express");
 const cors = require("cors");
 const adminRoute = require("./route.js/adminRoute");
 const app = express();
+// frontend backend middleWare cors
 app.use(cors());
 app.use(express.json());
 app.get("/", (req, res) => {
