@@ -1,0 +1,240 @@
+/* ----- PAGE BACKGROUND ----- */
+body {
+  background: #545454;
+}
+
+/* ----- TITLE ----- */
+.TitleDiv {
+  display: flex;
+  justify-content: center;
+  margin-top: 4rem;
+}
+
+.title {
+  color: white;
+  font-size: 1.3rem;
+}
+
+/* ----- SEARCH ----- */
+.searchContainer {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.SearchBox {
+  width: 300px;
+  padding: 0.4rem;
+  border-radius: 5px;
+  border: none;
+  background: #2a2a2a;
+  color: white;
+}
+
+/* ----- TABLE WRAPPER ----- */
+.tableWrapper {
+  width: 95%;
+  margin: auto;
+  background: #1e1e1e;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+/* ----- TABLE ----- */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+/* ----- HEAD ----- */
+.thead th {
+  background: #002b20;
+  color: white;
+  font-size: 0.9rem;
+  padding: 0.7rem;
+  border-right: 1px solid #333;
+  border-bottom: 1px solid #333;
+}
+
+.thead th:last-child {
+  border-right: none;
+}
+
+/* ----- HEADER FLEX ----- */
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.sortIcon {
+  font-size: 0.75rem;
+}
+
+/* ----- FILTER ----- */
+.columnFilter {
+  margin-top: 0.4rem;
+  width: 100%;
+  padding: 0.3rem;
+  font-size: 0.75rem;
+  background: #2b2b2b;
+  border: 1px solid #444;
+  color: white;
+  border-radius: 4px;
+}
+
+/* ----- BODY ----- */
+.tbody td {
+  padding: 0.6rem;
+  font-size: 0.8rem;
+  text-align: center;
+  border-right: 1px solid #333;
+  border-bottom: 1px solid #333;
+  background: #2a2a2a;
+  color: #ddd;
+}
+
+.tbody td:last-child {
+  border-right: none;
+}
+
+.tbody tr:hover td {
+  background: #00332a;
+}
+
+/* ----- CHECKBOX ROW ----- */
+.checkboxRow th {
+  background: #001c14;
+}
+
+.checkboxLabel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+/* ================= PAGINATION ================= */
+
+.paginationSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Page size dropdown */
+.paginationSize {
+  padding: 0.35rem 0.6rem;
+  background: #303030;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 5px;
+  font-size: 0.85rem;
+}
+
+/* Button group */
+.paginationControls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+/* Buttons */
+.paginationControls button {
+  padding: 0.35rem 0.9rem;
+  background: #303030;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: 0.2s ease;
+}
+
+.paginationControls button:hover:not(:disabled) {
+  background: #00a884;
+}
+
+.paginationControls button:disabled {
+  background: #777;
+  cursor: not-allowed;
+}
+
+/* Page text */
+.pageInfo {
+  font-size: 0.85rem;
+  color: #ddd;
+}
+
+/* ---------------------- RESPONSIVE BREAKPOINTS */
+/* ----- TABLET ----- */
+@media (max-width: 1024px) {
+  .title {
+    font-size: 1.2rem;
+  }
+
+  .SearchBox {
+    font-size: 0.85rem;
+  }
+
+  .thead th,
+  .tbody td {
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
+}
+
+/* ----- MOBILE ----- */
+@media (max-width: 768px) {
+  .TitleDiv {
+    margin-top: 5.5rem;
+  }
+
+  .tableWrapper {
+    padding: 0.5rem;
+  }
+
+  .SearchBox {
+    max-width: 100%;
+  }
+
+  .paginationSection {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .paginationControls {
+    justify-content: center;
+  }
+}
+
+/* ----- SMALL M-----OBILE  */
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.1rem;
+  }
+
+  .SearchBox {
+    font-size: 0.8rem;
+  }
+
+  .thead th,
+  .tbody td {
+    font-size: 0.75rem;
+  }
+
+  .paginationBtn button {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.75rem;
+  }
+}
