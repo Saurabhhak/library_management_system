@@ -1,4 +1,11 @@
-_______________Only Frontend Changes Commit_______________
+Important Rule
+Kabhi bhi: 
+git add .   <-------< Mat use karo agar tum single file commit karna chahte ho
+Warna sab files ek saath stage ho jayengi.
+Professional Tip (Very Important)
+Agar files already commit ho chuki hain aur tum bina code change kiye new commit banana chahte ho, to pehle thoda sa small change karo (jaise comment add/remove), tab commit hoga._
+
+______________Only Frontend Changes Commit_______________
 git add frontend
 git commit -m "feat(frontend): update Home and Admin UI layout"
 git push
