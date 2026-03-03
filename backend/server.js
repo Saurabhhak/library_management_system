@@ -1,4 +1,4 @@
-// Express server configuration setup
+// Express server configuration setup 
 //  Load env variables
 require("dotenv").config();
 //  Import dependencies
