@@ -1,7 +1,36 @@
-<<<<<<< HEAD
-git init
-https://github.com/Saurabhhak/library_management_system
-=======
-# library_management_system
-A full-stack Library Management System built with modern web technologies, featuring secure JWT-based authentication, role-based access control, and an interactive admin dashboard. The application includes protected routes, complete CRUD operations for administrators and a dynamic data table with pagination and sorting for efficient data management
->>>>>>> 79489b6bf0519d6431e0fd345ab4f842abac23be
+# 📚 Library Management System
+
+A full-stack Library Management System built using modern web technologies.  
+The application provides secure JWT-based authentication, role-based access control, and a powerful admin dashboard for managing books and users.
+
+---
+
+## 🚀 Features
+
+- 🔐 JWT Authentication (Login / Signup)
+- 🛡 Role-Based Access Control (Admin / User)
+- 📚 Book Management (CRUD Operations)
+- 👨‍💼 Admin Dashboard
+- 🔍 Search, Pagination & Sorting
+- 🔒 Protected Routes
+- 🌐 RESTful API Architecture
+
+---
+
+## 🛠 Tech Stack
+
+### Frontend
+- React.js
+- React Router
+- Axios
+
+### Backend
+- Node.js
+- Express.js
+- JWT Authentication
+- MongoDB / PostgreSQL
+
+---
+
+## 📂 Project Structure
+
