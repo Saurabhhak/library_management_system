@@ -24,8 +24,8 @@ The application provides secure JWT-based authentication, role-based access cont
 - React Router
 - Axios
 
-### Backend
-- Node.js
+### Backendcls
+
 - Express.js
 - JWT Authentication
 - MongoDB / PostgreSQL
