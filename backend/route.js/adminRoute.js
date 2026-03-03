@@ -1,3 +1,7 @@
+// implement authentication and book routes
+// Defined API endpoints for user authentication and book management.
+// Structured routes to maintain separation of concerns and improve maintainability.
+
 const express = require("express");
 const router = express.Router();
 
