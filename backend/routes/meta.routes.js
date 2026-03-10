@@ -3,7 +3,7 @@ const router = express.Router();
 const {
   getStates,
   getCitiesByState,
-} = require("../controllers.js/meta.controller");
+} = require("../controllers/meta.controller");
 // ---- GET ALL STATES
 router.get("/states", getStates);
 // ---- GET CITIES BY STATE

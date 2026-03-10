@@ -1,4 +1,4 @@
-const db = require("../db");
+const db = require("../config/db");
 const createBook = async (req, res) => {
   try {
     const { title, author, isbn, category_id, total_copies, shelf_location } =

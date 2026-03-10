@@ -10,14 +10,14 @@ const {
   deleteOwnAccount,
   loginAdmin,
   profileAdmin,
-} = require("../controllers.js/auth.controller");
+} = require("../controllers/auth.controller");
 
 const {
   getStates,
   getCitiesByState,
-} = require("../controllers.js/meta.controller");
+} = require("../controllers/meta.controller");
 
-const authMiddleware = require("../middleware/midleware");
+const authMiddleware = require("../middleware/auth.middleware");
 
 // -------- AUTH --------
 

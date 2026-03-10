@@ -6,9 +6,9 @@ const {
   getBooks,
   updateBook,
   deleteBook,
-} = require("../controllers.js/book.controller");
+} = require("../controllers/book.controller");
 
-const authMiddleware = require("../middleware/midleware");
+const authMiddleware = require("../middleware/auth.middleware");
 
 // Protected Routes
 router.post("/", authMiddleware, createBook);

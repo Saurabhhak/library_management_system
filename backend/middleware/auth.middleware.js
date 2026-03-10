@@ -1,13 +1,10 @@
 // Setup Express server and middleware
 const jwt = require("jsonwebtoken");
-
 const authMiddleware = (req, res, next) => {
   // Token header me mila
   const header = req.headers.authorization;
-
   if (!header)
     return res.status(401).json({ success: false, message: "No token" });
-
   const token = header.split(" ")[1];
   // Middleware verifies token || JWT verify
   try {
