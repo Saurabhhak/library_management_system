@@ -18,7 +18,6 @@ const getStates = async (req, res) => {
     });
   }
 };
-
 // GET cities by state
 const getCitiesByState = async (req, res) => {
   try {
