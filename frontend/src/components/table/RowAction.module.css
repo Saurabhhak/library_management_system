@@ -1,0 +1,29 @@
+.ActionsBTN {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    justify-content: center;
+}
+
+/* Button base style */
+
+.ActionEdit,
+.ActionsDel {
+    display: flex;
+    border: none;
+    background: none;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Hover effects */
+
+.ActionEdit:hover {
+    color: aqua;
+}
+
+.ActionsDel:hover {
+    color: red;
+}

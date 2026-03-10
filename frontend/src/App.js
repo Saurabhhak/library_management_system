@@ -1,51 +1,67 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import HomeLayout from "./HomeLayout";
-import Home from "./Home";
-import History from "./History";
-import Members from "./Members";
-import Profile from "./Profile";
-import AdminLoginForm from "./AdminLog";
-import AdminSignForm from "./AdminSign";
-// import BooksMng from "./BooksMng";
-import AdminManagment from "./AdminManagment";
-import CreateAdmin from "./CreateAdmin";
-import DisplayAdmin from "./DisplayAdmin";
-import UpdateAdmin from "./UpdateAdmin";
-import DeleteAdmin from "./DeleteAdmin";
-import SearchAdmin from "./SearchAdmin";
-import PrivateRoute from "./PrivateRoute";
-import Category from "./Books/Category";
-import BooksLib from "./Books/BooksLib";
+
+/* Layout */
+import HomeLayout from "./components/layout/HomeLayout";
+
+/* Routing */
+import PrivateRoute from "./components/routing/PrivateRoute";
+
+/* Auth */
+import AdminLoginForm from "./pages/auth/loginAdmin";
+
+/* Dashboard */
+import DisplayAdmin from "./pages/dashboard/DisplayAdmin";
+
+/* Admin */
+import CreateAdmin from "./pages/admin/CreateAdmin";
+import UpdateAdmin from "./pages/admin/UpdateAdmin";
+
+/* Pages */
+import Home from "./pages/home/Home";
+import History from "./pages/members/History";
+import Members from "./pages/members/Members";
+import Profile from "./pages/profile/Profile";
+
+/* Books */
+import Books from "./pages/books/Books";
+import Category from "./pages/books/Category";
+
 function App() {
   return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          {/* Protected Routes  */}
-          <Route element={<PrivateRoute />}>
-            <Route element={<HomeLayout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/createadmin" element={<CreateAdmin />} />
-              <Route path="/displayadmin" element={<DisplayAdmin />} />
-              <Route path="/deleteadmin" element={<DeleteAdmin />} />
-              <Route path="/updateadmin" element={<UpdateAdmin />} />
-              <Route path="/searchadmin" element={<SearchAdmin />} />
-              <Route path="/adminmanagment" element={<AdminManagment />} />
-              {/* <Route path="/booksmng" element={<BooksMng />} /> */}
-              <Route path="/history" element={<History />} />
-              <Route path="/members" element={<Members />} />
-              <Route path="/profile" element={<Profile />} />
-              {/* Books or Category */}
-              <Route path="/books" element={<BooksLib/>} />
-              <Route path="/categories" element={<Category/>} />
-            </Route>
+    <BrowserRouter>
+      <Routes>
+        {/* -------- PUBLIC ROUTES -------- */}
+        <Route path="/login" element={<AdminLoginForm />} />
+
+        {/* -------- PROTECTED ROUTES -------- */}
+        <Route element={<PrivateRoute />}>
+          <Route element={<HomeLayout />}>
+            {/* Dashboard */}
+            <Route path="/" element={<Home />} />
+
+            {/* Admin Management */}
+            <Route path="/createadmin" element={<CreateAdmin />} />
+            <Route path="/updateadmin/:id" element={<UpdateAdmin />} />
+            <Route path="/displayadmin" element={<DisplayAdmin />} />
+
+            {/* Members */}
+            <Route path="/members" element={<Members />} />
+            <Route path="/history" element={<History />} />
+
+            {/* Profile */}
+            <Route path="/profile" element={<Profile />} />
+
+            {/* Books */}
+            <Route path="/books" element={<Books />} />
+            <Route path="/categories" element={<Category />} />
           </Route>
-          {/* Public Routes */}
-          <Route path="/login" element={<AdminLoginForm />} />
-          <Route path="/signup" element={<AdminSignForm />} />
-        </Routes>
-      </BrowserRouter>
-    </>
+        </Route>
+
+        {/* -------- If LSM routes does'nt matches to url route then 404 PAGE -------- */}
+        <Route path="*" element={<h1>404 Page Not Found</h1>} />
+      </Routes>
+    </BrowserRouter>
   );
 }
+
 export default App;

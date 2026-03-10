@@ -1,0 +1,126 @@
+.profileContainer {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.776);
+  display: flex;
+  justify-content: center;
+  margin-left: 2rem;
+  flex-direction: column;
+  /* margin-bottom: 2rem; */
+}
+
+.title {
+  font-size: 1.3rem;
+  margin-bottom: .5rem;
+}
+
+.avatar {
+  font-size: 2.5rem;
+  margin: 1rem 0;
+}
+
+.profileCard {
+  font-family: monospace;
+  font-size: .85rem;
+  /* border: 1px solid red; */
+  text-align: left;
+  width: fit-content;
+
+}
+
+.profileCard p {
+  margin: .6rem 0;
+  /* border: 1px solid green; */
+  width: fit-content;
+  margin-bottom: .85rem;
+}
+
+.actionBtns {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.logoutBtn,
+.deleteBtn {
+  padding: .35rem .7rem;
+  border-radius: .25rem;
+  border: none;
+  cursor: pointer;
+  font-size: .75rem;
+}
+
+.logoutBtn {
+  background: #4a4a4a;
+  color: rgb(255, 255, 255);
+}
+.logoutBtn:hover{
+  background-color: rgb(19, 125, 255);
+  color: rgb(255, 255, 255);
+}
+.deleteBtn {
+  background: #c20000;
+  color: white;
+}
+.deleteBtn:hover{
+    background: #ff0000;
+  color: rgb(255, 255, 255);
+}
+.popupOverlay {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  justify-content: center;
+  top: 20%;
+  left: -50%;
+  width: 100%;
+  height: 100%;
+  /* background: #383838e5; */
+  align-items: center;
+}
+
+.popup {
+  width: auto;
+  background: #e4e4e4;
+  padding: 1rem;
+  border: none;
+  border-radius: .3rem;
+  text-align: center;
+  font-family: monospace;
+  color: black;
+}
+
+.popupBtns {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  margin-top: 2rem;
+  gap: 3rem;
+}
+
+.popupBtns button{
+  background: #242424;
+  border-radius: .2rem;
+  border: none;
+  color: white;
+  padding: .35rem;
+}
+
+.popupBtnsCancel:hover {
+  background: rgb(22, 150, 255);
+}
+.popupBtnsDel:hover {
+  background: rgb(255, 22, 22);
+}
+.cancelBtn {
+  background: gray;
+  border: none;
+  padding: 1rem .6rem;
+}
+
+.confirmDelete {
+  background: red;
+  border: none;
+  padding: .3rem .6rem;
+}

@@ -2,16 +2,19 @@
 const jwt = require("jsonwebtoken");
 
 const authMiddleware = (req, res, next) => {
+  // Token header me mila
   const header = req.headers.authorization;
 
   if (!header)
     return res.status(401).json({ success: false, message: "No token" });
 
   const token = header.split(" ")[1];
-
+  // Middleware verifies token || JWT verify
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    req.user = decoded; // req.user me store
+    //     Now backend knows:
+    //     req.user.id = 7
     next();
   } catch (err) {
     res.status(401).json({ success: false, message: "Invalid token" });

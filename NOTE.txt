@@ -1,3 +1,6 @@
+Look first this task add super admin only create admin, only admin login page view ho admin ka or 
+admin login page but member create or login ye bhi sath me hi
+
 Important Rule
 Kabhi bhi: 
 git add .   <-------< Mat use karo agar tum single file commit karna chahte ho

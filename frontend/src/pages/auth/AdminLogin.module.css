@@ -1,0 +1,166 @@
+.headers {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 60px;
+  background-color: #001c21;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0 20px;
+  border-bottom: 1px solid #999;
+  z-index: 1000;
+}
+
+.leftIcon {
+  font-size: 24px;
+  color: white;
+}
+
+.centerTitle {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+}
+
+.formContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 7rem;
+  padding: 2rem;
+}
+
+.formSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 500px;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.tagh1 {
+  grid-column: span 2;
+  text-align: center;
+  color: #3e4144;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.formInput {
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.3rem;
+  border: 1px solid #bbb;
+  background-color: #fff;
+  font-size: 0.9rem;
+  transition: 0.2s ease-in-out;
+}
+
+.formInput:hover {
+  border-color: #1976d2;
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 6px rgba(25, 118, 210, 0.3);
+}
+
+.inputError {
+  border: 2px solid #e53935;
+}
+
+.errorMsg {
+  padding: 4px 8px;
+  background: #e53935;
+  color: white;
+  font-size: 0.75rem;
+  border-radius: 4px;
+}
+
+.btnSection {
+  grid-column: span 2;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.btnFeature {
+  width: 15rem;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 0.3rem;
+  background-color: #1088ff;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+.btnFeature:hover {
+  background: #003d98;
+}
+
+.notify {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.9rem 1.8rem;
+  border-radius: 6px;
+  font-weight: 600;
+  color: white;
+  z-index: 2000;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+}
+
+.success {
+  background: #00ab11;
+}
+
+.error {
+  background: #e53935;
+}
+.linkStyle {
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.linkStyle:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .formSection {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .headers {
+    height: 55px;
+  }
+
+  .centerTitle {
+    font-size: 0.8rem;
+  }
+
+  .formSection {
+    grid-template-columns: 1fr;
+    width: 100%;
+    padding: 1.5rem;
+  }
+
+  .btnSection {
+    grid-column: span 1;
+  }
+
+  .btnFeature {
+    width: 100%;
+  }
+}
