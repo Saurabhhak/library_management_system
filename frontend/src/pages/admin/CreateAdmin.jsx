@@ -1,4 +1,4 @@
-import { useState, useEffect, timer } from "react";
+import { useState, useEffect } from "react";
 // import { useNavigate } from "react-router-dom";
 import { validateAdminForm } from "../../utils/validateAdminForm";
 
@@ -41,7 +41,6 @@ function CreateAdmin() {
       setNotification("");
       setNotifyType("");
     }, 3000);
-    return () => clearTimeout(timer);
   };
 
   const handleReset = () => {

@@ -1,28 +1,41 @@
+/* ---- PAGE BACKGROUND ---- */
+body {
+  background: #545454;
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ---- HEADER ---- */
+
 .headers {
   position: fixed;
   top: 0;
   left: 0;
   height: 60px;
-  background-color: #001c21;
+  width: 100%;
+  background: #001c21;
   display: flex;
   align-items: center;
-  width: 100%;
   padding: 0 20px;
   border-bottom: 1px solid #999;
   z-index: 1000;
 }
 
+/* Left icon */
 .leftIcon {
-  font-size: 24px;
+  font-size: 22px;
   color: white;
 }
 
+/* Center title */
 .centerTitle {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
   color: white;
 }
+
+/* ---- FORM CONTAINER ---- */
 
 .formContainer {
   display: flex;
@@ -31,80 +44,110 @@
   padding: 2rem;
 }
 
+/* ---- FORM CARD ---- */
+
 .formSection {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  width: 500px;
-  padding: 2rem;
-  border-radius: 0.5rem;
+  width: 420px;
   background: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
+/* Form title */
 .tagh1 {
-  grid-column: span 2;
   text-align: center;
+  margin-bottom: 10px;
   color: #3e4144;
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
 }
+
+/* ---- INPUT FIELD ---- */
 
 .formInput {
   width: 100%;
-  padding: 0.7rem 0.8rem;
-  border-radius: 0.3rem;
+  padding: 0.7rem;
+  border-radius: 4px;
   border: 1px solid #bbb;
-  background-color: #fff;
   font-size: 0.9rem;
-  transition: 0.2s ease-in-out;
+  transition: 0.2s;
 }
 
+/* Hover effect */
 .formInput:hover {
   border-color: #1976d2;
 }
 
+/* Focus effect */
 .formInput:focus {
   outline: none;
   border-color: #1976d2;
   box-shadow: 0 0 6px rgba(25, 118, 210, 0.3);
 }
 
-.inputError {
-  border: 2px solid #e53935;
+/* ---- PASSWORD WRAPPER ---- */
+
+.password_wrapper {
+  position: relative;
+  width: 100%;
 }
 
-.errorMsg {
-  padding: 4px 8px;
-  background: #e53935;
-  color: white;
-  font-size: 0.75rem;
-  border-radius: 4px;
+/* Eye icon */
+
+.eye_icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #555;
 }
+
+/* ---- ERROR STYLING ---- */
+
+.inputError {
+  border: 1px solid #e53935;
+}
+
+/* Error text */
+.errorMsg {
+  font-size: 12px;
+  color: #e53935;
+  margin-top: -4px;
+  margin-bottom: 4px;
+}
+
+/* ---- BUTTONS ---- */
 
 .btnSection {
-  grid-column: span 2;
   display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-top: 0.5rem;
+  gap: 10px;
+  margin-top: 10px;
 }
 
+/* Button */
+
 .btnFeature {
-  width: 15rem;
+  flex: 1;
   padding: 0.6rem;
   border: none;
-  border-radius: 0.3rem;
-  background-color: #1088ff;
-  color: #fff;
+  border-radius: 4px;
+  background: #1088ff;
+  color: white;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.2s ease-in-out;
+  transition: 0.2s;
 }
 
 .btnFeature:hover {
   background: #003d98;
 }
+
+/* ---- NOTIFICATION ---- */
 
 .notify {
   position: fixed;
@@ -116,7 +159,7 @@
   font-weight: 600;
   color: white;
   z-index: 2000;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
 }
 
 .success {
@@ -126,6 +169,9 @@
 .error {
   background: #e53935;
 }
+
+/* ---- LINK ---- */
+
 .linkStyle {
   color: #1976d2;
   text-decoration: none;
@@ -135,32 +181,37 @@
   text-decoration: underline;
 }
 
+/* ---- RESPONSIVE ---- */
+
 @media (max-width: 768px) {
+
   .formSection {
     width: 100%;
+    max-width: 380px;
   }
+
 }
 
 @media (max-width: 480px) {
+
   .headers {
     height: 55px;
   }
 
   .centerTitle {
-    font-size: 0.8rem;
+    font-size: 14px;
+  }
+
+  .formContainer {
+    padding: 1rem;
   }
 
   .formSection {
-    grid-template-columns: 1fr;
-    width: 100%;
     padding: 1.5rem;
   }
 
   .btnSection {
-    grid-column: span 1;
+    flex-direction: column;
   }
 
-  .btnFeature {
-    width: 100%;
-  }
 }
