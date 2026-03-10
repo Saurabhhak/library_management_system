@@ -1,15 +1,20 @@
+// routes/admin.routes.js
 const express = require("express");
 const router = express.Router();
 
+// -------- Controllers --------
 const {
-  postData,
-  getData,
+  createAdmin,
+  getAllAdmins,
   getAdminById,
-  putData,
-  delData,
-  deleteOwnAccount,
+  updateAdmin,
+  deleteAdmin,
+} = require("../controllers/admin.controller");
+
+const {
   loginAdmin,
   profileAdmin,
+  deleteOwnAccount,
 } = require("../controllers/auth.controller");
 
 const {
@@ -17,33 +22,39 @@ const {
   getCitiesByState,
 } = require("../controllers/meta.controller");
 
+// -------- Middleware --------
 const authMiddleware = require("../middleware/auth.middleware");
 
-// -------- AUTH --------
+//  ------------ AUTH ROUTES
 
+// -------------- Login admin
 router.post("/login", loginAdmin);
 
+// ---- Get logged-in admin profile
 router.get("/profile", authMiddleware, profileAdmin);
 
-// -------- DELETE OWN ACCOUNT --------
-
+// ---- Delete own account
 router.delete("/delete-account", authMiddleware, deleteOwnAccount);
 
-// -------- META --------
-
+// ----  META DATA ROUTES (States / Cities)
 router.get("/meta/states", getStates);
 router.get("/meta/cities/:stateId", getCitiesByState);
 
-// -------- ADMIN CRUD --------
+// --------------------- ADMIN CRUD ROUTES
 
-router.post("/", postData);
+// ---- Create new admin
+router.post("/", createAdmin);
 
-router.get("/", getData);
+// ---- Get all admins
+router.get("/", getAllAdmins);
 
+// ---- Get admin by id
 router.get("/:id", getAdminById);
 
-router.put("/:id", putData);
+// ---- Update admin
+router.put("/:id", updateAdmin);
 
-router.delete("/:id", delData);
+// ---- Delete admin
+router.delete("/:id", deleteAdmin);
 
 module.exports = router;
