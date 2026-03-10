@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomeLayout from "./components/layout/HomeLayout";
 
 /* Routing */
-import PrivateRoute from "./components/routing/PrivateRoute";
+import PrivateRoute from "./routes/PrivateRoute";
 
 /* Auth */
 import AdminLoginForm from "./pages/auth/loginAdmin";

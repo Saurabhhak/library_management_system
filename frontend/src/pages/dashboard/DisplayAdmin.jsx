@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styles from "./DisplayAdmin.module.css";
-import { getAdmins, deleteAdmin } from "../../services/adminapi";
+import { getAdmins, deleteAdmin } from "../../services/admin.service";
 import { getColumns } from "../../components/table/columns";
 
 import {

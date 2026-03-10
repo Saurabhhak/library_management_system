@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getProfile, deleteAccount } from "../../services/adminapi";
+import { getProfile, deleteAccount } from "../../services/admin.service";
 import styles from "./Profile.module.css";
 
 function Profile() {

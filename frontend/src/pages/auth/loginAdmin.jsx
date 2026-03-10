@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { loginAdmin } from "../../services/adminapi";
+import { loginAdmin } from "../../services/admin.service";
 import styles from "./AdminLogin.module.css";
 
 function AdminLoginForm() {

@@ -7,7 +7,7 @@ import {
   getStates,
   getCitiesByState,
   // getAdmins,
-} from "../../services/adminapi";
+} from "../../services/admin.service";
 
 import AdminForm from "./AdminForm";
 import styles from "./CreateAdmin.module.css";

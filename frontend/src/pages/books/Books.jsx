@@ -1,7 +1,7 @@
 import styles from "./Books.module.css";
 import { useEffect, useState } from "react";
-import { getBooks, createBook } from "../../services/bookapi";
-import { getCategories } from "../../services/categoryapi";
+import { getBooks ,createBook } from "../../services/book.service";
+import { getCategories } from "../../services/category.service"
 
 function Books() {
   const [books, setBooks] = useState([]);
