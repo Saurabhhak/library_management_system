@@ -1,10 +1,8 @@
 const db = require("../db");
-
 const createBook = async (req, res) => {
   try {
     const { title, author, isbn, category_id, total_copies, shelf_location } =
       req.body;
-
     // Auto set available copies
     const available_copies = total_copies;
     if (!title || !author || !category_id || !total_copies) {
