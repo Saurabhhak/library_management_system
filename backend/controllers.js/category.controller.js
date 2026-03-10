@@ -9,7 +9,6 @@ const createCategory = async (req, res) => {
        RETURNING *`,
       [name, description],
     );
-
     res.status(201).json({
       success: true,
       data: result.rows[0],
