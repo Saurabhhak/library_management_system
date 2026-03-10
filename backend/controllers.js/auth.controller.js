@@ -1,7 +1,6 @@
 const pool = require("../db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
 // ---- Create Admin
 const postData = async (req, res) => {
   try {
@@ -185,15 +184,10 @@ const putData = async (req, res) => {
 // ---------------- DELETE ADMIN BY ID ----------------
 
 const delData = async (req, res) => {
-
   const { id } = req.params;
 
   try {
-
-    const check = await pool.query(
-      "SELECT role FROM admin WHERE id=$1",
-      [id]
-    );
+    const check = await pool.query("SELECT role FROM admin WHERE id=$1", [id]);
 
     if (!check.rows.length) {
       return res.status(404).json({
@@ -215,52 +209,37 @@ const delData = async (req, res) => {
       success: true,
       message: "Admin deleted successfully",
     });
-
   } catch (error) {
-
     console.error(error);
 
     res.status(500).json({
       success: false,
       message: "Delete error",
     });
-
   }
-
 };
-
 
 // ---------------- DELETE OWN ACCOUNT ----------------
 
 const deleteOwnAccount = async (req, res) => {
-
   try {
-
     const id = req.user.id;
 
-    await pool.query(
-      "DELETE FROM admin WHERE id=$1",
-      [id]
-    );
+    await pool.query("DELETE FROM admin WHERE id=$1", [id]);
 
     res.json({
       success: true,
       message: "Account deleted successfully",
     });
-
   } catch (error) {
-
     console.error(error);
 
     res.status(500).json({
       success: false,
       message: "Delete account error",
     });
-
   }
-
 };
-
 
 // ---- Get Single Admin
 const getAdminById = async (req, res) => {
@@ -389,7 +368,6 @@ const profileAdmin = async (req, res) => {
   }
 };
 
-
 module.exports = {
   postData,
   getData,
@@ -398,5 +376,5 @@ module.exports = {
   deleteOwnAccount,
   loginAdmin,
   profileAdmin,
-  getAdminById
+  getAdminById,
 };
