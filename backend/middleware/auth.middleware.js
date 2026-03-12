@@ -1,10 +1,14 @@
 // Setup Express server and middleware
 const jwt = require("jsonwebtoken");
 const authMiddleware = (req, res, next) => {
-  // Token header me mila
+  // Header me value aayegi
   const header = req.headers.authorization;
   if (!header)
-    return res.status(401).json({ success: false, message: "No token" });
+    return res.status(401).json({
+      success: false,
+      message: "Token missing",
+    });
+  // Token extract hota hai
   const token = header.split(" ")[1];
   // Middleware verifies token || JWT verify
   try {
@@ -13,8 +17,11 @@ const authMiddleware = (req, res, next) => {
     //     Now backend knows:
     //     req.user.id = 7
     next();
-  } catch (err) {
-    res.status(401).json({ success: false, message: "Invalid token" });
+  } catch (error) {
+    return res.status(403).json({
+      success: false,
+      message: "Invalid token",
+    });
   }
 };
 

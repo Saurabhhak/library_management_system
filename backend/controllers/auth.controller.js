@@ -41,6 +41,8 @@ const loginAdmin = async (req, res) => {
     }
 
     // Create JWT Token
+    // user data + secret key
+    // use karke JWT token generate karta hai.
     const token = jwt.sign(
       {
         id: user.id,
@@ -50,7 +52,7 @@ const loginAdmin = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1d" },
     );
-
+    // Token send to frontend  Controller response 
     res.json({
       success: true,
       token,
@@ -62,7 +64,6 @@ const loginAdmin = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-
     res.status(500).json({
       success: false,
       message: "Login error",

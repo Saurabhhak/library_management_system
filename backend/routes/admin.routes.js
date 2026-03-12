@@ -24,7 +24,7 @@ const {
 
 // -------- Middleware --------
 const authMiddleware = require("../middleware/auth.middleware");
-
+const superAdminMiddleware = require("../middleware/superAdmin.middleware");
 //  ------------ AUTH ROUTES
 
 // -------------- Login admin
@@ -43,18 +43,18 @@ router.get("/meta/cities/:stateId", getCitiesByState);
 // --------------------- ADMIN CRUD ROUTES
 
 // ---- Create new admin
-router.post("/", createAdmin);
+router.post("/", authMiddleware, superAdminMiddleware, createAdmin);
 
 // ---- Get all admins
-router.get("/", getAllAdmins);
+router.get("/", authMiddleware, superAdminMiddleware, getAllAdmins);
 
 // ---- Get admin by id
-router.get("/:id", getAdminById);
+router.get("/:id", authMiddleware, superAdminMiddleware, getAdminById);
 
 // ---- Update admin
-router.put("/:id", updateAdmin);
+router.put("/:id", authMiddleware, superAdminMiddleware, updateAdmin);
 
 // ---- Delete admin
-router.delete("/:id", deleteAdmin);
+router.delete("/:id", authMiddleware, superAdminMiddleware, deleteAdmin);
 
 module.exports = router;
