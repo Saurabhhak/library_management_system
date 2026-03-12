@@ -1,45 +1,51 @@
-export const validateAdminForm = (userinfo) => {
-  const newErrors = {};
+export const validateAdminForm = (userinfo, mode = "create") => {
+  const errors = {};
 
-  if (!userinfo.first_name) newErrors.first_name = "First name required";
-  if (!userinfo.last_name) newErrors.last_name = "Last name required";
-  if (!userinfo.email) newErrors.email = "Email required";
-  if (!userinfo.phone) newErrors.phone = "Phone required";
-  if (!userinfo.state_id) newErrors.state_id = "State required";
-  if (!userinfo.city_id) newErrors.city_id = "City required";
-  if (!userinfo.role) newErrors.role = "Role required";
-  if (!userinfo.password) newErrors.password = "Password required";
-  if (!userinfo.confirm_password)
-    newErrors.confirm_password = "Confirm password required";
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  /* ---------- REQUIRED FIELDS ---------- */
+
+  if (!userinfo.first_name) errors.first_name = "First name required";
+  if (!userinfo.last_name) errors.last_name = "Last name required";
+
+  // Email only required in CREATE
+  if (mode === "create" && !userinfo.email)
+    errors.email = "Email required";
+
+  if (!userinfo.phone) errors.phone = "Phone required";
+  if (!userinfo.role) errors.role = "Role required";
+  if (!userinfo.state_id) errors.state_id = "State required";
+
+  if (userinfo.state_id && !userinfo.city_id)
+    errors.city_id = "City required";
+
+  // Password only required in CREATE
+  if (mode === "create") {
+    if (!userinfo.password)
+      errors.password = "Password required";
+    if (!userinfo.confirm_password)
+      errors.confirm_password = "Confirm password required";
+  }
+
+  /* ---------- REGEX ---------- */
+
   const nameRegex = /^[A-Za-z\s]{3,30}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneRegex = /^[0-9]{10,12}$/;
 
-  if (userinfo.first_name && !nameRegex.test(userinfo.first_name)) {
-    newErrors.first_name = "Only letters allowed (3-30 characters)";
-  }
+  /* ---------- NAME ---------- */
 
-  if (userinfo.last_name && !nameRegex.test(userinfo.last_name)) {
-    newErrors.last_name = "Only letters allowed (3-30 characters)";
-  }
+  if (userinfo.first_name && !nameRegex.test(userinfo.first_name))
+    errors.first_name = "Only letters allowed (3-30 characters)";
 
-  if (userinfo.email && !emailRegex.test(userinfo.email)) {
-    newErrors.email = "Invalid email format";
-  }
+  if (userinfo.last_name && !nameRegex.test(userinfo.last_name))
+    errors.last_name = "Only letters allowed (3-30 characters)";
 
-  // password optional in update
-  if (userinfo.password || userinfo.confirm_password) {
-    const passwordRegex =
-      /^(?=(?:.*[a-z]){3,})(?=.*[A-Z])(?=(?:.*\d){2,3})(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+  /* ---------- EMAIL ---------- */
+  if (mode === "create" && userinfo.email && !emailRegex.test(userinfo.email))
+    errors.email = "Invalid email format";
 
-    if (!passwordRegex.test(userinfo.password)) {
-      newErrors.password =
-        "Password must contain 1 capital, 3 lowercase, 2-3 numbers, 1 special character and be at least 8 characters";
-    }
+  /* ---------- PHONE ---------- */
+  if (userinfo.phone && !phoneRegex.test(userinfo.phone))
+    errors.phone = "Phone must be 10-12 digits";
 
-    if (userinfo.password !== userinfo.confirm_password) {
-      newErrors.confirm_password = "Passwords do not match";
-    }
-  }
-
-  return newErrors;
+  return errors;
 };

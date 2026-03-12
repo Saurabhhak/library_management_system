@@ -7,13 +7,10 @@ function Profile() {
   const navigate = useNavigate();
 
   /* ---------------- STATE ---------------- */
-
   // store admin profile
   const [user, setUser] = useState(null);
-
   // loading state while fetching data
   const [loading, setLoading] = useState(true);
-
   // delete popup toggle
   const [showDelete, setShowDelete] = useState(false);
 
@@ -34,19 +31,17 @@ function Profile() {
         setLoading(false);
       }
     };
-
     fetchProfile();
   }, []);
 
   /* ---------------- LOGOUT ---------------- */
-
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("role");
     navigate("/login");
   };
 
   /* ---------------- DELETE ACCOUNT ---------------- */
-
   const handleDeleteAccount = async () => {
     try {
       const { data } = await deleteAccount();

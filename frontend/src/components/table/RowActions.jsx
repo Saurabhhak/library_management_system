@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import styles from "./RowAction.module.css";
 
-function RowActions({ row, onDelete }) {
+function RowActions({ admin, onDelete }) {
   const navigate = useNavigate();
-  const id = row.original.id;
+  const id = admin.id;
 
   return (
     <div className={styles.ActionsBTN}>
@@ -11,14 +11,13 @@ function RowActions({ row, onDelete }) {
         className={styles.ActionEdit}
         onClick={() => navigate(`/updateadmin/${id}`)}
       >
-<i class="fa-solid fa-user-pen"></i>
+        <i class="fa-solid fa-user-pen"></i>
       </button>
-
       <button
-        className={styles.ActionsDel}
-        onClick={() => onDelete(id)}
+        className={styles.ActionEdit}
+        onClick={() => onDelete(admin)}
       >
-       <i class="fa-solid fa-trash"></i>
+        <i className="fa-solid fa-trash"></i>
       </button>
     </div>
   );

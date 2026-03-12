@@ -16,22 +16,32 @@ function NavbarSection() {
     setAdminBarOpen(false);
     setProfileOpen(false);
   };
-
+  const role = localStorage.getItem("role");
   return (
-    <div className={styles.Navbar_header}>
-      {/* -------- ADMIN SIDEBAR BUTTON -------- */}
-      <button
-        className={`${styles.navlink} ${styles.AdminBar}`}
-        onClick={() => {
-          setAdminBarOpen(!adminBarOpen);
-          setMenuOpen(false);
-          setProfileOpen(false);
-        }}
-      >
-        <i class="fa-solid fa-user-gear"></i>
-      </button>
 
+    <div className={styles.Navbar_header}>
+      {role !== "superadmin" && (
+        <button
+          className={`${styles.navlink} ${styles.AdminBar}`}
+          onClick={() => alert("This Page Only Super Admin Access")}>
+          <i class="fa-solid fa-user-gear"></i>
+        </button>
+      )}
+      {/* -------- ADMIN SIDEBAR BUTTON -------- */}
+      {role === "superadmin" && (
+        <button
+          className={`${styles.navlink} ${styles.AdminBar}`}
+          onClick={() => {
+            setAdminBarOpen(!adminBarOpen);
+            setMenuOpen(false);
+            setProfileOpen(false);
+          }}
+        >
+          <i class="fa-solid fa-user-gear"></i>
+        </button>
+      )}
       {/* -------- ADMIN SIDEBAR -------- */}
+
       <nav
         className={`${styles.adminBars} ${adminBarOpen ? styles.activeAdmin : ""}`}
       >
@@ -109,7 +119,7 @@ function NavbarSection() {
         className={`${styles.profilePanel} ${profileOpen ? styles.profileActive : ""}`}
       >
         {/* <div className={styles.ProfileData}> */}
-          <Profile />
+        <Profile />
         {/* </div> */}
       </div>
     </div>

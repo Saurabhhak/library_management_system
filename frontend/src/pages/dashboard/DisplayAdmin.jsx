@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import styles from "./DisplayAdmin.module.css";
 import { getAdmins, deleteAdmin } from "../../services/admin.service";
 import { getColumns } from "../../components/table/columns";
-
+import Swal from "sweetalert2";
 import {
   useReactTable,
   getCoreRowModel,
@@ -40,24 +40,31 @@ function DisplayAdmin() {
   }, []);
 
   /* ---------------- DELETE ADMIN ---------------- */
+  const handleDelete = async (admin) => {
+    const result = await Swal.fire({
+      title: "Delete Admin?",
+      html: `
+      <b>ID:</b> ${admin.id} <br/>
+      <b>Role:</b> ${admin.role} <br/>
+      <b>Name:</b> ${admin.first_name} ${admin.last_name}
 
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("Delete this admin?");
-
-    if (!confirmDelete) return;
-
+    `,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
+    });
+    if (!result.isConfirmed) return;
     try {
-      await deleteAdmin(id);
-
-      // remove deleted admin from UI
-      setData((prev) => prev.filter((admin) => admin.id !== id));
-
-      alert("Admin deleted successfully");
+      await deleteAdmin(admin.id);
+      setData((prev) =>
+        prev.filter((a) => a.id !== admin.id)
+      );
+      Swal.fire("Deleted!", "Admin removed successfully", "success");
     } catch (err) {
-      console.error("Delete failed:", err);
+      console.error(err);
     }
   };
-
   /* ---------------- TABLE COLUMNS ---------------- */
 
   // columns generate with delete function
@@ -68,7 +75,6 @@ function DisplayAdmin() {
   const table = useReactTable({
     data,
     columns,
-
     state: { globalFilter, columnFilters, columnVisibility },
 
     initialState: {

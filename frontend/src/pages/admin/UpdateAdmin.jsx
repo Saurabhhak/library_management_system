@@ -59,7 +59,6 @@ function UpdateAdmin() {
   useEffect(() => {
     getAdminById(id).then((res) => {
       const admin = res?.data?.data;
-
       setUserInfo({
         first_name: admin.first_name || "",
         last_name: admin.last_name || "",
@@ -104,7 +103,7 @@ function UpdateAdmin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const validationErrors = validateAdminForm(userinfo);
+    const validationErrors = validateAdminForm(userinfo, "update");
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;

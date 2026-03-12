@@ -5,7 +5,7 @@ const PrivateRoute = () => {
   if (!token) return <Navigate to="/login" replace />;
   try {
     const decoded = jwtDecode(token);
-    // exp is in seconds → convert to ms
+    // expire is in seconds → convert to ms
     if (decoded.exp * 1000 < Date.now()) {
       localStorage.removeItem("token");
       return <Navigate to="/login" replace />;

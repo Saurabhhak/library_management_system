@@ -54,7 +54,6 @@ function CreateAdmin() {
 
   useEffect(() => {
     if (!userinfo.state_id) return;
-
     getCitiesByState(userinfo.state_id).then((res) =>
       setCities(res?.data?.data || []),
     );
@@ -81,7 +80,7 @@ function CreateAdmin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Run validation function and get all validation errors
-    const validationErrors = validateAdminForm(userinfo);
+    const validationErrors = validateAdminForm(userinfo, "create");
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;

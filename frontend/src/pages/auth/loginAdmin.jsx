@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginAdmin } from "../../services/admin.service";
-import styles from "./AdminLogin.module.css";
-
+import styles from "./LoginAdmin.module.css";
 function AdminLoginForm() {
+  /* ---------------- NAVIGATION ---------------- */
   const navigate = useNavigate();
+  /* ---------------- STATE ---------------- */
   const [showPassword, setShowPassword] = useState(false);
   const [userinfo, setUserInfo] = useState({
     email: "",
@@ -13,28 +14,25 @@ function AdminLoginForm() {
   const [errors, setErrors] = useState({});
   const [notification, setNotification] = useState("");
   const [notifyType, setNotifyType] = useState("");
+  /* ---------------- NOTIFICATION ---------------- */
   const showNotification = (msg, type) => {
     setNotification(msg);
     setNotifyType(type);
-
     setTimeout(() => {
       setNotification("");
       setNotifyType("");
     }, 3000);
   };
+  /* ---------------- INPUT CHANGE ---------------- */
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     setUserInfo((prev) => ({
       ...prev,
       [name]: value,
     }));
     setErrors({ ...errors, [name]: "" });
   };
-  const handleReset = () => {
-    setUserInfo({ email: "", password: "" });
-    setErrors({});
-  };
+  /* ---------------- FORM SUBMIT ---------------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
@@ -45,16 +43,21 @@ function AdminLoginForm() {
     try {
       const res = await loginAdmin(userinfo);
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("role", res.data.user.role);
       showNotification("Login successful", "success");
       setTimeout(() => navigate("/"), 1200);
     } catch (error) {
       showNotification(
         error.response?.data?.message || "Invalid email or password",
-        "error",
+        "error"
       );
     }
   };
-
+  /* ---------------- MEMBER LOGIN (TEMP) ---------------- */
+  function handleMember() {
+    alert("Member Feature coming soon");
+  }
+  /* ---------------- UI ---------------- */
   return (
     <>
       {notification && (
@@ -62,6 +65,7 @@ function AdminLoginForm() {
           {notification}
         </div>
       )}
+      {/* -------- HEADER -------- */}
       <header className={styles.headers}>
         <div className={styles.leftIcon}>
           <i className="fa-solid fa-book"></i>
@@ -70,62 +74,70 @@ function AdminLoginForm() {
           <h2>APV Tech Library</h2>
         </div>
       </header>
+      {/* -------- LOGIN FORM -------- */}
       <div className={styles.formContainer}>
         <form onSubmit={handleSubmit} className={styles.formSection}>
           <h1 className={styles.tagh1}>Admin Login</h1>
-          <input
-            className={`${styles.formInput} ${errors.email ? styles.inputError : ""}`}
-            type="email"
-            name="email"
-            value={userinfo.email}
-            onChange={handleChange}
-            placeholder="Admin email"
-          />
-          {errors.email && (
-            <span className={styles.errorMsg}>{errors.email}</span>
-          )}
-          <div className={styles.password_wrapper}>
+          {/* -------- EMAIL FIELD -------- */}
+          <div className={styles.formGroup}>
+            <label htmlFor="email">Email address</label>
             <input
-              className={`${styles.formInput} ${
-                errors.password ? styles.inputError : ""
-              }`}
-              type={showPassword ? "text" : "password"}
-              name="password"
-              value={userinfo.password}
+              id="email"
+              type="email"
+              name="email"
+              value={userinfo.email}
               onChange={handleChange}
-              placeholder="Admin password"
+              className={`${styles.formInput} ${errors.email ? styles.inputError : ""}`}
             />
-            <span
-              className={styles.eye_icon}
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              <i
-                className={`fa-solid ${
-                  showPassword ? "fa-eye-slash" : "fa-eye"
-                }`}
-              ></i>
-            </span>
+            {errors.email && (
+              <span className={styles.errorMsg}>{errors.email}</span>
+            )}
           </div>
-          {errors.password && (
-            <span className={styles.errorMsg}>{errors.password}</span>
-          )}
+          {/* -------- PASSWORD FIELD -------- */}
+          <div className={styles.formGroup}>
+            <div className={styles.lableOrForgotPass}>
+              <label htmlFor="password">Password</label>
+              <Link className={styles.linkStyle} to="/forgot-password">
+                Forgot password?
+              </Link>
+            </div>
+            <div className={styles.password_wrapper}>
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={userinfo.password}
+                onChange={handleChange}
+                className={styles.formInput}
+              />
+              <span
+                className={styles.eye_icon}
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                <i className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
+              </span>
+            </div>
+            {errors.password && (
+              <span className={styles.errorMsg}>{errors.password}</span>
+            )}
+          </div>
+          {/* -------- LOGIN BUTTON -------- */}
           <div className={styles.btnSection}>
-            <button
-              type="reset"
-              className={styles.btnFeature}
-              onClick={handleReset}
-            >
-              Reset
-            </button>
             <button type="submit" className={styles.btnFeature}>
               Login
             </button>
           </div>
+          {/* -------- MEMBER LINK -------- */}
           <p>
-            <Link className={styles.linkStyle} to="/">
+            <Link
+              onClick={handleMember}
+              className={styles.linkStyle}
+              to="/"
+            >
               Member Login
             </Link>
           </p>
+
         </form>
       </div>
     </>

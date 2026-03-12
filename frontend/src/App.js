@@ -7,7 +7,9 @@ import HomeLayout from "./components/layout/HomeLayout";
 import PrivateRoute from "./routes/PrivateRoute";
 
 /* Auth */
-import AdminLoginForm from "./pages/auth/loginAdmin";
+import AdminLoginForm from "./pages/auth/LoginAdmin";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 
 /* Dashboard */
 import DisplayAdmin from "./pages/dashboard/DisplayAdmin";
@@ -25,13 +27,18 @@ import Profile from "./pages/profile/Profile";
 /* Books */
 import Books from "./pages/books/Books";
 import Category from "./pages/books/Category";
-
+/* SuperAdmin Protected Route */
+import SuperAdminRoute from "./routes/SuperAdminRoute";
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* -------- PUBLIC ROUTES -------- */}
         <Route path="/login" element={<AdminLoginForm />} />
+        {/* Password Recovery Routes (PUBLIC) */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
 
         {/* -------- PROTECTED ROUTES -------- */}
         <Route element={<PrivateRoute />}>
@@ -40,9 +47,9 @@ function App() {
             <Route path="/" element={<Home />} />
 
             {/* Admin Management */}
-            <Route path="/createadmin" element={<CreateAdmin />} />
-            <Route path="/updateadmin/:id" element={<UpdateAdmin />} />
-            <Route path="/displayadmin" element={<DisplayAdmin />} />
+            <Route path="/createadmin" element={<SuperAdminRoute><CreateAdmin /></SuperAdminRoute>} />
+            <Route path="/updateadmin/:id" element={<SuperAdminRoute><UpdateAdmin /></SuperAdminRoute>} />
+            <Route path="/displayadmin" element={<SuperAdminRoute><DisplayAdmin /></SuperAdminRoute>} />
 
             {/* Members */}
             <Route path="/members" element={<Members />} />
