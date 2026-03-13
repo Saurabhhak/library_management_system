@@ -10,7 +10,19 @@ const passwordRoutes = require("./routes/password.routes");
 const app = express();
 
 /* Middleware */
-app.use(cors());
+// app.use(cors());
+// const cors = require("cors");
+
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      process.env.FRONTEND_URL
+    ],
+    credentials: true
+  })
+);
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -18,7 +30,6 @@ app.get("/", (req, res) => {
 });
 
 /* API Routes */
-
 app.use("/api/admin", adminRoute);
 app.use("/api/books", bookRoutes);
 app.use("/api/categories", categoryRoutes);
