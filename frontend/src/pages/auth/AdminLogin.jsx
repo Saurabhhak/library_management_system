@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { loginAdmin } from "../../services/auth.service";
+import { loginAdmin } from "../../services/admin.service";
 import styles from "./LoginAdmin.module.css";
-function AdminLoginForm() { 
+function AdminLoginForm() {
   /* ---------------- NAVIGATION ---------------- */
   const navigate = useNavigate();
   /* ---------------- STATE ---------------- */
