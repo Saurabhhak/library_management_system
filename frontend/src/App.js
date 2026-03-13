@@ -7,7 +7,7 @@ import HomeLayout from "./components/layout/HomeLayout";
 import PrivateRoute from "./routes/PrivateRoute";
 
 /* Auth */
-import AdminLoginForm from "./pages/auth/LoginAdmin";
+import AdminLoginForm from "./pages/auth/AdminLogin";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 
