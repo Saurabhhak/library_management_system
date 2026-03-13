@@ -14,6 +14,8 @@ function AdminLoginForm() {
   const [errors, setErrors] = useState({});
   const [notification, setNotification] = useState("");
   const [notifyType, setNotifyType] = useState("");
+  const [loading, setLoading] = useState(false);
+
   /* ---------------- NOTIFICATION ---------------- */
   const showNotification = (msg, type) => {
     setNotification(msg);
@@ -41,6 +43,7 @@ function AdminLoginForm() {
     setErrors(newErrors);
     if (Object.keys(newErrors).length) return;
     try {
+      setLoading(true);
       const res = await loginAdmin(userinfo);
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.user.role);
@@ -51,6 +54,8 @@ function AdminLoginForm() {
         error.response?.data?.message || "Invalid email or password",
         "error"
       );
+    } finally {
+      setLoading(false);
     }
   };
   /* ---------------- MEMBER LOGIN (TEMP) ---------------- */
@@ -123,8 +128,14 @@ function AdminLoginForm() {
           </div>
           {/* -------- LOGIN BUTTON -------- */}
           <div className={styles.btnSection}>
-            <button type="submit" className={styles.btnFeature}>
-              Login
+            <button
+              type="submit"
+              className={styles.btnFeature}
+              disabled={loading}
+            >
+              {loading
+                ? "Login..."
+                : "Login"}
             </button>
           </div>
           {/* -------- MEMBER LINK -------- */}
