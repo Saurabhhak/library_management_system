@@ -48,7 +48,7 @@ function AdminLoginForm() {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.user.role);
       showNotification("Login successful", "success");
-      setTimeout(() => navigate("/"), 1200);
+      navigate("/", { replace: true });
     } catch (error) {
       showNotification(
         error.response?.data?.message || "Invalid email or password",
@@ -113,7 +113,7 @@ function AdminLoginForm() {
                 name="password"
                 value={userinfo.password}
                 onChange={handleChange}
-                className={styles.formInput}
+                className={`${styles.formInput} ${errors.password ? styles.inputError : ""}`}
               />
               <span
                 className={styles.eye_icon}
@@ -133,9 +133,13 @@ function AdminLoginForm() {
               className={styles.btnFeature}
               disabled={loading}
             >
-              {loading
-                ? "Login..."
-                : "Login"}
+              {loading ? (
+                <>
+                  <i className="fa-solid fa-spinner fa-spin"></i> Logging in...
+                </>
+              ) : (
+                "Login"
+              )}
             </button>
           </div>
           {/* -------- MEMBER LINK -------- */}
