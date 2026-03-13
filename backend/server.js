@@ -25,9 +25,9 @@ app.use(
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
+/*app.get("/", (req, res) => {
   res.send("API Server Running");
-});
+});*/
 
 /* API Routes */
 app.use("/api/admin", adminRoute);
@@ -40,7 +40,17 @@ app.use("/api/password", passwordRoutes);
 // Gets the port number from environment variables 
 // (used in production servers) =  process.env.PORT
 
+/*const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});*/
+
 const PORT = process.env.PORT || 5000;
+
+app.get("/", (req, res) => {
+  res.send("LMS Backend Running");
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
