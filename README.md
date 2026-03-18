@@ -34,3 +34,4 @@ The application provides secure JWT-based authentication, role-based access cont
 
 ## 📂 Project Structure
 
+# Updated production setup
