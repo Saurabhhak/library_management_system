@@ -5,13 +5,13 @@ const API = axios.create({
 });
 
 // Attach token automatically
+
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
 
   if (token && !config.url.includes("/password")) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-
   return config;
 });
 
