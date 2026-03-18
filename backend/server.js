@@ -22,7 +22,7 @@ app.use(cors({
 
 app.use(express.json());
 
-/* Health Check */
+/* Server Check */
 
 app.get("/", (req, res) => {
   res.send("LMS Backend Running");
