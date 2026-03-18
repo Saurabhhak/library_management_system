@@ -1,0 +1,246 @@
+/* ---------- FORM CONTAINER ---------- */
+
+.formContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+
+/* ---------- FORM CARD ---------- */
+
+.formSection {
+  max-width: 30rem;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 2rem;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+
+/* ---------- HEADING ---------- */
+
+.tagh1 {
+  grid-column: span 2;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #3e4144;
+}
+
+
+/* ---------- FORM FIELD ---------- */
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+
+/* ---------- INPUT / SELECT ---------- */
+
+.formInput {
+  width: 100%;
+  padding: .7rem .8rem;
+  border-radius: 4px;
+  border: 1px solid #bbb;
+  font-size: .9rem;
+  cursor: text;
+  color: #191919;
+  transition: .2s;
+}
+
+.formInput:hover {
+  border-color: #1976d2;
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: #03ffab;
+  box-shadow:inset 0 0 .4rem rgba(0, 181, 69, 0.564);
+}
+
+
+/* ---------- FULL WIDTH ---------- */
+
+.fullWidth {
+  grid-column: span 2;
+}
+
+
+/* ---------- ERROR ---------- */
+
+.errorMsg {
+  font-size: 11px;
+  color: #e53935;
+  margin-top: 4px;
+}
+
+.inputError {
+  border: 1px solid #e53935 !important;
+}
+
+
+/* ---------- PASSWORD FIELD ---------- */
+
+.password_wrapper {
+  position: relative;
+}
+
+.password_wrapper input {
+  padding-right: 2.5rem;
+}
+
+/* eye icon */
+
+.eye_icon {
+  position: absolute;
+  right: 10px;
+  top: 65%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #717171;
+}
+
+.eye_icon:hover {
+  color: #191919;
+}
+
+
+/* ---------- BUTTON SECTION ---------- */
+
+.btnSection {
+  grid-column: span 2;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+
+/* ---------- BUTTON ---------- */
+
+.btnFeature {
+  width: 15rem;
+  padding: .65rem;
+
+  border: none;
+  border-radius: 4px;
+
+  background: #1088ff;
+  color: #fff;
+
+  font-weight: 600;
+  font-size: .9rem;
+
+  cursor: pointer;
+  transition: .2s;
+}
+
+.btnFeature:hover {
+  background: #003d98;
+}
+
+.btnFeature:disabled {
+  background: #9aa5b1;
+  cursor: not-allowed;
+}
+
+
+/* ---------- NOTIFICATION ---------- */
+
+.notify {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+
+  padding: 12px 18px;
+
+  border-radius: 6px;
+  font-weight: 600;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  box-shadow: 0 8px 25px rgba(0, 0, 0, .2);
+
+  animation: slideDown .3s ease;
+  z-index: 9999;
+}
+
+.success {
+  background: #00ab11;
+  color: white;
+}
+
+.error {
+  background: #e53935;
+  color: white;
+}
+
+.closeBtn {
+  cursor: pointer;
+}
+
+
+/* ---------- ANIMATION ---------- */
+
+@keyframes slideDown {
+
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+}
+
+
+/* ---------- RESPONSIVE ---------- */
+
+@media (max-width:768px) {
+
+  .formSection {
+    width: 100%;
+  }
+
+}
+
+@media (max-width:480px) {
+
+  .formSection {
+    grid-template-columns: 1fr;
+    padding: 1.5rem;
+  }
+
+  .tagh1 {
+    grid-column: span 1;
+  }
+
+  .btnSection {
+    grid-column: span 1;
+    flex-direction: column;
+  }
+
+  .btnFeature {
+    width: 100%;
+  }
+
+}

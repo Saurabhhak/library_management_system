@@ -1,0 +1,50 @@
+Look first this task add super admin only create admin, only admin login page view ho admin ka or 
+admin login page but member create or login ye bhi sath me hi
+
+Important Rule
+Kabhi bhi: 
+git add .   <-------< Mat use karo agar tum single file commit karna chahte ho
+Warna sab files ek saath stage ho jayengi.
+Professional Tip (Very Important)
+Agar files already commit ho chuki hain aur tum bina code change kiye new commit banana chahte ho, to pehle thoda sa small change karo (jaise comment add/remove), tab commit hoga._
+
+______________Only Frontend Changes Commit_______________
+git add frontend
+git commit -m "feat(frontend): update Home and Admin UI layout"
+git push
+_______________Only Backend Changes Commit________________
+git add backend
+git commit -m "feat(backend): add book and category controller"
+git push
+_______________Dono Commit Karna Ho__________________
+git add .
+git commit -m "feat: update frontend UI and backend routes"
+git push
+Required Metarial
+fronend 
+backend
+DB
+
+STEP 1: Db created  DONE
+STEP 1: GO to Postgres SQL Create Database or table 
+STEP 2: fronend create
+//-------------------------
+STEP 2:
+create your react app fronend 
+npx create-react-app project_name
+STEP 3: backend create
+//-------------------------
+STEP3:
+mkdir backend
+cd backend
+npm init -y
+npm install express cors pg
+
+
+--- Daily task
+can do auth JWT 
+Today 21-02-2026
+Create Authentication or Book CRUD Fucionlity
+React Table Sorting 
+And Pagination Fucionlity Are Completed 
+Next Task is Searching page or user input box  

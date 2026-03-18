@@ -1,0 +1,10 @@
+.globalName {
+    margin-top: 6rem;
+    text-align: center;
+    align-items: center;
+    border: none;
+    background-color: rgb(65, 65, 65);
+    color: aliceblue;
+    border-radius: .3rem;
+    width: auto;
+}
