@@ -160,7 +160,9 @@ function CreateAdmin() {
       };
       // payload = argument
       await createAdmin(payload);
-      showNotification("Superadmin created", "success");
+      // role based notify notification
+      const roleLabel = userinfo.role === "superadmin" ? "SuperAdmin" : "Admin";
+      showNotification(`${roleLabel} created successfully`, "success");
       setUserInfo(initialState);
     } catch (error) {
       showNotification(
