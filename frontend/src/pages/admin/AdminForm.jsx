@@ -12,6 +12,14 @@ function AdminForm({
   errors,
   isEdit,
   loading,
+  handleSendOtp,
+  handleVerifyOtp,
+  otp,
+  setOtp,
+  otpSent,
+  otpVerified,
+  timer,
+  resendDisabled,
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -49,19 +57,74 @@ function AdminForm({
             <p className={styles.errorMsg}>{errors.last_name}</p>
           )}
         </div>
-        {/* Email Full Width */}{!isEdit && (
-          <>
-            <div className={styles.fullWidth}>
-              <label htmlFor="email">Email address</label>
+        {/* EMAIL + SEND OTP */}
+        {!isEdit && (
+          <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+            <label>Email address</label>
+
+            <div className={styles.otpRow}>
               <input
                 name="email"
                 value={userinfo.email}
                 onChange={handleChange}
-                className={`${styles.formInput} ${errors?.email ? styles.inputError : ""}`}
+                className={`${styles.formInput} ${errors?.email ? styles.inputError : ""
+                  }`}
               />
-              {errors?.email && <p className={styles.errorMsg}>{errors.email}</p>}
+
+              <button
+                type="button"
+                onClick={handleSendOtp}
+                disabled={otpSent && resendDisabled}
+                className={styles.btnFeature}
+              >
+                {otpSent ? "Sent" : "Send OTP"}
+              </button>
             </div>
-          </>)}
+
+            {errors?.email && (
+              <p className={styles.errorMsg}>{errors.email}</p>
+            )}
+
+            {/* OTP BOX */}
+            {otpSent && (
+              <div className={styles.otpBox}>
+                <input
+                  type="text"
+                  maxLength="6"
+                  placeholder="Enter OTP"
+                  value={otp}
+                  onChange={(e) =>
+                    setOtp(e.target.value.replace(/\D/g, ""))
+                  }
+                  className={styles.formInput}
+                />
+
+                <button
+                  type="button"
+                  onClick={handleVerifyOtp}
+                  disabled={otpVerified}
+                  className={styles.btnFeature}
+                >
+                  {otpVerified ? "Verified " : "Verify"}
+                </button>
+
+                {resendDisabled ? (
+                  <p className={styles.timerText}>
+                    Resend in {timer}s
+                  </p>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleSendOtp}
+                    className={styles.resendBtn}
+                  >
+                    Resend OTP
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
         {/* Phone */}
         <div className={styles.formGroup}>
           <label htmlFor="password">Phone</label>
@@ -126,7 +189,8 @@ function AdminForm({
           </select>
           {errors?.city_id && <p className={styles.errorMsg}>{errors.city_id}</p>}
         </div>
-        {/* Password */}{!isEdit && (
+        {/* Password */}
+        {!isEdit && (
           <>
             <div className={styles.password_wrapper}>
               <label htmlFor="password">Password</label>

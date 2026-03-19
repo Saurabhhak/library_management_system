@@ -2,9 +2,8 @@ import API from "../api/axiosInstance";
 
 /* ---------------- AUTH ---------------- */
 
-// login admin
-export const loginAdmin = (data) => API.post("/admin/login", data);
 
+// export const loginAdmin = (data) => API.post("/admin/login", data);
 /* ---------------- PROFILE ---------------- */
 
 // get logged in admin profile

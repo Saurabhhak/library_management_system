@@ -38,8 +38,7 @@ function App() {
         {/* Password Recovery Routes (PUBLIC) */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-
-
+        
         {/* -------- PROTECTED ROUTES -------- */}
         <Route element={<PrivateRoute />}>
           <Route element={<HomeLayout />}>

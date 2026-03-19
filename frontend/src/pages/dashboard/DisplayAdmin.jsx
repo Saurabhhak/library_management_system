@@ -79,8 +79,9 @@ function DisplayAdmin() {
 
     initialState: {
       pagination: { pageSize: 10, pageIndex: 0 },
-      sorting: [{ id: "first_name", desc: false }],
+      sorting: [{ id: "id", desc: false }],
     },
+    
 
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
