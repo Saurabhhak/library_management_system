@@ -45,7 +45,7 @@ function UpdateAdmin() {
     setTimeout(() => {
       setNotification("");
       setNotifyType("");
-    }, 3000);
+    }, 5000);
   };
 
   /* ------------------ FETCH STATES ------------------ */
@@ -115,9 +115,7 @@ function UpdateAdmin() {
       await updateAdmin(id, userinfo);
       // role based notify notification
       const roleLabel = userinfo.role === "superadmin" ? "SuperAdmin" : "Admin";
-      showNotification(`${roleLabel} created successfully`, "success");
-      showNotification("Admin updated successfully", "success");
-
+      showNotification(`${roleLabel} updated successfully`, "success");
       setTimeout(() => {
         navigate("/displayadmin");
       }, 1500);
