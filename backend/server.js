@@ -36,6 +36,7 @@ app.get("/db-test", async (req, res) => {
 
 /* -------------------- API Routes -------------------- */
 app.use("/api", routes);
+
 /* -------------------- Server -------------------- */
 
 const PORT = process.env.PORT || 5000;
