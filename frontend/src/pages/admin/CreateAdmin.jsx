@@ -16,7 +16,7 @@ function CreateAdmin() {
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
 
-  // ⏱ Timer states (ONLY HERE)
+  // Timer states (ONLY HERE)
   const [timer, setTimer] = useState(0);
   const [resendDisabled, setResendDisabled] = useState(true);
 
@@ -24,26 +24,20 @@ function CreateAdmin() {
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [errors, setErrors] = useState({});
-
   const initialState = {
     first_name: "",
     last_name: "",
     email: "",
     phone: "",
-    role: "",
+    role: "admin", // Default role set
     state_id: "",
     city_id: "",
     password: "",
     confirm_password: "",
   };
-  const handleReset = () => {
-    setUserInfo(initialState);
-  };
   const [userinfo, setUserInfo] = useState(initialState);
-
   const [notification, setNotification] = useState("");
   const [notifyType, setNotifyType] = useState("");
-
   const showNotification = (msg, type) => {
     setNotification(msg);
     setNotifyType(type);
@@ -53,7 +47,18 @@ function CreateAdmin() {
     }, 5000);
   };
 
-  // RESET on email change
+  // ---------- handle Change ------------
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUserInfo((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  // ---------- handle Change ------------
+  const handleReset = () => {
+    setUserInfo(initialState);
+  };
+  // --------- Reset on email change
   useEffect(() => {
     setOtp("");
     setOtpSent(false);
@@ -62,38 +67,31 @@ function CreateAdmin() {
     setResendDisabled(true);
   }, [userinfo.email]);
 
-  // TIMER LOGIC (single source of truth)
+  // useEffect Timer Logic (single source of truth)
   useEffect(() => {
     if (!otpSent) return;
-
     if (timer === 0) {
       setResendDisabled(false);
       return;
     }
-
     const interval = setInterval(() => {
       setTimer((prev) => prev - 1);
     }, 1000);
-
     return () => clearInterval(interval);
   }, [timer, otpSent]);
 
+  // useEffect onchange states
   useEffect(() => {
     getStates().then((res) => setStates(res?.data?.data || []));
   }, []);
 
+  // useEffect onchange cities
   useEffect(() => {
     if (!userinfo.state_id) return;
     getCitiesByState(userinfo.state_id).then((res) =>
       setCities(res?.data?.data || []),
     );
   }, [userinfo.state_id]);
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setUserInfo((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: "" }));
-  };
 
   // SEND OTP
   const handleSendOtp = async () => {
@@ -101,13 +99,11 @@ function CreateAdmin() {
       showNotification("Enter email first", "error");
       return;
     }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(userinfo.email)) {
       showNotification("Invalid email", "error");
       return;
     }
-
     try {
       // STEP 1: Check email first
       const res = await checkEmailAPI({ email: userinfo.email });
@@ -118,12 +114,10 @@ function CreateAdmin() {
       }
       // STEP 2: Send OTP
       await sendOtpAPI({ email: userinfo.email });
-
       setOtpSent(true);
       setOtpVerified(false);
       setTimer(30);
       setResendDisabled(true);
-
       showNotification("OTP sent successfully", "success");
     } catch {
       showNotification("Something went wrong", "error");
@@ -137,6 +131,7 @@ function CreateAdmin() {
       return;
     }
     try {
+      // STEP 3: Verify OTP
       await verifyOtpAPI({ email: userinfo.email, otp });
       setOtpVerified(true);
       showNotification("OTP verified", "success");
@@ -148,12 +143,10 @@ function CreateAdmin() {
   // SUBMIT
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!otpVerified) {
       showNotification("Verify OTP first", "error");
       return;
     }
-
     const validationErrors = validateAdminForm(userinfo, "create");
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -161,14 +154,12 @@ function CreateAdmin() {
     }
     try {
       setLoading(true);
-      // FORCE ROLE (IMPORTANT)
+      // Data modify karne ke liye (before sending)
       const payload = {
         ...userinfo,
-        role: "superadmin",
       };
-
+      // payload = argument
       await createAdmin(payload);
-
       showNotification("Superadmin created", "success");
       setUserInfo(initialState);
     } catch (error) {
