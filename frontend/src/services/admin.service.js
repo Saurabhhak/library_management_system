@@ -2,7 +2,6 @@ import API from "../api/axiosInstance";
 
 /* ---------------- AUTH ---------------- */
 
-
 // export const loginAdmin = (data) => API.post("/admin/login", data);
 /* ---------------- PROFILE ---------------- */
 
@@ -15,7 +14,7 @@ export const deleteAccount = () => API.delete("/admin/delete-account");
 
 /* ---------------- ADMIN CRUD ---------------- */
 
-// create new admin
+// create new admin       (data = parameter)
 export const createAdmin = (data) => API.post("/admin", data);
 
 // get all admins
