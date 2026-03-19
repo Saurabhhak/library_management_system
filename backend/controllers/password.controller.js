@@ -1,5 +1,5 @@
 const pool = require("../config/db");
-const sendEmail = require("../utils/sendEmail");
+const sendEmail = require("../services/email.service");
 const bcrypt = require("bcrypt");
 
 // ---------------- FORGOT PASSWORD ----------------
