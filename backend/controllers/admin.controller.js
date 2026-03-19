@@ -24,6 +24,20 @@ const createAdmin = async (req, res) => {
         message: "Email already exists",
       });
     }
+    // CHECK GMAIL OTP VERIFIED
+    const otpCheck = await pool.query(
+      `SELECT * FROM otp_verifications 
+       WHERE email=$1 AND is_verified=true 
+       ORDER BY id DESC LIMIT 1`,
+      [email],
+    );
+
+    if (!otpCheck.rows.length) {
+      return res.status(400).json({
+        success: false,
+        message: "Please verify OTP first",
+      });
+    }
     // Hash password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
     const result = await pool.query(
@@ -70,7 +84,7 @@ const getAllAdmins = async (req, res) => {
         s.name AS state,
         c.name AS city,
         a.role,
-        a.is_active
+        a.is_active   
       FROM admin a
       LEFT JOIN states s ON a.state_id = s.id
       LEFT JOIN cities c ON a.city_id = c.id
