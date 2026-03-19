@@ -56,7 +56,6 @@ const createAdmin = async (req, res) => {
         role || "admin",
       ],
     );
-
     res.status(201).json({
       success: true,
       message: "Admin created successfully",
@@ -149,7 +148,6 @@ const updateAdmin = async (req, res) => {
     city_id,
     role,
   } = req.body;
-
   try {
     // check duplicate email except current user
     const emailCheck = await pool.query(
