@@ -1,37 +1,113 @@
-# 📚 Library Management System
+📚 Library Management System (Production Ready)
 
-A full-stack Library Management System built using modern web technologies.  
-The application provides secure JWT-based authentication, role-based access control, and a powerful admin dashboard for managing books and users.
+A full-stack Library Management System with secure authentication, OTP-based email verification, and role-based admin control.
 
----
+🚀 Features
 
-## 🚀 Features
+🔐 JWT Authentication
 
-- 🔐 JWT Authentication (Login / Signup)
-- 🛡 Role-Based Access Control (Admin / User)
-- 📚 Book Management (CRUD Operations)
-- 👨‍💼 Admin Dashboard
-- 🔍 Search, Pagination & Sorting
-- 🔒 Protected Routes
-- 🌐 RESTful API Architecture
+Secure login system
 
----
+Token-based session handling
 
-## 🛠 Tech Stack
+📧 Email OTP Verification
 
-### Frontend
-- React.js
-- React Router
-- Axios
+OTP sent via Brevo (Sendinblue)
 
-### Backendcls
+Required before admin creation
 
-- Express.js
-- JWT Authentication
-- MongoDB / PostgreSQL
+Resend timer & validation included
 
----
+🛡 Role-Based Access Control
 
-## 📂 Project Structure
+Admin
 
-# Updated production setup
+Super Admin (restricted operations)
+
+👨‍💼 Admin Management
+
+Create Admin (with OTP verification)
+
+Update / Delete Admin
+
+Superadmin protection (cannot delete)
+
+🌍 Location Management
+
+Dynamic State & City dropdown
+
+Relational DB (PostgreSQL)
+
+📚 Scalable Architecture
+
+RESTful APIs
+
+Modular services
+
+Clean separation (Controller / Service / UI)
+
+🛠 Tech Stack
+🎨 Frontend
+
+JavaScript (ES6+)
+
+React.js (v19)
+
+React Router DOM (v7)
+
+Axios (API calls)
+
+Lucide React (icons)
+
+SweetAlert2 (alerts)
+
+React Table (TanStack) (data table)
+
+FontAwesome (icons)
+
+⚙️ Backend
+
+Node.js
+
+Express.js
+
+PostgreSQL (Neon Cloud DB)
+
+JWT (Authentication)
+
+bcrypt (password hashing)
+
+☁️ Services & Tools
+
+Neon DB → Cloud PostgreSQL
+
+Brevo (Sendinblue) → Email OTP service
+
+Render → Deployment
+
+Postman → API Testing
+
+📦 Dependencies (Key)
+Frontend
+
+axios → API communication
+
+react-router-dom → routing
+
+jwt-decode → token decoding
+
+lucide-react → icons
+
+sweetalert2 → notifications
+
+Backend
+
+bcrypt → password hashing
+
+jsonwebtoken → auth tokens
+
+pg → PostgreSQL client
+
+resend / brevo → email service
+
+
