@@ -1,52 +1,53 @@
 require("dotenv").config();
 const express = require("express");
-const cors = require("cors");
-
-const adminRoutes = require("./routes/admin.routes");
-const bookRoutes = require("./routes/book.routes");
-const categoryRoutes = require("./routes/category.routes");
-const metaRoutes = require("./routes/meta.routes");
-const passwordRoutes = require("./routes/password.routes");
-
 const app = express();
+const cors = require("cors");
+const routes = require("./routes"); // Route aggregator (routes/index.js)
 
-/* Middleware */
-
-app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "https://lms-frontend-35yk.onrender.com"
-  ],
-  credentials: true
-}));
-
+/* -------------------- Middleware -------------------- */
 app.use(express.json());
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://lms-frontend-35yk.onrender.com"],
+    credentials: true,
+  }),
+);
 
-/* Server Check */
-
+/* -------------------- Server Running Check -------------------- */
 app.get("/", (req, res) => {
   res.send("LMS Backend Running");
 });
 
-/* DB Test */
-
+/* -------------------- DB Test -------------------- */
 app.get("/db-test", async (req, res) => {
-  const { rows } = await require("./config/db").query("SELECT NOW()");
-  res.json(rows[0]);
+  try {
+    const { rows } = await require("./config/db").query("SELECT NOW()");
+    res.json({
+      success: true,
+      time: rows[0],
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Database connection failed",
+    });
+  }
 });
 
-/* Routes */
-
-app.use("/api/admin", adminRoutes);
-app.use("/api/books", bookRoutes);
-app.use("/api/categories", categoryRoutes);
-app.use("/api/meta", metaRoutes);
-app.use("/api/password", passwordRoutes);
-
-/* Server */
+/* -------------------- API Routes -------------------- */
+app.use("/api", routes);
+/* -------------------- Server -------------------- */
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+/* -------------------- ENV Debug (optional) -------------------- */
+console.log(
+  "BREVO_API_KEY:",
+  process.env.BREVO_API_KEY ? "Loaded " : "Missing ",
+);
+
+console.log("SENDER_EMAIL:", process.env.BREVO_SENDER_EMAIL || "Not set ");
