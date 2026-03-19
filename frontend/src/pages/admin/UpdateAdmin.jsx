@@ -113,7 +113,9 @@ function UpdateAdmin() {
       setLoading(true);
 
       await updateAdmin(id, userinfo);
-
+      // role based notify notification
+      const roleLabel = userinfo.role === "superadmin" ? "SuperAdmin" : "Admin";
+      showNotification(`${roleLabel} created successfully`, "success");
       showNotification("Admin updated successfully", "success");
 
       setTimeout(() => {
