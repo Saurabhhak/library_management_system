@@ -1,6 +1,8 @@
 import { useState } from "react";
 import styles from "./AdminForm.module.css";
 import { useNavigate } from "react-router-dom";
+import { CheckCircle, Mail } from "lucide-react";
+
 function AdminForm({
   title,
   userinfo,
@@ -24,16 +26,17 @@ function AdminForm({
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const navigate = useNavigate();
-  const handleCancel = () => {
-    navigate("/displayadmin");
-  };
+
+  const handleCancel = () => navigate("/displayadmin");
+
   return (
     <div className={styles.formContainer}>
       <form onSubmit={handleSubmit} className={styles.formSection}>
         <h1 className={styles.tagh1}>{title}</h1>
+
         {/* First Name */}
         <div className={styles.formGroup}>
-          <label htmlFor="email">First Name</label>
+          <label>First Name</label>
           <input
             name="first_name"
             value={userinfo.first_name}
@@ -44,9 +47,10 @@ function AdminForm({
             <p className={styles.errorMsg}>{errors.first_name}</p>
           )}
         </div>
+
         {/* Last Name */}
         <div className={styles.formGroup}>
-          <label htmlFor="email">Last Name</label>
+          <label>Last Name</label>
           <input
             name="last_name"
             value={userinfo.last_name}
@@ -57,77 +61,80 @@ function AdminForm({
             <p className={styles.errorMsg}>{errors.last_name}</p>
           )}
         </div>
-        {/* EMAIL + SEND OTP */}
+
+        {/* EMAIL + OTP */}
         {!isEdit && (
           <div className={`${styles.formGroup} ${styles.fullWidth}`}>
             <label>Email address</label>
-
             <div className={styles.otpRow}>
               <input
                 name="email"
                 value={userinfo.email}
                 onChange={handleChange}
-                className={`${styles.formInput} ${errors?.email ? styles.inputError : ""
-                  }`}
+                className={`${styles.formInput} ${errors?.email ? styles.inputError : ""}`}
+                disabled={otpVerified}
               />
-
-              <button
-                type="button"
-                onClick={handleSendOtp}
-                disabled={otpSent && resendDisabled}
-                className={styles.btnFeature}
-              >
-                {otpSent ? "Sent" : "Send OTP"}
-              </button>
-            </div>
-
-            {errors?.email && (
-              <p className={styles.errorMsg}>{errors.email}</p>
-            )}
-
-            {/* OTP BOX */}
-            {otpSent && (
-              <div className={styles.otpBox}>
-                <input
-                  type="text"
-                  maxLength="6"
-                  placeholder="Enter OTP"
-                  value={otp}
-                  onChange={(e) =>
-                    setOtp(e.target.value.replace(/\D/g, ""))
-                  }
-                  className={styles.formInput}
-                />
-
+              {!otpVerified ? (
                 <button
                   type="button"
-                  onClick={handleVerifyOtp}
-                  disabled={otpVerified}
+                  onClick={handleSendOtp}
+                  disabled={otpSent && resendDisabled}
                   className={styles.btnFeature}
                 >
-                  {otpVerified ? "Verified " : "Verify"}
+                  {otpSent ? "Sent" : "Send OTP"}
                 </button>
-
-                {resendDisabled ? (
-                  <p className={styles.timerText}>
-                    Resend in {timer}s
-                  </p>
-                ) : (
+              ) : (
+                <div className={styles.verifiedBadge}>
+                  <CheckCircle size={16} />
+                  Verified
+                </div>
+              )}
+            </div>
+            {errors?.email && <p className={styles.errorMsg}>{errors.email}</p>}
+            {/* OTP INPUT + VERIFY BUTTON */}
+            {otpSent && !otpVerified && (
+              <div className={styles.otpBox}>
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <input
+                    type="text"
+                    maxLength="6"
+                    placeholder="Enter OTP"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                    className={styles.formInput}
+                  />
                   <button
                     type="button"
-                    onClick={handleSendOtp}
-                    className={styles.resendBtn}
+                    onClick={handleVerifyOtp}
+                    disabled={otpVerified || otp.length < 6}
+                    className={`${styles.btnFeature} ${otpVerified ? styles.verifiedBtn : styles.verifyBtn}`}
                   >
-                    Resend OTP
+                    <Mail size={16} className={styles.iconDefault} />
+                    Verify
                   </button>
-                )}
+                </div>
+
+                {/* Resend OTP */}
+                {!otpVerified &&
+                  (resendDisabled ? (
+                    <p className={styles.timerText}>Resend in {timer}s</p>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleSendOtp}
+                      className={styles.resendBtn}
+                    >
+                      Resend OTP
+                    </button>
+                  ))}
               </div>
             )}
           </div>
         )}
-        {/* Phone */}
+
+        {/* PHONE */}
         <div className={styles.formGroup}>
-          <label htmlFor="password">Phone</label>
+          <label>Phone</label>
           <input
             name="phone"
             value={userinfo.phone}
@@ -136,7 +143,8 @@ function AdminForm({
           />
           {errors?.phone && <p className={styles.errorMsg}>{errors.phone}</p>}
         </div>
-        {/* Role */}
+
+        {/* ROLE */}
         <div className={styles.formGroup}>
           <label>Role</label>
           <select
@@ -149,10 +157,10 @@ function AdminForm({
             <option value="admin">Admin</option>
             <option value="superadmin">Super Admin</option>
           </select>
-
           {errors?.role && <p className={styles.errorMsg}>{errors.role}</p>}
         </div>
-        {/* State */}
+
+        {/* STATE */}
         <div className={styles.formGroup}>
           <label>State</label>
           <select
@@ -168,9 +176,11 @@ function AdminForm({
               </option>
             ))}
           </select>
-          {errors?.state_id && <p className={styles.errorMsg}>{errors.state_id}</p>}
+          {errors?.state_id && (
+            <p className={styles.errorMsg}>{errors.state_id}</p>
+          )}
         </div>
-        {/* City */}
+        {/* CITY */}
         <div className={styles.formGroup}>
           <label>City</label>
           <select
@@ -180,20 +190,22 @@ function AdminForm({
             className={`${styles.formInput} ${errors?.city_id ? styles.inputError : ""}`}
           >
             <option value="">Choose city</option>
-
             {cities.map((city) => (
               <option key={city.id} value={city.id}>
                 {city.name}
               </option>
             ))}
           </select>
-          {errors?.city_id && <p className={styles.errorMsg}>{errors.city_id}</p>}
+          {errors?.city_id && (
+            <p className={styles.errorMsg}>{errors.city_id}</p>
+          )}
         </div>
-        {/* Password */}
+
+        {/* PASSWORD */}
         {!isEdit && (
           <>
             <div className={styles.password_wrapper}>
-              <label htmlFor="password">Password</label>
+              <label>Password</label>
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
@@ -213,8 +225,9 @@ function AdminForm({
                 <p className={styles.errorMsg}>{errors.password}</p>
               )}
             </div>
+
             <div className={styles.password_wrapper}>
-              <label htmlFor="password">Confirm Password</label>
+              <label>Confirm Password</label>
               <input
                 type={showConfirm ? "text" : "password"}
                 name="confirm_password"
@@ -236,7 +249,8 @@ function AdminForm({
             </div>
           </>
         )}
-        {/* Buttons */}
+
+        {/* BUTTONS */}
         <div className={styles.btnSection}>
           {isEdit ? (
             <button
@@ -273,4 +287,5 @@ function AdminForm({
     </div>
   );
 }
+
 export default AdminForm;
