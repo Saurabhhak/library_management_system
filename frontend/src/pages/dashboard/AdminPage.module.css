@@ -1,0 +1,105 @@
+/* CONTAINER */
+.container {
+  padding: 28px;
+  margin-top: 2.5rem;
+  background: #f2fdff;
+  min-height: 100vh;
+  color: #262626;
+}
+
+/* TITLE */
+.title {
+  font-size: 1.35rem;
+  margin-bottom: 24px;
+  color: #131313;
+  font-weight: 600;
+  border-bottom: 1px solid #979797ac;
+  padding-bottom: 10px;
+  font-family: 'Materials', sans-serif;
+}
+
+/* STATS GRID */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+/* STATS CARD */
+.statCard {
+  background:#dee5e5b5;
+  border: none;
+  border-radius: .5rem;
+  padding: 1rem;
+  transition: 0.3s;
+}
+
+/* .statCard:hover {
+  transform: translateY(-3px);
+  border-color: #4facfe;
+} */
+
+.statCard p {
+  font-size: 1rem;
+  color: #000000;
+  margin-bottom: 6px;
+}
+
+.statCard h2 {
+  font-size: 1rem;
+  color: #000000;
+}
+
+/* GRID */
+.grid {
+  display: grid;
+  border: none;
+  background: none;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+/* CARD */
+.card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 14px;
+  padding: 20px;
+  min-height: 30rem;
+  border: none;
+  background: none;
+  /* transition: all 0.3s ease; */
+}
+
+/* .card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(79, 172, 254, 0.15);
+} */
+
+/* LOADING */
+.message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #0d1117;
+  color: #939dae;
+  font-size: 18px;
+  gap: 1rem;
+}
+
+/* RESPONSIVE IMPROVEMENTS */
+@media (max-width: 768px) {
+  .container {
+    padding: 18px;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+
+  .statCard h2 {
+    font-size: 18px;
+  }
+}

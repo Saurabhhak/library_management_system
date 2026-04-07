@@ -1,0 +1,42 @@
+.container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f4f6f8;
+}
+
+.card {
+  width: 400px;
+  padding: 2rem;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.title {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.text {
+  margin-bottom: 20px;
+  color: #666;
+}
+
+.googleBtn {
+  width: 100%;
+  padding: 0.7rem;
+  border: none;
+  border-radius: 5px;
+  background: #4285f4;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.googleBtn:hover {
+  background: #3367d6;
+}

@@ -1,0 +1,147 @@
+/* ---------- CONTAINER ---------- */
+.formContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+/* ---------- FORM CARD ---------- */
+.formSection {
+  max-width: 30rem;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 2rem;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* ---------- HEADING ---------- */
+.tagh1 {
+  grid-column: span 2;
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* ---------- FORM ---------- */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+/* ---------- INPUT ---------- */
+.formInput {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  transition: 0.2s;
+}
+
+.formInput:hover {
+  border-color: #1088ff;
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: #00c853;
+  box-shadow: 0 0 0 2px rgba(0, 200, 83, 0.15);
+}
+
+.formInput:disabled {
+  background: #f1fdf4;
+  border-color: #00c853;
+}
+
+/* ---------- ERROR ---------- */
+.errorMsg {
+  font-size: 11px;
+  color: #e53935;
+  margin-top: 4px;
+}
+
+.inputError {
+  border-color: #e53935 !important;
+}
+
+
+/* ---------- PASSWORD ---------- */
+.password_wrapper {
+  position: relative;
+}
+
+.password_wrapper input {
+  padding-right: 2.5rem;
+}
+
+.eye_icon {
+  position: absolute;
+  right: 10px;
+  top: 65%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #888;
+}
+
+/* ---------- BUTTONS ---------- */
+.btnSection {
+  grid-column: span 2;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.btnFeature {
+  padding: 0.65rem;
+  width: 14rem;
+  border: none;
+  border-radius: 5px;
+  background: #1088ff;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btnFeature:hover {
+  background: #0a5ec2;
+}
+
+.btnFeature:disabled {
+  background: #a0aab5;
+  cursor: not-allowed;
+}
+  
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 480px) {
+  .formSection {
+    grid-template-columns: 1fr;
+    padding: 1.5rem;
+  }
+
+  .tagh1,
+  .btnSection {
+    grid-column: span 1;
+  }
+
+  .btnSection {
+    flex-direction: column;
+  }
+
+  .btnFeature {
+    width: 100%;
+  }
+}

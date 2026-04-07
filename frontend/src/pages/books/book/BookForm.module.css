@@ -1,0 +1,177 @@
+/* ---------- CONTAINER ---------- */
+.formContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+/* ---------- FORM CARD ---------- */
+.formSection {
+  width: 500px;
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  padding: 2rem;
+  border-radius: 10px;
+
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* ---------- HEADING ---------- */
+.heading {
+  grid-column: span 2;
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #2c2c2c;
+}
+
+/* ---------- FORM GROUP ---------- */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #444;
+}
+
+/* ---------- INPUT / SELECT ---------- */
+.input {
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #bbb;
+
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  background: #fff;
+}
+
+/* ---------- HOVER ---------- */
+.input:hover {
+  border-color: #1976d2;
+}
+
+/* ---------- FOCUS ---------- */
+.input:focus {
+  outline: none;
+  border-color: #00c853;
+  box-shadow: 0 0 0 2px rgba(0, 200, 83, 0.15);
+}
+
+/* ---------- DISABLED ---------- */
+.input:disabled {
+  background: #f1fdf4;
+  border-color: #00c853;
+}
+
+/* ---------- ERROR ---------- */
+.inputError {
+  border-color: #e53935 !important;
+}
+
+.error {
+  font-size: 11px;
+  color: #e53935;
+  margin-top: 4px;
+}
+
+/* ---------- BUTTON SECTION ---------- */
+.btnSection {
+  grid-column: span 2;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* ---------- BUTTON ---------- */
+.btnSection button {
+  width: 12rem;
+  padding: 0.6rem;
+
+  border: none;
+  border-radius: 5px;
+
+  background: #1088ff;
+  color: white;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* ---------- BUTTON HOVER ---------- */
+.btnSection button:hover:not(:disabled) {
+  background: #003d98;
+}
+
+/* ---------- BUTTON DISABLED ---------- */
+.btnSection button:disabled {
+  background: #a0aab5;
+  cursor: not-allowed;
+}
+
+/* ---------- SECONDARY BUTTON (RESET / CANCEL) ---------- */
+.btnSection button:first-child {
+  background: #6b7280;
+}
+
+.btnSection button:first-child:hover {
+  background: #4b5563;
+}
+
+/* ---------- ANIMATION ---------- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.formSection {
+  animation: fadeIn 0.3s ease;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  .formSection {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .heading,
+  .btnSection {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .formContainer {
+    padding: 1rem;
+  }
+
+  .formSection {
+    padding: 1.5rem;
+  }
+
+  .btnSection {
+    flex-direction: column;
+  }
+
+  .btnSection button {
+    width: 100%;
+  }
+}

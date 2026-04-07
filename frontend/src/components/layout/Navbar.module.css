@@ -1,409 +1,381 @@
- * {
-   margin: 0;
-   padding: 0;
-   box-sizing: content-box;
-   font-family: "Trebuchet MS";
- }
+/* =========================================================
+   VARIABLES
+========================================================= */
+:root {
+  --bg-dark: #0d1117;
+  --bg-darker: #161b22;
+  --bg-hover: #21262d;
+  --border-color: #30363d;
+  --text-light: #c9d1d9;
+  --text-muted: #8b949e;
+  --text-white: #ffffff;
 
- /* body {
-  padding-top: 60px;
-} */
- .Navbar_header {
-   background-color: hsl(189, 100%, 6%);
-   position: fixed;
-   top: 0;
-   left: 0;
-   width: 100%;
-   height: 50px;
-   z-index: 1000;
-   display: flex;
-   align-items: center;
-   justify-content: space-between;
-   padding: 0.3rem 0.8rem;
+  --transition-speed: 0.3s;
+  --border-radius: 8px;
 
- }
+  --gap-sm: 0.4rem;
+  --gap-md: 0.6rem;
 
- .left_icons {
-   right: -100%;
-   transition: 0.3s ease;
-   gap: 3rem;
-   display: flex;
-   align-items: center;
-   font-weight: bold;
-   font-family: "Trebuchet MS";
- }
+  --font-family: 'Materials', sans-serif;
+}
 
- .right_icons {
-   gap: 3rem;
-   display: flex;
-   align-items: center;
-   font-weight: bold;
-   font-family: "Trebuchet MS";
- }
+/* =========================================================
+   RESET
+========================================================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font-family);
+}
 
- .Link {
-   border: none;
-   background: none;
-   color: none;
- }
+a {
+  color: var(--text-light);
+  text-decoration: none;
+  transition: color var(--transition-speed);
+}
 
- .navlink {
-   padding: .4rem .7rem .4rem .7rem;
-   font-size: 1rem;
-   background: none;
-   color: rgb(255, 255, 255);
-   border-radius: 1rem;
-   /* font-weight: bolder; */
-   border: 1px solid transparent;
-   overflow-x: hidden;
-   transition: 0.3s ease;
- }
+a:hover {
+  color: var(--text-white);
+}
 
- .navlink:hover {
-   box-shadow: inset 0 0 .2rem #ffffff;
- }
+/* =========================================================
+   NAVBAR CONTAINER
+========================================================= */
+.navbarHeader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 50px;
+  width: 100%;
 
- .menuBtn {
-   display: none;
- }
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
- .active {
-   right: 0 !important;
- }
+  padding: 0 1rem;
+  background: var(--bg-dark);
+  border-bottom: 1px solid var(--border-color);
 
- /* ------- admin bar------- */
- .AdminBar {
-   display: inline-block;
- }
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
 
- .adminBars {
-   position: fixed;
-   top: 3.2rem;
-   left: 0;
-   width: 17rem;
-   height: 50vh;
-   border-radius: .3rem;
-   background: #1f1f1ff6;
-   padding: 1.5rem;
-   transform: translateX(-100%);
-   transition: transform 0.3s ease;
-   z-index: 999;
-   display: flex;
-   box-shadow: inset 0 0 .4rem #97979776;
-   flex-direction: column;
- }
+/* =========================================================
+   NAV GROUPS
+========================================================= */
+.leftIcons,
+.rightIcons {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-md);
+}
 
- .activeAdmin {
-   transform: translateX(0);
- }
+/* =========================================================
+   NAV LINKS (TEXT BUTTONS)
+========================================================= */
+.navlink {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
 
- .adminMainBtn {
-   width: fit-content;
-   column-gap: .5rem;
-   padding: .5rem;
-   background: #141414f6;
-   border: none;
-   color: #ffffff;
-   font-weight: bold;
-   display: flex;
-   align-items: center;
-   cursor: pointer;
-   border-radius: 6px;
-   transition: 0.3s ease;
-   border: 1px solid transparent;
- }
+  height: 36px;
+  min-width: 100px;
+  padding: 0.4rem 0.9rem;
 
- .adminMainBtn:hover {
-   transform: scale(1.001);
-   color: #ffffff;
-   border-color: #ffffff;
- }
+  border-radius: var(--border-radius);
+  border: 1px solid transparent;
+  background: transparent;
 
+  color: var(--text-light);
+  cursor: pointer;
 
- .subMenu a {
-   padding: .5rem;
-   width: fit-content;
-   text-decoration: none;
-   color: #cccccc;
-   font-size: 1rem;
-   margin: .5rem;
-   border-radius: .3rem;
-   transition: 0.3s ease;
-   border: 1px solid transparent;
- }
+  transition: all var(--transition-speed);
+}
 
- .subMenu a:hover {
-   transform: scale(1.001);
-   color: #ffffff;
-   border-color: #ffffff;
- }
+.navlink:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-color);
+  color: var(--text-white);
+  box-shadow: 0 0 10px var(--bg-hover);
+}
 
- .subMenu {
-   max-height: 0;
-   overflow: hidden;
-   display: flex;
-   flex-direction: column;
-   transition: max-height 0.4s ease;
- }
+/* =========================================================
+   ICON BUTTONS (ADMIN / MENU / PROFILE)
+========================================================= */
+.iconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
- .subMenuActive {
-   max-height: 500px;
-   margin-top: 0.5rem;
- }
+  width: 2.5rem;
+  height: 38px;
 
- .sidebarBtn {
-   width: 100%;
-   padding: 0.7rem;
-   background: #8f8f8f7c;
-   border: none;
-   border-radius: 0.3rem;
-   color: #002e36;
-   font-weight: 600;
-   text-align: left;
-   cursor: pointer;
- }
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background: transparent;
 
- .profilePanel {
-   position: absolute;
-   display: flex;
-   flex-direction: column;
-   top: 3.2rem;
-   right: 0;
-   height: 70vh;
-   width: 18rem;
-   background: #1f1f1ff6;
-   padding: 1.5rem;
-   transform: translateX(100%);
-   transition: transform 0.4s ease;
-   z-index: 999;
-   border-radius: .3rem;
-   box-shadow: inset 0 0 .4rem #97979776;
+  color: var(--text-light);
+  cursor: pointer;
 
- }
+  transition: all var(--transition-speed);
+}
 
- .profileActive {
-   transform: translateX(0);
- }
+.iconBtn:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-color);
+  color: var(--text-white);
+  box-shadow: 0 0 10px var(--bg-hover);
+}
 
+.active {
+  background: var(--bg-hover);
+  color: var(--text-white);
+}
 
- @media (max-width: 768px) {
-   .menuBtn {
-     display: inline-block;
-   }
-
-   .adminBars {
-     position: absolute;
-     display: flex;
-     flex-direction: column;
-     top: 2.55rem;
-     /* right: 0; */
-     height: 65vh;
-     width: 17rem;
-     background-color: #2a2a2afa;
-     padding: 1.25rem;
-     box-shadow: inset 0px 0px 1rem #ffffff3b;
-     transition: transform 0.4s ease;
-     z-index: 999;
-     border-radius: .3rem;
-     border: none;
-   }
-
-   .profilePanel {
-     position: absolute;
-     display: flex;
-     flex-direction: column;
-     top: 2.55rem;
-     /* right: 0; */
-     height: 65vh;
-     width: 16rem;
-     box-shadow: inset 0px 0px 1rem #ffffff3b;
-     background-color: #2a2a2afa;
-     padding: 1.25rem;
-     transition: transform 0.4s ease;
-     z-index: 999;
-     border-radius: .3rem;
-     border: none;
-   }
-
-   .Navbar_header {
-     height: 40px;
-   }
-
-   .left_icons {
-     position: absolute;
-     top: 2.6rem;
-     height: 45vh;
-     background-color: #2a2a2afa;
-     flex-direction: column;
-     text-decoration: solid;
-     box-shadow: inset 0px 0px 1rem #ffffff3b;
-     gap: 1.2rem;
-     border-radius: 0.3rem;
-     transition: 0.3s ease;
-     width: 14rem;
-     align-items: self-start;
-     text-align: center;
-     padding: 1rem;
-     /* z-index: 999;     */
-   }
-
-   .left_icons.active {
-     right: 0;
-     transform: scale(1);
-   }
-
-   .left_icons button {
-     color: #ffffff;
-     border: none;
-     border-radius: 0.3rem;
-     font-weight: 500;
-     font-family: monospace;
-     justify-content: left;
-     transition: 0.3s ease;
-     border: 1px solid transparent;
-   }
-
-   .left_icons button:hover {
-     transform: scale(1.001);
-     color: #ffffff;
-     border-color: #ffffff;
-   }
-
-   .right_icons {
-     justify-content: center;
-     gap: 0.3rem;
-     /* flex-wrap: wrap; */
-   }
-
-   .right_icons button {
-     font-size: 0.8rem;
-     padding: .5rem .7rem .5rem .7rem;
-     border: none;
-     /* box-shadow: inset 0 0 .2rem rgb(113, 113, 113); */
-     border-radius: 1rem;
-     font-size: 0.85rem;
-     color: rgb(229, 223, 228);
-   }
-
-   .right_icons button:hover {
-     box-shadow: inset 0 0 .2rem #ffffff;
-   }
-
- }
-
- 
- @media (max-width: 480px) {
+/* ----------- Default: hide on desktop -------------*/
 .menuBtn {
-     display: inline-block;
-   }
+  display: none;
+}
 
-   .adminBars {
-     position: absolute;
-     display: flex;
-     flex-direction: column;
-     top: 2.55rem;
-     /* right: 0; */
-     height: 50vh;
-     width: 13rem;
-     background-color: #2a2a2afa;
-     padding: .5rem;
-     box-shadow: inset 0px 0px 1rem #ffffff3b;
-     transition: transform 0.4s ease;
-     z-index: 999;
-     border-radius: .3rem;
-     border: none;
-   }
- .subMenu a {
-   padding: .5rem;
-   width: fit-content;
-   text-decoration: none;
-   color: #cccccc;
-   font-size: .70rem;
-   margin: .70rem;
-   border-radius: .3rem;
-   transition: 0.3s ease;
-   border: 1px solid transparent;
- }
+/* =========================================================
+   DROPDOWN
+========================================================= */
+.dropdown {
+  position: relative;
+}
 
-   .profilePanel {
-     position: absolute;
-     display: flex;
-     flex-direction: column;
-     top: 2.55rem;
-     /* right: 0; */
-     height: 70vh;
-     width: 14rem;
-     box-shadow: inset 0px 0px 1rem #ffffff3b;
-     background-color: #2a2a2afa;
-     padding: .5rem;
-     transition: transform 0.4s ease;
-     z-index: 999;
-     border-radius: .3rem;
-     border: none;
-   }
+/* Dropdown menu */
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  /* FIX: no gap */
+  left: 0;
 
-   .Navbar_header {
-     height: 40px;
-   }
+  min-width: 200px;
+  padding: 0.6rem 0;
 
-   .left_icons {
-     position: absolute;
-     top: 2.6rem;
-     height: 50vh;
-     background-color: #2a2a2afa;
-     flex-direction: column;
-     text-decoration: solid;
-     box-shadow: inset 0px 0px 1rem #ffffff3b;
-     gap: 1.2rem;
-     border-radius: 0.3rem;
-     transition: 0.3s ease;
-     width: 13rem;
-     align-items: self-start;
-     text-align: center;
-     padding: 1rem;
-     /* z-index: 999;     */
-   }
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
 
-   .left_icons.active {
-     right: 0;
-     transform: scale(1);
-   }
+  background: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
 
-   .left_icons button {
-     color: #ffffff;
-     border: none;
-     border-radius: 0.3rem;
-     font-weight: 500;
-     font-family: monospace;
-     justify-content: left;
-     transition: 0.3s ease;
-     border: 1px solid transparent;
-   }
+  /* box-shadow: inset 0 0 .2rem rgba(255, 255, 255, 0.6); */
 
-   .left_icons button:hover {
-     transform: scale(1.001);
-     color: #ffffff;
-     border-color: #ffffff;
-   }
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
 
-   .right_icons {
-     justify-content: center;
-     gap: 0.3rem;
-     /* flex-wrap: wrap; */
-   }
+  transition: all var(--transition-speed);
+  z-index: 999;
+}
 
-   .right_icons button {
-     font-size: 0.8rem;
-     padding: .5rem .7rem .5rem .7rem;
-     border: none;
-     /* box-shadow: inset 0 0 .2rem rgb(113, 113, 113); */
-     border-radius: 1rem;
-     font-size: 0.85rem;
-     color: rgb(229, 223, 228);
-   }
+/* Show dropdown */
+.dropdown:hover > .dropdownMenu,
+.dropdown:focus-within > .dropdownMenu {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
 
-   .right_icons button:hover {
-     box-shadow: inset 0 0 .2rem #ffffff;
-   }
+/* Dropdown links */
+.dropdownMenu a {
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  color: var(--text-light);
 
- }
+  transition: all var(--transition-speed);
+}
+
+.dropdownMenu a:hover {
+  background: var(--bg-hover);
+  color: var(--text-white);
+}
+
+/* Hover bridge (prevents flicker) */
+.dropdown::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 10px;
+}
+
+/* =========================================================
+   ADMIN SIDEBAR
+========================================================= */
+.adminSidebar {
+  position: fixed;
+  top: 3.13rem;
+  left: 0;
+
+  width: 260px;
+  height: calc(100vh - 55px);
+
+  background: var(--bg-dark);
+  /* border-right: 1px solid var(--border-color); */
+
+  padding: 1rem;
+  transform: translateX(-100%);
+  transition: transform var(--transition-speed);
+
+  z-index: 900;
+}
+
+.activeAdmin {
+  transform: translateX(0);
+}
+
+/* Sidebar button */
+.adminMainBtn {
+  width: 100%;
+  height: 36px;
+  padding: 0.5rem;
+  /* justify-content: center; */
+  border-radius: var(--border-radius);
+  border: none;
+  /* border: 1px solid red; */
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  /* border: 1px solid red; */
+  display: flex;
+  font-size: 1rem;
+  font-weight: 100  ;
+  gap: 0.5rem;
+  transition: all var(--transition-speed);
+}
+
+.adminMainBtn:hover {
+  background: var(--bg-hover);
+  color: var(--text-white);
+}
+
+.mobileArrow {
+  display: none;
+  /* border: 1px solid gold; */
+}
+
+.leftContent {
+  /* border: 1px solid red; */
+  display: flex;
+  font-size: .95rem;
+  gap: 1rem;
+}
+
+/* Sub menu */
+.subMenu {
+  margin-top: 0.7rem;
+  font-size: .95rem;
+  max-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: max-height 0.3s ease;
+}
+
+.subMenuActive {
+  max-height: 300px;
+}
+
+.subMenu a {
+  padding: 0.5rem;
+  border-radius: .3rem;
+  /* border: 2px solid red; */
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  color: var(--text-muted);
+}
+
+.subMenu a:hover {
+  background: var(--bg-hover);
+  color: var(--text-white);
+}
+
+/* =========================================================
+   PROFILE PANEL
+========================================================= */
+.profilePanel {
+  position: fixed;
+  top: 2.67rem;
+  right: 0;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  z-index: 999;
+}
+
+.profileActive {
+  transform: translateX(0);
+}
+
+.profileWrapper {
+  padding: 0.5rem;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+@media (max-width: 768px) {
+  .leftIcons {
+    position: fixed;
+    top: 50px;
+    right: -100%;
+    width: 14rem;
+    height: calc(100vh - 50px);
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+    background: var(--bg-dark);
+    transition: right var(--transition-speed);
+  }
+
+  .activeMenu {
+    right: 0;
+  }
+
+  .menuBtn {
+    display: flex;
+  }
+
+  .mobileArrow {
+    display: inline-block;
+  }
+
+  .dropdownMenu {
+    position: static;
+    width: 100%;
+
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: none !important;
+
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+  .adminMainBtn,
+  .leftContent,
+  .subMenu {
+    font-size: 0.8rem;
+  }
+}
+
+/* =========================================================
+   SMALL DEVICES
+========================================================= */
+@media (max-width: 480px) {
+  .adminSidebar {
+    width: 220px;
+  }
+
+  .profilePanel {
+    width: 240px;
+  }
+}

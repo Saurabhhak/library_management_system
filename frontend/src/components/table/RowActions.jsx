@@ -14,8 +14,11 @@ function RowActions({ admin, onDelete }) {
         <i class="fa-solid fa-user-pen"></i>
       </button>
       <button
-        className={styles.ActionEdit}
+        className={styles.ActionsDel}
         onClick={() => onDelete(admin)}
+        // Button Disabled Option
+        // disabled={admin.role === "superadmin"}
+        // className={`${styles.ActionsDel} ${admin.role} === "superadmin" ? ${styles.disabledBtn} : ""`}
       >
         <i className="fa-solid fa-trash"></i>
       </button>

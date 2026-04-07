@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import styles from "./DisplayAdmin.module.css";
-import { getAdmins, deleteAdmin } from "../../services/admin.service";
+import { getAdmins, deleteAdmin } from "../../services/admin/admin.service";
 import { getColumns } from "../../components/table/columns";
 import Swal from "sweetalert2";
+import { Link } from "react-router-dom";
 import {
   useReactTable,
   getCoreRowModel,
@@ -23,7 +24,6 @@ function DisplayAdmin() {
   const [columnVisibility, setColumnVisibility] = useState({});
 
   /* ---------------- FETCH ADMINS ---------------- */
-
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
@@ -35,36 +35,55 @@ function DisplayAdmin() {
         setLoading(false);
       }
     };
-
     fetchAdmins();
   }, []);
 
   /* ---------------- DELETE ADMIN ---------------- */
   const handleDelete = async (admin) => {
+    // Prevent SuperAdmin deletion
+    if (admin.role === "superadmin") {
+      return Swal.fire({
+        icon: "error",
+        title: "Action Not Allowed",
+        text: "SuperAdmin cannot be deleted!",
+      });
+    }
     const result = await Swal.fire({
       title: "Delete Admin?",
       html: `
       <b>ID:</b> ${admin.id} <br/>
       <b>Role:</b> ${admin.role} <br/>
       <b>Name:</b> ${admin.first_name} ${admin.last_name}
-
     `,
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Delete",
       cancelButtonText: "Cancel",
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
     });
     if (!result.isConfirmed) return;
     try {
       await deleteAdmin(admin.id);
-      setData((prev) =>
-        prev.filter((a) => a.id !== admin.id)
-      );
-      Swal.fire("Deleted!", "Admin removed successfully", "success");
+      setData((prev) => prev.filter((a) => a.id !== admin.id));
+      Swal.fire({
+        icon: "success",
+        title: "Deleted!",
+        text: "Admin removed successfully",
+        timer: 1500,
+        showConfirmButton: false,
+      });
     } catch (err) {
       console.error(err);
+
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Failed to delete admin",
+      });
     }
   };
+
   /* ---------------- TABLE COLUMNS ---------------- */
 
   // columns generate with delete function
@@ -81,7 +100,6 @@ function DisplayAdmin() {
       pagination: { pageSize: 10, pageIndex: 0 },
       sorting: [{ id: "id", desc: false }],
     },
-    
 
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
@@ -99,6 +117,17 @@ function DisplayAdmin() {
     <>
       {/* -------- HEADER SECTION -------- */}
       <div className={styles.headerBar}>
+        <Link to="/createadmin" className={styles.chartBtn}>
+          + Add Admin
+        </Link>
+        {/* -------- CHART NAV BUTTON -------- */}
+        <Link
+          to="/adminpage"
+          className={styles.chartBtn}
+          title="View Analytics Dashboard"
+        >
+          View Charts
+        </Link>
         <h1 className={styles.title}>Admin Records</h1>
 
         <div className={styles.searchContainer}>
@@ -187,7 +216,12 @@ function DisplayAdmin() {
           <tbody className={styles.tbody}>
             {loading ? (
               <tr>
-                <td colSpan={table.getAllColumns().length}>Loading data...</td>
+                <td colSpan={table.getAllColumns().length}>
+                  <span className={styles.loading}>
+                    <i className="fa-solid fa-spinner fa-spin-pulse"></i>{" "}
+                    Loading data...
+                  </span>
+                </td>
               </tr>
             ) : table.getRowModel().rows.length === 0 ? (
               <tr>
@@ -228,7 +262,6 @@ function DisplayAdmin() {
           </select>
 
           {/* pagination buttons */}
-
           <div className={styles.paginationControls}>
             <button
               onClick={() => table.setPageIndex(0)}
@@ -245,7 +278,8 @@ function DisplayAdmin() {
             </button>
 
             <span className={styles.pageInfo}>
-              Page {table.getState().pagination.pageIndex + 1} of
+              Page {table.getState().pagination.pageIndex + 1}
+              of
               {table.getPageCount()}
             </span>
 

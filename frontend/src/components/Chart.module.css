@@ -1,0 +1,16 @@
+.chartContainer {
+  width: 100%;
+  max-width: 600px;
+  margin-top: 10rem;
+  padding: 16px;
+  background: #006aff;
+  border-radius: 12px;
+
+  border: 1px solid #30363d;
+}
+
+/* Optional: smooth look */
+canvas {
+  width: 100% !important;
+  height: auto !important;
+}

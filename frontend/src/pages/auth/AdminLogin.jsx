@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { loginAdmin } from "../../services/auth.service";
-import styles from "./LoginAdmin.module.css";
-function AdminLoginForm() {
+import { loginAdmin } from "../../services/admin/auth.service";
+import styles from "./AdminLogin.module.css";
+function AdminLoginForm({handleGoogleLogin}) {
   /* ---------------- NAVIGATION ---------------- */
   const navigate = useNavigate();
   /* ---------------- STATE ---------------- */
@@ -49,19 +49,22 @@ function AdminLoginForm() {
       localStorage.setItem("role", res.data.user.role);
       showNotification("Login successful", "success");
       navigate("/", { replace: true });
+      
     } catch (error) {
       showNotification(
         error.response?.data?.message || "Invalid email or password",
-        "error"
+        "error",
       );
     } finally {
       setLoading(false);
     }
+    
   };
   /* ---------------- MEMBER LOGIN (TEMP) ---------------- */
   function handleMember() {
     alert("Member Feature coming soon");
   }
+  
   /* ---------------- UI ---------------- */
   return (
     <>
@@ -73,16 +76,18 @@ function AdminLoginForm() {
       {/* -------- HEADER -------- */}
       <header className={styles.headers}>
         <div className={styles.leftIcon}>
-          <i className="fa-solid fa-book"></i>
+          <i class="fa-solid fa-book-open-reader logoIcon"></i>
         </div>
-        <div className={styles.centerTitle}>
+        <div className={styles.headingTitle}>
           <h2>APV Tech Library</h2>
         </div>
       </header>
       {/* -------- LOGIN FORM -------- */}
       <div className={styles.formContainer}>
         <form onSubmit={handleSubmit} className={styles.formSection}>
-          <h1 className={styles.tagh1}>Admin Login</h1>
+          <h1 className={styles.formTitle}>
+            Admin Login <i class="fa-solid fa-user-shield"></i>
+          </h1>
           {/* -------- EMAIL FIELD -------- */}
           <div className={styles.formGroup}>
             <label htmlFor="email">Email address</label>
@@ -92,6 +97,7 @@ function AdminLoginForm() {
               name="email"
               value={userinfo.email}
               onChange={handleChange}
+              disabled={loading}
               className={`${styles.formInput} ${errors.email ? styles.inputError : ""}`}
             />
             {errors.email && (
@@ -112,6 +118,7 @@ function AdminLoginForm() {
                 type={showPassword ? "text" : "password"}
                 name="password"
                 value={userinfo.password}
+                disabled={loading}
                 onChange={handleChange}
                 className={`${styles.formInput} ${errors.password ? styles.inputError : ""}`}
               />
@@ -119,7 +126,9 @@ function AdminLoginForm() {
                 className={styles.eye_icon}
                 onClick={() => setShowPassword(!showPassword)}
               >
-                <i className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
+                <i
+                  className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
+                ></i>
               </span>
             </div>
             {errors.password && (
@@ -133,26 +142,23 @@ function AdminLoginForm() {
               className={styles.btnFeature}
               disabled={loading}
             >
-              {loading ? (
-                <>
-                  <i className="fa-solid fa-spinner fa-spin"></i> Logging in...
-                </>
-              ) : (
-                "Login"
-              )}
+              {loading ? "Logging in..." : "Login"}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              className={styles.googleBtn}
+            >
+              <i className="fa-brands fa-google"></i> Login with Google
             </button>
           </div>
           {/* -------- MEMBER LINK -------- */}
           <p>
-            <Link
-              onClick={handleMember}
-              className={styles.linkStyle}
-              to="/"
-            >
+            <Link onClick={handleMember} className={styles.linkStyle} to="/">
               Member Login
             </Link>
           </p>
-
         </form>
       </div>
     </>

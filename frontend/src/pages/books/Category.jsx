@@ -1,192 +1,136 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import Swal from "sweetalert2";
 import styles from "./Category.module.css";
-import {
-  getCategories,
-  createCategory,
-  updateCategory,
-  deleteCategory,
-} from "../../services/category.service";
+import { createCategory } from "../../services/category.service";
+
+const initial_state = {
+  name: "",
+  description: "",
+};
 
 function Category() {
-  const [categories, setCategories] = useState([]);
-  const [form, setForm] = useState({ name: "", description: "" });
-
-  const [editingId, setEditingId] = useState(null);
-  const [message, setMessage] = useState("");
+  const [form, setForm] = useState(initial_state);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
-  /* ---------------- FETCH CATEGORIES ---------------- */
+  const categoryRegex = /^(?=.*[A-Za-z])[A-Za-z0-9 &(),./-]{3,50}$/;
 
-  const fetchCategories = async () => {
-    setLoading(true);
+  /* ---------------- FORM CHANGE ---------------- */
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setForm((prev) => ({ ...prev, [name]: value }));
+
+    // remove error when typing
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  /* ---------------- RESET ---------------- */
+  const resetForm = () => {
+    setForm(initial_state);
+    setErrors({});
+  };
+
+  /* ---------------- SUBMIT ---------------- */
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const newErrors = {};
+
+    // Validation
+    if (form.name === "") {
+      newErrors.name = "Category name is required";
+    } else if (!categoryRegex.test(form.name)) {
+      newErrors.name =
+        "3–50 chars, letters required, only letters, numbers, space & ( ) , . / - allowed";
+    }
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
     try {
-      const res = await getCategories();
-      setCategories(res.data.data || []);
+      setLoading(true);
+      const res = await createCategory(form);
+      if (res.length !== 0) {
+        await Swal.fire({
+          icon: "success",
+          title: "Category Added Successfully",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        resetForm();
+      } else {
+        Swal.fire("Error", res.message, "error");
+      }
     } catch (err) {
-      console.error("Fetch error:", err);
+      if (err.response?.data?.message?.includes("exists")) {
+        Swal.fire("Duplicate", "Category already exists", "warning");
+      } else {
+        Swal.fire(
+          "Error",
+          err.response?.data?.message || "Something went wrong",
+          "error",
+        );
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  /* ---------------- FORM CHANGE ---------------- */
-
-  const handleChange = (e) => {
-    setForm((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
-  /* ---------------- SUBMIT ---------------- */
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      if (editingId) {
-        await updateCategory(editingId, form);
-        showMessage("Category updated successfully");
-      } else {
-        await createCategory(form);
-        showMessage("Category created successfully");
-      }
-
-      resetForm();
-      fetchCategories();
-    } catch (err) {
-      console.error("Operation failed:", err);
-    }
-  };
-
-  /* ---------------- EDIT ---------------- */
-
-  const handleEdit = (cat) => {
-    setForm({
-      name: cat.name,
-      description: cat.description,
-    });
-    setEditingId(cat.id);
-  };
-
-  /* ---------------- DELETE ---------------- */
-
-  const handleDelete = async (id) => {
-    const confirm = window.confirm("Delete this category?");
-    if (!confirm) return;
-
-    try {
-      await deleteCategory(id);
-      showMessage("Category deleted successfully");
-      fetchCategories();
-    } catch (err) {
-      console.error("Delete failed:", err);
-    }
-  };
-
-  /* ---------------- UTIL FUNCTIONS ---------------- */
-
-  const resetForm = () => {
-    setForm({ name: "", description: "" });
-    setEditingId(null);
-  };
-
-  const showMessage = (msg) => {
-    setMessage(msg);
-    setTimeout(() => setMessage(""), 3000);
-  };
-
-  /* ---------------- UI ---------------- */
-
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>Category Management</h2>
+      <form className={styles.form} onSubmit={handleSubmit} noValidate>
+        <header className={styles.formTitle}>
+          <i className={`fa-solid fa-layer-group ${styles.titleIcon}`} />
+          <h2>Add Category</h2>
+        </header>
 
-      {/* ---------- FORM ---------- */}
-
-      <div className={styles.formCard}>
-        <form className={styles.form} onSubmit={handleSubmit}>
-          {message && <div className={styles.successMsg}>{message}</div>}
-
+        {/* Category Name */}
+        <div className={styles.field}>
+          <label className={styles.label}>
+            Category Name <span>*</span>
+          </label>
           <input
-            className={styles.input}
+            type="text"
             name="name"
-            placeholder="Category Name"
+            placeholder="e.g. Computer / IT"
             value={form.name}
             onChange={handleChange}
-            required
+            maxLength={50}
+            disabled={loading}
+            className={`${styles.input} ${
+              errors.name ? styles.inputError : ""
+            }`}
           />
+          {errors.name && <p className={styles.errorMsg}>{errors.name}</p>}
+        </div>
 
+        {/* Description */}
+        <div className={`${styles.field} ${styles.fieldFull}`}>
+          <label className={styles.label}>Description</label>
           <textarea
-            className={styles.textarea}
             name="description"
-            placeholder="Description"
+            placeholder="Write category description..."
             value={form.description}
             onChange={handleChange}
+            maxLength={300}
+            disabled={loading}
+            className={styles.textarea}
           />
+        </div>
 
-          <button className={styles.buttonPrimary}>
-            {editingId ? "Update Category" : "Add Category"}
-          </button>
-        </form>
-      </div>
-
-      {/* ---------- TABLE ---------- */}
-
-      <div className={styles.tableCard}>
-        {loading ? (
-          <p style={{ textAlign: "center", padding: "1rem" }}>
-            Loading categories...
-          </p>
-        ) : (
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {categories.length > 0 ? (
-                categories.map((cat) => (
-                  <tr key={cat.id}>
-                    <td>{cat.name}</td>
-                    <td>{cat.description}</td>
-
-                    <td>
-                      <button
-                        className={`${styles.actionBtn} ${styles.editBtn}`}
-                        onClick={() => handleEdit(cat)}
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        className={`${styles.actionBtn} ${styles.deleteBtn}`}
-                        onClick={() => handleDelete(cat.id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="3" style={{ textAlign: "center" }}>
-                    No Categories Found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        )}
-      </div>
+        {/* Submit */}
+        <button
+          type="submit"
+          disabled={loading}
+          className={styles.buttonPrimary}
+        >
+          {loading ? (
+            <>
+              <i className="fa-solid fa-spinner fa-spin" /> Adding...
+            </>
+          ) : (
+            "Add Category"
+          )}
+        </button>
+      </form>
     </div>
   );
 }

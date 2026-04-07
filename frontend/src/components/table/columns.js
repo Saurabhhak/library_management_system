@@ -64,6 +64,7 @@ export const getColumns = (handleDelete) => [
       <RowActions
         admin={row.original}
         onDelete={handleDelete}
+        
       />
     ),
   },

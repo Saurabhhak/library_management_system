@@ -1,16 +1,12 @@
 import { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 import { useNavigate, useParams } from "react-router-dom";
-import { validateAdminForm } from "../../utils/validateAdminForm";
 
-import {
-  getStates,
-  getCitiesByState,
-  getAdminById,
-  updateAdmin,
-} from "../../services/admin.service";
+import { validateAdminForm } from "../../utils/validateAdminForm";
+import { getAdminById, updateAdmin } from "../../services/admin/admin.service";
+import { getStates, getCitiesByState } from "../../services/meta.service";
 
 import AdminForm from "./AdminForm";
-import styles from "./CreateAdmin.module.css";
 
 function UpdateAdmin() {
   const navigate = useNavigate();
@@ -29,52 +25,40 @@ function UpdateAdmin() {
     role: "",
     state_id: "",
     city_id: "",
-    password: "",
-    confirm_password: "",
   };
 
   const [userinfo, setUserInfo] = useState(initialState);
 
-  const [notification, setNotification] = useState("");
-  const [notifyType, setNotifyType] = useState("");
-
-  const showNotification = (msg, type) => {
-    setNotification(msg);
-    setNotifyType(type);
-
-    setTimeout(() => {
-      setNotification("");
-      setNotifyType("");
-    }, 5000);
-  };
-
-  /* ------------------ FETCH STATES ------------------ */
-
+  /* ---------------- FETCH STATES ---------------- */
   useEffect(() => {
     getStates().then((res) => setStates(res?.data?.data || []));
   }, []);
 
-  /* ------------------ FETCH ADMIN ------------------ */
-
+  /* ---------------- FETCH ADMIN ---------------- */
   useEffect(() => {
-    getAdminById(id).then((res) => {
-      const admin = res?.data?.data;
-      setUserInfo({
-        first_name: admin.first_name || "",
-        last_name: admin.last_name || "",
-        email: admin.email || "",
-        phone: admin.phone || "",
-        role: admin.role || "",
-        state_id: admin.state_id || "",
-        city_id: admin.city_id || "",
-        password: "",
-        confirm_password: "",
-      });
-    });
+    const fetchAdmin = async () => {
+      try {
+        const res = await getAdminById(id);
+        const admin = res?.data?.data;
+
+        setUserInfo({
+          first_name: admin.first_name || "",
+          last_name: admin.last_name || "",
+          email: admin.email || "",
+          phone: admin.phone || "",
+          role: admin.role || "",
+          state_id: admin.state_id || "",
+          city_id: admin.city_id || "",
+        });
+      } catch {
+        Swal.fire("Error", "Failed to fetch admin data", "error");
+      }
+    };
+
+    fetchAdmin();
   }, [id]);
 
-  /* ------------------ FETCH CITIES ------------------ */
-
+  /* ---------------- FETCH CITIES ---------------- */
   useEffect(() => {
     if (!userinfo.state_id) return;
 
@@ -83,8 +67,7 @@ function UpdateAdmin() {
     );
   }, [userinfo.state_id]);
 
-  /* ------------------ HANDLE CHANGE ------------------ */
-
+  /* ---------------- HANDLE CHANGE ---------------- */
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -99,31 +82,60 @@ function UpdateAdmin() {
     }));
   };
 
-  /* ------------------ SUBMIT ------------------ */
+  /* ---------------- CANCEL ---------------- */
+  const handleCancel = async () => {
+    const confirm = await Swal.fire({
+      title: "Cancel?",
+      text: "Changes will be lost",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+    });
 
+    if (confirm.isConfirmed) {
+      navigate("/displayadmin");
+    }
+  };
+
+  /* ---------------- SUBMIT ---------------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const validationErrors = validateAdminForm(userinfo, "update");
+
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
+    const confirm = await Swal.fire({
+      title: "Update Admin?",
+      text: "Are you sure you want to update this admin?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Update",
+    });
+
+    if (!confirm.isConfirmed) return;
+
     try {
       setLoading(true);
 
       await updateAdmin(id, userinfo);
-      // role based notify notification
-      const roleLabel = userinfo.role === "superadmin" ? "SuperAdmin" : "Admin";
-      showNotification(`${roleLabel} updated successfully`, "success");
-      setTimeout(() => {
-        navigate("/displayadmin");
-      }, 1500);
-    } catch (error) {
-      console.error(error);
 
-      showNotification(
-        error?.response?.data?.message || "Something went wrong",
+      await Swal.fire({
+        icon: "success",
+        title: "Updated!",
+        text: "Admin updated successfully",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+
+      navigate("/displayadmin");
+    } catch (error) {
+      Swal.fire(
+        "Error",
+        error?.response?.data?.message || "Update failed",
         "error",
       );
     } finally {
@@ -131,35 +143,19 @@ function UpdateAdmin() {
     }
   };
 
-  const handleCancel = () => {
-    navigate("/displayadmin");
-  };
-
   return (
-    <>
-      {notification && (
-        <div className={`${styles.notify} ${styles[notifyType]}`}>
-          {notification}
-
-          <span className={styles.closeBtn} onClick={() => setNotification("")}>
-            ✖
-          </span>
-        </div>
-      )}
-
-      <AdminForm
-        title="Update Admin Account"
-        userinfo={userinfo}
-        handleChange={handleChange}
-        handleSubmit={handleSubmit}
-        handleCancel={handleCancel}
-        states={states}
-        cities={cities}
-        errors={errors}
-        isEdit={true}
-        loading={loading}
-      />
-    </>
+    <AdminForm
+      title="Update Admin"
+      userinfo={userinfo}
+      handleChange={handleChange}
+      handleSubmit={handleSubmit}
+      handleReset={handleCancel}
+      states={states}
+      cities={cities}
+      errors={errors}
+      loading={loading}
+      mode="update"
+    />
   );
 }
 

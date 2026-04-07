@@ -1,0 +1,189 @@
+.headers {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 60px;
+  width: 100%;
+  background:#0d1117;
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  z-index: 1000;
+  box-shadow: 1px 0 1px #ffffff60;
+}
+
+.leftIcon {
+  font-size: 22px;
+  color: #ffffff;
+}
+
+.headingTitle {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #ffffff;
+  letter-spacing: 1px;
+}
+
+/* ---------- FORM LAYOUT ---------- */
+
+.formContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding-top: 60px;
+  background:#111827;
+  
+}
+.formSection {
+  width: 20rem;
+  display: grid;
+  gap: 1rem;
+  border:  1px solid rgba(107, 107, 107, 0.058);
+  padding: 2rem;
+  border-radius: 8px;
+  /* border: none; */
+  background: #1f2937;
+  box-shadow: 0 0 .5rem rgba(202, 209, 214, 0.327);
+}
+
+/* ---------- TITLE ---------- */
+
+.formTitle {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #f6fff7;
+}
+
+/* ---------- FORM FIELD ---------- */
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  font-size: 14px;
+  color: #9ca3af;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+
+
+/* ---------- PASSWORD ---------- */
+
+.lableOrForgotPass {
+  display: flex;
+  justify-content: space-between;
+}
+
+.password_wrapper {
+  position: relative;
+}
+
+/* ---------- INPUT ---------- */
+
+.formInput {
+  width: 100%;
+  padding: 0.7rem 2.5rem 0.7rem 0.8rem;
+  border-radius: 4px;
+  border: none;  
+  background: #111827;
+  color: #e5e7eb;
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: #374151;
+  box-shadow: inset 0 0 .4rem rgba(2, 255, 158, 0.3);
+}
+
+/* eye icon */
+
+.eye_icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #9b9b9b;
+}
+
+/* ---------- ERROR ---------- */
+
+.errorMsg {
+  font-size: 11px;
+  color: #e53935;
+  margin-top: 4px;
+}
+
+.inputError {
+  border: 1px solid #e53935;
+}
+
+/* ---------- BUTTON ---------- */
+
+.btnSection {
+  display: flex;
+  justify-content: center;
+}
+
+.btnFeature {
+  padding: .6rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btnFeature:hover {
+  background:#1d4ed8;
+}
+
+/* If Logining Inputs Disable */
+input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+/* ---------- LINK ---------- */
+.linkStyle {
+  color: #1088ff;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.linkStyle:hover {
+  text-decoration: underline;
+}
+
+/* ---------- NOTIFICATION ---------- */
+
+.notify {
+  position: fixed;
+  top: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: .7rem 1rem;
+  border-radius: .3rem;
+  font-weight: 700;
+}
+
+.success {
+  background: #16a34a;
+  color: white;
+}
+
+.error {
+  background: #dc2626;
+  color: white;
+}
