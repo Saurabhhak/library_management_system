@@ -1,19 +1,16 @@
-// utils/otp.js
+// utils/token.js
 
 const crypto = require("crypto");
 
 /*
 |--------------------------------------------------------------------------
-| GENERATE NUMERIC OTP
+| GENERATE SECURE TOKEN
 |--------------------------------------------------------------------------
-| Default: 6 digit secure OTP
+| Used for: verify email, invite, reset password
 |--------------------------------------------------------------------------
 */
-const generateOtp = (length = 6) => {
-  const min = 10 ** (length - 1);
-  const max = 10 ** length - 1;
-
-  return crypto.randomInt(min, max).toString();
+const generateToken = (size = 32) => {
+  return crypto.randomBytes(size).toString("hex");
 };
 
-module.exports = generateOtp;
+module.exports = generateToken;

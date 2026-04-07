@@ -1,0 +1,43 @@
+--------- members Table
+-- CREATE TABLE members (
+--   id SERIAL PRIMARY KEY,
+--   first_name VARCHAR(50) NOT NULL,
+--   last_name VARCHAR(50),
+--   email VARCHAR(120) UNIQUE NOT NULL,
+--   phone VARCHAR(15) UNIQUE NOT NULL,
+--   date_of_birth DATE,
+--   state_id INT REFERENCES states(id),
+--   city_id INT REFERENCES cities(id),
+--   membership_start DATE DEFAULT CURRENT_DATE,
+--   membership_end DATE,
+--   max_books_allowed INT DEFAULT 3,
+--   status VARCHAR(20) DEFAULT 'active',
+--   is_deleted BOOLEAN DEFAULT FALSE,
+--   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
+
+-- --------- issues Table
+-- CREATE TABLE issues (
+--   id SERIAL PRIMARY KEY,
+--   book_id INT REFERENCES books(id),
+--   member_id INT REFERENCES members(id),
+--   issue_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--   due_date TIMESTAMP,
+--   return_date TIMESTAMP,
+--   status VARCHAR(20) DEFAULT 'issued'
+-- );
+
+-- --------- Return Table
+-- CREATE TABLE returns (
+--   id SERIAL PRIMARY KEY,
+--   issue_id INT REFERENCES issues(id),
+--   return_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--   fine_amount DECIMAL(10,2) DEFAULT 0
+-- );
+
+-- ------------------------- vc code run Terminal Queries ---------------------------------
+-- run this command in backend terminal to create psql in [pgadmin]
+-- psql -U postgres -d library_db -f backend/config/schema.sql  
+-- Run in Vs Code Terminal to create neon
+-- psql "postgresql://neondb_owner:npg_P1WMNF7UjJle@ep-wild-cloud-a1ifuvlk.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require" -f backend/config/schema.sql

@@ -1,13 +1,68 @@
-const router = require("express").Router();
+    // routes/index.js
 
-// MAIN ROUTES
-router.use("/auth", require("./auth.routes"));
-router.use("/admin", require("./admin.routes"));
+    const router = require("express").Router();
 
-// Other modules
-router.use("/books", require("./book.routes"));
-router.use("/categories", require("./category.routes"));
-router.use("/password", require("./password.routes"));
-router.use("/meta", require("./meta.routes"));
+    /*
+    |--------------------------------------------------------------------------
+    | AUTH ROUTES
+    |--------------------------------------------------------------------------
+    | Login, Google OAuth, Check Email
+    |--------------------------------------------------------------------------
+    */
+    router.use("/auth", require("./admin/auth.routes"));
 
-module.exports = router;
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN ROUTES
+    |--------------------------------------------------------------------------
+    | Admin CRUD, Profile, Verification
+    |--------------------------------------------------------------------------
+    */
+    router.use("/admin", require("./admin/admin.routes"));
+
+    /*
+    |--------------------------------------------------------------------------
+    | INVITE ROUTES
+    |--------------------------------------------------------------------------
+    | SuperAdmin sends admin invite
+    |--------------------------------------------------------------------------
+    */
+    router.use("/invite", require("./admin/invite.routes"));
+
+    /*
+    |--------------------------------------------------------------------------
+    | LIBRARY ROUTES
+    |--------------------------------------------------------------------------
+    | Books & Categories
+    |--------------------------------------------------------------------------
+    */
+    router.use("/books", require("./books/book.routes"));
+    router.use("/categories", require("./books/category.routes"));
+
+    /*
+    |--------------------------------------------------------------------------
+    | MEMBER ROUTES
+    |--------------------------------------------------------------------------
+    */
+    router.use("/members", require("./member/member.routes"));
+
+    /*
+    |--------------------------------------------------------------------------
+    | TRANSACTION ROUTES
+    |--------------------------------------------------------------------------
+    | Issue & Return Books
+    |--------------------------------------------------------------------------
+    */
+    router.use("/issuebook", require("./books/issue.routes"));
+    router.use("/returnissuebook", require("./books/return.routes"));
+
+    /*
+    |--------------------------------------------------------------------------
+    | META ROUTES
+    |--------------------------------------------------------------------------
+    | States, Cities etc.
+    |--------------------------------------------------------------------------
+    */
+    router.use("/meta", require("./meta/meta.routes"));
+
+    module.exports = router;

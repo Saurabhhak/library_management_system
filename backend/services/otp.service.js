@@ -15,7 +15,7 @@ const verifyOtp = async (email, otp) => {
      WHERE email=$1 AND otp=$2 
      ORDER BY id DESC LIMIT 1`,
     [email, otp],
-  );
+  );x 
 
   if (!result.rows.length) return false;
 

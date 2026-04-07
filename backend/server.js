@@ -1,11 +1,15 @@
 require("dotenv").config();
 const express = require("express");
-const app = express();
 const cors = require("cors");
-const routes = require("./routes"); // Route aggregator (routes/index.js)
+const passport = require("./config/googleAuth");
+const routes = require("./routes");
+const db = require("./config/db");
+
+const app = express();
 
 /* -------------------- Middleware -------------------- */
 app.use(express.json());
+
 app.use(
   cors({
     origin: ["http://localhost:3000", "https://lms-frontend-35yk.onrender.com"],
@@ -13,7 +17,10 @@ app.use(
   }),
 );
 
-/* -------------------- Server Running Check -------------------- */
+// Passport middleware (Google OAuth)
+app.use(passport.initialize());
+
+/* -------------------- Server Check -------------------- */
 app.get("/", (req, res) => {
   res.send("LMS Backend Running");
 });
@@ -21,7 +28,7 @@ app.get("/", (req, res) => {
 /* -------------------- DB Test -------------------- */
 app.get("/db-test", async (req, res) => {
   try {
-    const { rows } = await require("./config/db").query("SELECT NOW()");
+    const { rows } = await db.query("SELECT NOW()");
     res.json({
       success: true,
       time: rows[0],
@@ -35,20 +42,18 @@ app.get("/db-test", async (req, res) => {
 });
 
 /* -------------------- API Routes -------------------- */
-app.use("/api", routes);
+app.use("/api", require("./routes"));
 
 /* -------------------- Server -------------------- */
-
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-/* -------------------- ENV Debug (optional) -------------------- */
+/* -------------------- ENV Debug -------------------- */
 console.log(
-  "BREVO_API_KEY:",
-  process.env.BREVO_API_KEY ? "Loaded " : "Missing ",
+  "GOOGLE_CLIENT_ID:",
+  process.env.GOOGLE_CLIENT_ID ? "Loaded" : "Missing",
 );
-
-console.log("SENDER_EMAIL:", process.env.BREVO_SENDER_EMAIL || "Not set ");
+console.log("JWT_SECRET:", process.env.JWT_SECRET ? "Loaded" : "Missing");
