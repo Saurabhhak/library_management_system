@@ -1,4 +1,4 @@
-import API from "../api/axiosInstance";
+import API from "../../api/axiosInstance";
 /*
   CATEGORY API SERVICE
   All category related API calls are centralized here.

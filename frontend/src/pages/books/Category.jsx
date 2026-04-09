@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
 import styles from "./Category.module.css";
-import { createCategory } from "../../services/category.service";
+import { createCategory } from "../../services/books/category.service";
 
 const initial_state = {
   name: "",

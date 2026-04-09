@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { validateAdminForm } from "../../utils/validateAdminForm";
-import { createMember } from "../../services/member.service";
-import { getStates, getCitiesByState } from "../../services/meta.service";
+import { createMember } from "../../services/member/member.service";
+import { getStates, getCitiesByState } from "../../services/meta/meta.service";
 import MemberForm from "./MemberForm";
 import styles from "./CreateMember.module.css";
 

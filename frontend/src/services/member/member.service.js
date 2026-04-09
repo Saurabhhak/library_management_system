@@ -1,4 +1,4 @@
-import API from "../api/axiosInstance";
+import API from "../../api/axiosInstance";
 
 // Create member
 export const createMember = (data) => API.post("/members", data);

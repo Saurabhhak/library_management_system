@@ -7,12 +7,10 @@ import HomeLayout from "./components/layout/HomeLayout";
 import PrivateRoute from "./routes/PrivateRoute";
 import SuperAdminRoute from "./routes/SuperAdminRoute";
 
-/* Auth + Setup pages  (ALL PUBLIC) */
-import Setup from "./pages/auth/Setup"; // ← /setup  NEW
+/* Auth (ALL PUBLIC) */
 import AdminLoginForm from "./pages/auth/AdminLogin";
-import AcceptInvite from "./pages/auth/AcceptInvite";
-import GoogleSuccess from "./pages/auth/GoogleSuccess";
-import CompleteProfile from "./pages/profile/CompleteProfile";
+import ResetPassword from "./pages/auth/ResetPassword";
+import ForgotPassword from "./pages/auth/ForgotPassword";
 
 /* Dashboard */
 import DisplayMember from "./pages/dashboard/DisplayMember";
@@ -32,14 +30,14 @@ import Home from "./pages/home/Home";
 import Profile from "./pages/profile/Profile";
 
 /* Books */
+import Books from "./pages/books/BooksLayout";
 import CreateBook from "./pages/books/book/CreateBook";
 import UpdateBook from "./pages/books/book/UpdateBook";
-import Books from "./pages/books/BooksLayout";
 import BookInventory from "./pages/books/BookInventory";
-import IssueBook from "./pages/books/IssueBook";
 import Bookslib from "./pages/books/Bookslib";
 import Category from "./pages/books/Category";
 import CategoryInventory from "./pages/books/CategoryInventory";
+import IssueBook from "./pages/books/IssueBook";
 
 /* History */
 import History from "./pages/history/History";
@@ -48,52 +46,49 @@ import History from "./pages/history/History";
 import CreateMember from "./pages/members/CreateMember";
 import UpdateMember from "./pages/members/UpdateMember";
 import MemberPage from "./pages/members/MemberPage";
-
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* ══════════════════════════════════════════════════════
-            PUBLIC ROUTES  — no token needed
-            ══════════════════════════════════════════════════════ */}
-
-        {/* First-time setup — self-disables after superadmin created */}
-        <Route path="/setup" element={<Setup />} />
-
-        {/* Normal login */}
+        {/* -------- PUBLIC ROUTES -------- */}
         <Route path="/login" element={<AdminLoginForm />} />
-
-        {/* Google OAuth landing — saves token then redirects */}
-        <Route path="/google-success" element={<GoogleSuccess />} />
-
-        {/* Invite flow — invited admin clicks email link */}
-        <Route path="/accept-invite/:token" element={<AcceptInvite />} />
-
-        {/* Complete profile after invite Google login */}
-        <Route path="/complete-profile" element={<CompleteProfile />} />
-
-        {/* ══════════════════════════════════════════════════════
-            PRIVATE ROUTES — valid JWT required
-            PrivateRoute checks token exists + not expired
-            ══════════════════════════════════════════════════════ */}
+        {/* Password Recovery Routes (PUBLIC) */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+            {/* Admin management temprary public*/}
+        <Route
+          path="/createadmin"
+          element={
+            // <SuperAdminRoute>
+              <CreateAdmin />
+            // </SuperAdminRoute>
+          }
+        />
+        <Route
+          path="/updateadmin/:id"
+          element={
+            // <SuperAdminRoute>
+              <UpdateAdmin />
+            // </SuperAdminRoute>
+          }
+        />
+        <Route
+          path="/displayadmin"
+          element={
+            // <SuperAdminRoute>
+              <DisplayAdmin />
+            // </SuperAdminRoute>
+          }
+        />
+        {/* -------- PROTECTED ROUTES -------- */}
         <Route element={<PrivateRoute />}>
-          {/* SuperAdmin-only */}
-          <Route
-            path="/createadmin"
-            element={
-              <SuperAdminRoute>
-                <CreateAdmin />
-              </SuperAdminRoute>
-            }
-          />
-
           {/* All authenticated admins */}
           <Route element={<HomeLayout />}>
+            {/* Dashboard */}
             <Route path="/" element={<Home />} />
 
             {/* Admin management */}
-            <Route path="/updateadmin/:id" element={<UpdateAdmin />} />
-            <Route path="/displayadmin" element={<DisplayAdmin />} />
+            {/* ......... */}
 
             {/* Profile */}
             <Route path="/profile" element={<Profile />} />
@@ -123,10 +118,7 @@ function App() {
             <Route path="/memberpage" element={<MemberPage />} />
           </Route>
         </Route>
-
-        {/* ══════════════════════════════════════════════════════
-            404
-            ══════════════════════════════════════════════════════ */}
+        {/* -------- If LSM routes does'nt matches to url route then 404 PAGE -------- */}
         <Route
           path="*"
           element={
@@ -141,11 +133,12 @@ function App() {
                 fontFamily: "sans-serif",
               }}
             >
+              {/* Example Icon using a Unicode emoji or an SVG component */}
               <span style={{ fontSize: "4rem" }}>
-                <i className="fa-solid fa-face-sad-tear" />
+                <i className="fa-solid fa-face-sad-tear"></i>
               </span>
-              <h1 style={{ margin: 0 }}>404 — Page Not Found</h1>
-              <p>The page you are looking for doesn't exist.</p>
+              <h1 style={{ margin: 0 }}>404 Page Not Found</h1>
+              <p>Oops! The page you are looking for doesn't exist.</p>
             </div>
           }
         />
@@ -153,5 +146,4 @@ function App() {
     </BrowserRouter>
   );
 }
-
 export default App;

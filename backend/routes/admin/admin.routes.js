@@ -1,24 +1,38 @@
 const express = require("express");
 const router = express.Router();
-const authMiddleware = require("../../middleware/auth.middleware");
-
-/* ── Bug Fix #4: completeProfile imported here so route is
-      PUT /api/admin/complete-profile  — matches profile.service.js ── */
-const { completeProfile } = require("../../controllers/admin/auth.controller");
 
 const {
-  getProfile,
-  updateProfile,
-  deleteAccount,
+  createAdmin,
+  getAllAdmins,
+  getAdminById,
+  updateAdmin,
+  deleteAdmin,
+} = require("../../controllers/admin/admin.controller");
+const {
+  profileAdmin,
+  deleteOwnAccount,
 } = require("../../controllers/admin/auth.controller");
 
-// ─── PROFILE ──────────────────────────────────────────────────────
-router.get("/profile", authMiddleware, getProfile);
-router.put("/update-profile", authMiddleware, updateProfile);
-router.delete("/delete-account", authMiddleware, deleteAccount);
+const authMiddleware = require("../../middleware/auth.middleware");
+const superAdminMiddleware = require("../../middleware/superAdmin.middleware");
 
-// ─── COMPLETE PROFILE (after Google invite login) ─────────────────
-// Matches: PUT /api/admin/complete-profile  ← called by profile.service.js
-router.put("/complete-profile", authMiddleware, completeProfile);
+// _______ Profile OR Delete Own Account ________
+router.get("/profile", authMiddleware, profileAdmin);
+router.delete("/delete-account", authMiddleware, deleteOwnAccount);
+
+// _______ Create admin ________
+router.post("/", authMiddleware, superAdminMiddleware, createAdmin);
+
+// _______ Get all admins ________
+router.get("/", authMiddleware, superAdminMiddleware, getAllAdmins);
+
+// _______ Get admin by id ________
+router.get("/:id", authMiddleware, superAdminMiddleware, getAdminById);
+
+// _______ Update admin ________
+router.put("/:id", authMiddleware, superAdminMiddleware, updateAdmin);
+
+// _______ Delete admin ________
+router.delete("/:id", authMiddleware, superAdminMiddleware, deleteAdmin);
 
 module.exports = router;

@@ -3,12 +3,14 @@ const router = express.Router();
 
 const {
   forgotPassword,
-  resetPassword,
-} = require("../../controllers/password/password.controller");
+} = require("../../controllers/validations/forgotpassword.controller");
 const {
-  sendOtp,
+  resetPassword,
+} = require("../../controllers/validations/resetpassword.controller");
+const { sendOtp } = require("../../controllers/validations/sendotp.controller");
+const {
   verifyOtp,
-} = require("../../controllers/password/otp.controller");
+} = require("../../controllers/validations/verifyotp.controller");
 // ================= PASSWORD RESET =================
 
 router.post("/forgot-password", forgotPassword);

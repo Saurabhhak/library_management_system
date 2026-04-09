@@ -1,34 +1,37 @@
 import API from "../../api/axiosInstance";
 
-
-/* -----------------------------------
-   ADMIN SERVICE - Production Ready
-   Handles:
-   - Profile
-   - Admin CRUD
------------------------------------ */
-
+/* ---------------- AUTH ---------------- */
+export const loginAdmin = (data) => API.post("/admin/login", data);
 /* ---------------- PROFILE ---------------- */
 
-// Get logged-in admin profile
+// get logged in admin profile
+// API axios instance me token automatically attach hota hai
 export const getProfile = () => API.get("/admin/profile");
 
-// Delete own account
+// delete logged in account
 export const deleteAccount = () => API.delete("/admin/delete-account");
 
 /* ---------------- ADMIN CRUD ---------------- */
 
-// Create new admin
+// create new admin       (data = parameter)
 export const createAdmin = (data) => API.post("/admin", data);
 
-// Get all admins
+// get all admins
 export const getAdmins = () => API.get("/admin");
 
-// Get single admin by ID
+// get single admin
 export const getAdminById = (id) => API.get(`/admin/${id}`);
 
-// Update admin
+// update admin
 export const updateAdmin = (id, data) => API.put(`/admin/${id}`, data);
 
-// Delete admin
+// delete admin
 export const deleteAdmin = (id) => API.delete(`/admin/${id}`);
+
+/* ---------------- META DATA ---------------- */
+
+// get states list
+export const getStates = () => API.get("/meta/states");
+
+// get cities by state
+export const getCitiesByState = (stateId) => API.get(`/meta/cities/${stateId}`);

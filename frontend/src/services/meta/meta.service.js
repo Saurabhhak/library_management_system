@@ -1,4 +1,4 @@
-import API from "../api/axiosInstance";
+import API from "../../api/axiosInstance";
 
 /* ---------------- META DATA ---------------- */
 

@@ -1,5 +1,5 @@
 /* ---------------- META DATA ---------------- */
-import API from "../api/axiosInstance";
+import API from "../../api/axiosInstance";
 
 // get states list
 export const getStates = () => API.get("/meta/states");

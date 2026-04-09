@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getMembers } from "../../services/member.service";
+import { getMembers } from "../../services//member/member.service";
 import { getMembersCountByState } from "../../utils/stateCount";
 import MemberCharts from "../../components/charts/MemberCharts";
 import styles from "./MemberPage.module.css";

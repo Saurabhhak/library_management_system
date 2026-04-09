@@ -1,4 +1,4 @@
-const db = require("../config/db");
+const db = require("../../config/db");
 //   --------- Save OTP --------------
 const saveOtp = async (email, otp) => {
   const expiresAt = new Date(Date.now() + 2 * 60 * 1000);
@@ -15,7 +15,7 @@ const verifyOtp = async (email, otp) => {
      WHERE email=$1 AND otp=$2 
      ORDER BY id DESC LIMIT 1`,
     [email, otp],
-  );x 
+  );
 
   if (!result.rows.length) return false;
 

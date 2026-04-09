@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styles from "./DisplayAdmin.module.css";
-import { getMembers, deleteMember } from "../../services/member.service";
+import { getMembers, deleteMember } from "../../services/member/member.service";
 import { getColumns } from "../../components/table/memberColumns";
 import Swal from "sweetalert2";
 import { Link } from "react-router-dom";

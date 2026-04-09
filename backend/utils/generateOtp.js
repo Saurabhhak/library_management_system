@@ -1,19 +1,7 @@
-// utils/otp.js
-
 const crypto = require("crypto");
 
-/*
-|--------------------------------------------------------------------------
-| GENERATE NUMERIC OTP
-|--------------------------------------------------------------------------
-| Default: 6 digit secure OTP
-|--------------------------------------------------------------------------
-*/
 const generateOtp = (length = 6) => {
-  const min = 10 ** (length - 1);
-  const max = 10 ** length - 1;
-
-  return crypto.randomInt(min, max).toString();
+  return crypto.randomInt(10 ** (length - 1), 10 ** length).toString();
 };
 
 module.exports = generateOtp;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getStates, getCitiesByState } from "../services/states.cities.service";
+import { getStates, getCitiesByState } from "../services/meta/states.cities.service";
 
 export const useFetchStatesCities = (state_id) => {
   const [states, setStates] = useState([]);

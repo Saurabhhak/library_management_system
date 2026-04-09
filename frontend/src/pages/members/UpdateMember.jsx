@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 
 import MemberForm from "./MemberForm";
-import { getMemberById, updateMember } from "../../services/member.service";
+import { getMemberById, updateMember } from "../../services/member/member.service";
 import { validateAdminForm } from "../../utils/validateAdminForm";
 import { useFetchStatesCities } from "../../utils/useFetchStatesCities";
 

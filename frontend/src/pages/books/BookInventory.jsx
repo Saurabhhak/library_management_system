@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getBooks, deleteBook } from "../../services/book.service";
+import { getBooks, deleteBook } from "../../services/books/book.service";
 import styles from "../dashboard/DisplayAdmin.module.css";
 // import { Link } from "react-router-dom";
 import { getBooksColumns } from "../../components/table/bookscolumns";

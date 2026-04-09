@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styles from "../dashboard/DisplayAdmin.module.css";
-import { getCategories, deleteCategory } from "../../services/category.service";
+import { getCategories, deleteCategory } from "../../services/books/category.service";
 import Swal from "sweetalert2";
 import {
   useReactTable,

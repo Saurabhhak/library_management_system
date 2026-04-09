@@ -20,7 +20,6 @@ API.interceptors.request.use((config) => {
 
   const publicRoutes = [
     "/auth/login",
-    "/auth/google",
     "/auth/send-otp",
     "/auth/verify-otp",
     "/auth/check-email",

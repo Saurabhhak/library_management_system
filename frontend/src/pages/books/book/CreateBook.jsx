@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import BookForm from "./BookForm";
-import { createBook } from "../../../services/book.service";
-import { getCategories } from "../../../services/category.service";
+import { createBook } from "../../../services/books/book.service";
+import { getCategories } from "../../../services/books/category.service";
 
 const initialState = {
   title: "",

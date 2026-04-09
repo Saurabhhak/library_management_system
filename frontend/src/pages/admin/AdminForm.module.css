@@ -1,173 +1,221 @@
 /* ---------- CONTAINER ---------- */
-.container {
-  min-height: 100vh;
+.formContainer {
   display: flex;
   justify-content: center;
   align-items: center;
-
-  background: linear-gradient(135deg, #eef2f7, #f8fbff);
-  padding: 20px;
+  padding: 2rem;
+  min-height: 100vh;
 }
 
-/* ---------- CARD ---------- */
-.card {
+/* ---------- FORM CARD ---------- */
+.formSection {
+  max-width: 30rem;
   width: 100%;
-  max-width: 650px;
-
-  background: #ffffff;
-  padding: 32px 28px;
-  border-radius: 18px;
-
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.12);
-
-  animation: fadeInUp 0.5s ease;
-}
-
-/* ---------- TITLE ---------- */
-.title {
-  text-align: center;
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 25px;
-  color: #1e293b;
-}
-
-/* ---------- GRID ---------- */
-.grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 1rem;
+  padding: 2rem;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
-.full {
+/* ---------- HEADING ---------- */
+.tagh1 {
   grid-column: span 2;
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* ---------- FORM ---------- */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 5px;
 }
 
 /* ---------- INPUT ---------- */
-input,
-select {
+.formInput {
   width: 100%;
-  padding: 13px 14px;
-
-  border-radius: 10px;
-  border: 1px solid #dcdcdc;
-
-  font-size: 14px;
-  background: #fafafa;
-
-  transition: all 0.25s ease;
+  padding: 0.65rem 0.8rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  transition: 0.2s;
 }
 
-/* Hover */
-input:hover,
-select:hover {
+.formInput:hover {
   border-color: #1088ff;
 }
 
-/* Focus */
-input:focus,
-select:focus {
+.formInput:focus {
   outline: none;
   border-color: #00c853;
-  box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.15);
-  background: #fff;
+  box-shadow: 0 0 0 2px rgba(0, 200, 83, 0.15);
 }
 
-/* Disabled */
-input:disabled {
-  background: #e8f5e9;
+.formInput:disabled {
+  background: #f1fdf4;
   border-color: #00c853;
 }
 
 /* ---------- ERROR ---------- */
-.errorInput {
-  border: 1px solid #e53935 !important;
-  background: #fff5f5;
-}
-
-.grid p {
+.errorMsg {
   font-size: 11px;
   color: #e53935;
   margin-top: 4px;
 }
 
-/* ---------- BUTTONS ---------- */
-.actions {
-  margin-top: 28px;
+.inputError {
+  border-color: #e53935 !important;
+}
+
+/* ---------- FULL WIDTH ---------- */
+.fullWidth {
+  grid-column: span 2;
+}
+
+/* ---------- OTP SECTION ---------- */
+.otpRow {
   display: flex;
-  gap: 15px;
+  gap: 0.5rem;
 }
 
-/* Common button */
-.actions button {
-  flex: 1;
-  padding: 13px;
+.otpRow button {
+  width: 7.5rem;
+}
 
-  border-radius: 10px;
+/* OTP input + verify button same row */
+.otpBox {
+  margin-top: 0.5rem;
+}
+
+.otpInline {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* timer */
+.timerText {
+  font-size: 12px;
+  color: #555555;
+}
+
+/* resend */
+.resendBtn {
+  background: none;
   border: none;
-
-  font-size: 14px;
-  font-weight: 600;
-
+  color: #1088ff;
+  font-size: 12px;
   cursor: pointer;
-  transition: all 0.25s ease;
 }
 
-/* Reset / Cancel */
-.actions button:first-child {
-  background: #f1f3f5;
-  color: #333;
+.resendBtn:hover {
+  text-decoration: underline;
 }
 
-.actions button:first-child:hover {
-  background: #dee2e6;
+/* ---------- PASSWORD ---------- */
+.password_wrapper {
+  position: relative;
 }
 
-/* Submit */
-.actions button:last-child {
-  background: linear-gradient(135deg, #1088ff, #0066ff);
+.password_wrapper input {
+  padding-right: 2.5rem;
+}
+
+.eye_icon {
+  position: absolute;
+  right: 10px;
+  top: 65%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #888;
+}
+
+/* ---------- BUTTONS ---------- */
+.btnSection {
+  grid-column: span 2;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.btnFeature {
+  padding: 0.65rem;
+  width: 14rem;
+  border: none;
+  border-radius: 5px;
+  background: #1088ff;
   color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-.actions button:last-child:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(16, 136, 255, 0.35);
+.btnFeature:hover {
+  background: #0a5ec2;
 }
 
-/* Disabled */
-.actions button:disabled {
-  background: #adb5bd;
+.btnFeature:disabled {
+  background: #a0aab5;
   cursor: not-allowed;
-  box-shadow: none;
 }
 
-/* ---------- ANIMATION ---------- */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(35px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ---------- VERIFY STATES ---------- */
+.verifyBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.verifiedBox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #00c853;
+  font-weight: 600;
+}
+.verifiedBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0.6rem 0.8rem;
+  min-width: 8rem;
+  background: #e8f5e9;
+  color: #00c853;
+  border-radius: 5px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: 1px solid #00c853;
 }
 
 /* ---------- RESPONSIVE ---------- */
-@media (max-width: 768px) {
-  .card {
-    padding: 22px;
-  }
-
-  .grid {
+@media (max-width: 480px) {
+  .formSection {
     grid-template-columns: 1fr;
+    padding: 1.5rem;
   }
 
-  .full {
+  .tagh1,
+  .btnSection,
+  .fullWidth {
     grid-column: span 1;
   }
 
-  .actions {
+  .btnSection {
     flex-direction: column;
+  }
+
+  .btnFeature {
+    width: 100%;
   }
 }

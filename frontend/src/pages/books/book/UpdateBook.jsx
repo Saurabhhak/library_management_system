@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import BookForm from "./BookForm";
-import { getBooks, updateBook } from "../../../services/book.service";
-import { getCategories } from "../../../services/category.service";
+import { getBooks, updateBook } from "../../../services/books/book.service";
+import { getCategories } from "../../../services/books/category.service";
 
 const initialState = {
   title: "",

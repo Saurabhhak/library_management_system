@@ -1,68 +1,68 @@
-    // routes/index.js
+// routes/index.js
 
-    const router = require("express").Router();
+const router = require("express").Router();
 
-    /*
+/*
     |--------------------------------------------------------------------------
     | AUTH ROUTES
     |--------------------------------------------------------------------------
     | Login, Google OAuth, Check Email
     |--------------------------------------------------------------------------
     */
-    router.use("/auth", require("./admin/auth.routes"));
+router.use("/auth", require("./admin/auth.routes"));
 
-    /*
+/*
+    |--------------------------------------------------------------------------
+    | FORGOT PASSWORD
+    |--------------------------------------------------------------------------
+    | RESET PASSWORD
+    |--------------------------------------------------------------------------
+    */
+router.use("/password", require("./validations/password.routes"));
+
+/*
     |--------------------------------------------------------------------------
     | ADMIN ROUTES
     |--------------------------------------------------------------------------
     | Admin CRUD, Profile, Verification
     |--------------------------------------------------------------------------
     */
-    router.use("/admin", require("./admin/admin.routes"));
+router.use("/admin", require("./admin/admin.routes"));
 
-    /*
-    |--------------------------------------------------------------------------
-    | INVITE ROUTES
-    |--------------------------------------------------------------------------
-    | SuperAdmin sends admin invite
-    |--------------------------------------------------------------------------
-    */
-    router.use("/invite", require("./admin/invite.routes"));
-
-    /*
+/*
     |--------------------------------------------------------------------------
     | LIBRARY ROUTES
     |--------------------------------------------------------------------------
     | Books & Categories
     |--------------------------------------------------------------------------
     */
-    router.use("/books", require("./books/book.routes"));
-    router.use("/categories", require("./books/category.routes"));
+router.use("/books", require("./books/book.routes"));
+router.use("/categories", require("./books/category.routes"));
 
-    /*
+/*
     |--------------------------------------------------------------------------
     | MEMBER ROUTES
     |--------------------------------------------------------------------------
     */
-    router.use("/members", require("./member/member.routes"));
+router.use("/members", require("./member/member.routes"));
 
-    /*
+/*
     |--------------------------------------------------------------------------
     | TRANSACTION ROUTES
     |--------------------------------------------------------------------------
     | Issue & Return Books
     |--------------------------------------------------------------------------
     */
-    router.use("/issuebook", require("./books/issue.routes"));
-    router.use("/returnissuebook", require("./books/return.routes"));
+router.use("/issuebook", require("./books/issue.routes"));
+router.use("/returnissuebook", require("./books/return.routes"));
 
-    /*
+/*
     |--------------------------------------------------------------------------
     | META ROUTES
     |--------------------------------------------------------------------------
     | States, Cities etc.
     |--------------------------------------------------------------------------
     */
-    router.use("/meta", require("./meta/meta.routes"));
+router.use("/meta", require("./meta/meta.routes"));
 
-    module.exports = router;
+module.exports = router;
