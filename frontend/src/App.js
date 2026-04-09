@@ -5,7 +5,7 @@ import HomeLayout from "./components/layout/HomeLayout";
 
 /* Route guards */
 import PrivateRoute from "./routes/PrivateRoute";
-import SuperAdminRoute from "./routes/SuperAdminRoute";
+// import SuperAdminRoute from "./routes/SuperAdminRoute";
 
 /* Auth (ALL PUBLIC) */
 import AdminLoginForm from "./pages/auth/AdminLogin";
