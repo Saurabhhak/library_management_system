@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getBooks, deleteBook } from "../../services/book.service";
-import styles from "./BookInventory.module.css";
+import styles from "../dashboard/DisplayAdmin.module.css";
 // import { Link } from "react-router-dom";
 import { getBooksColumns } from "../../components/table/bookscolumns";
 import {
@@ -20,6 +20,8 @@ function BookInventory() {
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
+  const [pageSizeOpen, setPageSizeOpen] = useState(false);
+
   /* ---------------- FETCH Books ---------------- */
   useEffect(() => {
     const fetchBooks = async () => {
@@ -103,7 +105,8 @@ function BookInventory() {
           />
         </div>
         {/* COLUMN VISIBILITY */}
-        <div className={styles.columnToggle}>
+        <div className={styles.columnToggle}
+        title="Hide Columns feature">
           <details>
             <summary>
               <i className="fa fa-ellipsis-v"></i>
@@ -197,51 +200,72 @@ function BookInventory() {
             )}
           </tbody>
         </table>
-
-        {/* -------- PAGINATION -------- */}
+        {/* --------------------- PAGINATION ------------------------ */}
         <div className={styles.paginationSection}>
-          {/* page size */}
-          <select
-            className={styles.paginationSize}
-            value={table.getState().pagination.pageSize}
-            onChange={(e) => table.setPageSize(Number(e.target.value))}
-          >
-            {[5, 10, 20, 50].map((size) => (
-              <option key={size} value={size}>
-                Show {size}
-              </option>
-            ))}
-          </select>
-          {/* pagination buttons */}
+          {/* -------- PAGE SIZE -------- */}
+          <div style={{ position: "relative" }}>
+            <div
+              className={styles.pageSizeButton}
+              onClick={() => setPageSizeOpen((prev) => !prev)}
+            >
+              Show {table.getState().pagination.pageSize}
+            </div>
+
+            {pageSizeOpen && (
+              <div className={styles.pageSizeMenu}>
+                {[5, 10, 20, 50].map((size) => (
+                  <div
+                    key={size}
+                    className={`${styles.pageSizeItem} ${
+                      table.getState().pagination.pageSize === size
+                        ? styles.activeItem
+                        : ""
+                    }`}
+                    onClick={() => {
+                      table.setPageSize(size);
+                      setPageSizeOpen(false);
+                    }}
+                  >
+                    Show {size}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* -------- BUTTONS -------- */}
           <div className={styles.paginationControls}>
             <button
               onClick={() => table.setPageIndex(0)}
               disabled={!table.getCanPreviousPage()}
             >
-              First
+              ⏮ First
             </button>
+
             <button
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
-              Prev
+              ◀ Prev
             </button>
+
             <span className={styles.pageInfo}>
-              Page {table.getState().pagination.pageIndex + 1}
-              of
-              {table.getPageCount()}
+              Page <b>{table.getState().pagination.pageIndex + 1}</b> of{" "}
+              <b>{table.getPageCount()}</b>
             </span>
+
             <button
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
-              Next
+              Next ▶
             </button>
+
             <button
               onClick={() => table.setPageIndex(table.getPageCount() - 1)}
               disabled={!table.getCanNextPage()}
             >
-              Last
+              Last ⏭
             </button>
           </div>
         </div>

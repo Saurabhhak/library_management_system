@@ -1,27 +1,28 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
+const { loginAdmin, generateToken } = require("../../controllers/admin/auth.controller");
+const { checkEmailExists } = require("../../controllers/admin/checkEmailExists.controller");
+const { checkBootstrap, bootstrapGuard } = require("../../controllers/bootstrap.controller");
 
-/* ── Bug Fix #3: correct import path (was ../../controllers/admin/) ── */
-const {
-  loginAdmin,
-  generateToken,
-} = require("../../controllers/admin/auth.controller");
+// Bootstrap check
+router.get("/bootstrap/check", checkBootstrap);
 
-const authMiddleware = require("../../middleware/auth.middleware");
-const {
-  checkEmailExists,
-} = require("../../controllers/admin/checkEmailExists.controller");
+// Bootstrap Google OAuth (with browser-friendly guard)
+router.get("/bootstrap/google", bootstrapGuard, (req, res, next) => {
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    state: "BOOTSTRAP",
+    session: false,
+  })(req, res, next);
+});
 
-// ─── GOOGLE INVITE LOGIN ──────────────────────────────────────────
-// Called from AcceptInvite.jsx  →  /api/auth/google?inviteToken=xxx
+// Invited admin Google OAuth
 router.get("/google", (req, res, next) => {
   const { inviteToken } = req.query;
 
   if (!inviteToken) {
-    return res.redirect(
-      `${process.env.FRONTEND_URL}/login?error=invite_required`,
-    );
+    return res.redirect(`${process.env.FRONTEND_URL}/login?error=invite_required`);
   }
 
   passport.authenticate("google", {
@@ -31,7 +32,7 @@ router.get("/google", (req, res, next) => {
   })(req, res, next);
 });
 
-// ─── GOOGLE SUPERADMIN LOGIN ──────────────────────────────────────
+// Existing superadmin Google login
 router.get("/google/superadmin", (req, res, next) => {
   passport.authenticate("google", {
     scope: ["profile", "email"],
@@ -40,7 +41,7 @@ router.get("/google/superadmin", (req, res, next) => {
   })(req, res, next);
 });
 
-// ─── GOOGLE CALLBACK ──────────────────────────────────────────────
+// ✅ Single callback — all three flows land here, differentiated by state
 router.get(
   "/google/callback",
   passport.authenticate("google", {
@@ -50,18 +51,10 @@ router.get(
   (req, res) => {
     const token = generateToken(req.user);
     res.redirect(`${process.env.FRONTEND_URL}/google-success?token=${token}`);
-  },
+  }
 );
 
-// ─── LOGIN ────────────────────────────────────────────────────────
 router.post("/login", loginAdmin);
-
-// ─── CHECK EMAIL ──────────────────────────────────────────────────
 router.post("/check-email", checkEmailExists);
-
-/* ── Bug Fix #4: complete-profile is served from admin.routes ──────
-   Profile service calls PUT /admin/complete-profile
-   So this route lives in admin.routes.js, not here.
-   (Removed from auth.routes to avoid the /auth/complete-profile mismatch) */
 
 module.exports = router;

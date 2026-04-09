@@ -366,32 +366,22 @@
 -- ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE; 
 
 TRUNCATE TABLE admin RESTART IDENTITY CASCADE;
-
 INSERT INTO admin (
-  first_name,
-  last_name,
-  email,
-  password_hash,
-  role,
-  is_active,
-  is_verified,
-  is_profile_complete,
-  is_deleted,
-  created_at
+  first_name, last_name, email, password_hash,
+  role, is_active, is_verified, is_profile_complete, is_deleted, created_at
 )
 VALUES (
-  'Saurabh',
-  'Kashyap',
-  'skkashyap2328@gmail.com',
+  'Saurabh', 'Kashyap', 'skkashyap2328@gmail.com',
   '$2b$10$UvX2PNhCRwv5GiZNHaoMe9nED.LcYXZsuWYrPYlLRot70QsCMOty',
-  'superadmin',
-  true,
-  true,
-  true,
-  false,
-  NOW()
-);
+  'superadmin', true, true, true, false, NOW()
+)
+ON CONFLICT (email) DO UPDATE
+  SET role = 'superadmin',
+      is_active = true,
+      is_verified = true,
+      is_profile_complete = true,
+      is_deleted = false;
 
 -- bash
 -- psql -U postgres -d library_db -f backend/config/alter.sql
--- psql "postgresql://neondb_owner:npg_Wl3othi5vzRg@ep-wild-cloud-a1ifuvlk.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require" -f backend/config/alter.sql
+-- psql "postgresql://neondb_owner:npg_Q6RsxAM5KYvP@ep-wild-cloud-a1ifuvlk.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require" -f backend/config/alter.sql

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import styles from "../dashboard/DisplayAdmin.module.css"; // reuse admin table styles (or create CategoryInventory.module.css)
+import styles from "../dashboard/DisplayAdmin.module.css";
 import { getCategories, deleteCategory } from "../../services/category.service";
 import Swal from "sweetalert2";
 import {
@@ -19,6 +19,7 @@ function CategoryInventory() {
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
+  const [pageSizeOpen, setPageSizeOpen] = useState(false);
 
   /* ---------------- FETCH CATEGORIES ---------------- */
   useEffect(() => {
@@ -102,7 +103,7 @@ function CategoryInventory() {
           className={styles.deleteBtn} // add appropriate CSS if needed
           title="Delete Category"
         >
-          <i className="fa-solid fa-trash" /> 
+          <i className="fa-solid fa-trash" />
         </button>
       ),
     },
@@ -146,7 +147,8 @@ function CategoryInventory() {
         </div>
 
         {/* COLUMN VISIBILITY TOGGLE */}
-        <div className={styles.columnToggle}>
+        <div className={styles.columnToggle}
+        title="Hide Columns feature">
           <details>
             <summary>
               <i className="fa fa-ellipsis-v"></i>
@@ -244,55 +246,72 @@ function CategoryInventory() {
             )}
           </tbody>
         </table>
-
-        {/* -------- PAGINATION -------- */}
+        {/* --------------------- PAGINATION ------------------------ */}
         <div className={styles.paginationSection}>
-          {/* page size selector */}
-          <select
-            className={styles.paginationSize}
-            value={table.getState().pagination.pageSize}
-            onChange={(e) => table.setPageSize(Number(e.target.value))}
-          >
-            {[5, 10, 20, 50].map((size) => (
-              <option key={size} value={size}>
-                Show {size}
-              </option>
-            ))}
-          </select>
+          {/* -------- PAGE SIZE -------- */}
+          <div style={{ position: "relative" }}>
+            <div
+              className={styles.pageSizeButton}
+              onClick={() => setPageSizeOpen((prev) => !prev)}
+            >
+              Show {table.getState().pagination.pageSize}
+            </div>
 
-          {/* pagination buttons */}
+            {pageSizeOpen && (
+              <div className={styles.pageSizeMenu}>
+                {[5, 10, 20, 50].map((size) => (
+                  <div
+                    key={size}
+                    className={`${styles.pageSizeItem} ${
+                      table.getState().pagination.pageSize === size
+                        ? styles.activeItem
+                        : ""
+                    }`}
+                    onClick={() => {
+                      table.setPageSize(size);
+                      setPageSizeOpen(false);
+                    }}
+                  >
+                    Show {size}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* -------- BUTTONS -------- */}
           <div className={styles.paginationControls}>
             <button
               onClick={() => table.setPageIndex(0)}
               disabled={!table.getCanPreviousPage()}
             >
-              First
+              ⏮ First
             </button>
 
             <button
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
-              Prev
+              ◀ Prev
             </button>
 
             <span className={styles.pageInfo}>
-              Page {table.getState().pagination.pageIndex + 1} of{" "}
-              {table.getPageCount()}
+              Page <b>{table.getState().pagination.pageIndex + 1}</b> of{" "}
+              <b>{table.getPageCount()}</b>
             </span>
 
             <button
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
-              Next
+              Next ▶
             </button>
 
             <button
               onClick={() => table.setPageIndex(table.getPageCount() - 1)}
               disabled={!table.getCanNextPage()}
             >
-              Last
+              Last ⏭
             </button>
           </div>
         </div>

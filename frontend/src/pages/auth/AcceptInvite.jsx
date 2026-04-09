@@ -28,11 +28,10 @@ function AcceptInvite() {
       alert("Configuration error. Please contact support.");
       return;
     }
-
     // ── Build absolute URL to backend Google OAuth route ────────
     // REACT_APP_API_URL = http://localhost:5000  (NO /api suffix)
     // Route registered at  /api/auth/google
-    const url = `${backendBase}/api/auth/google?inviteToken=${encodeURIComponent(token)}`;
+    const url = `${backendBase}/api/auth/google?inviteToken=${token}`;
     window.location.href = url;
   };
 
