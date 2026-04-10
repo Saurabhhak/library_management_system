@@ -8,10 +8,10 @@ const loginAdmin = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Find admin by email
-    const result = await pool.query("SELECT * FROM admin WHERE email=$1", [
-      email,
-    ]);
+    const result = await pool.query(
+      "SELECT * FROM admin WHERE email=$1 AND is_deleted=false",
+      [email],
+    );
 
     if (!result.rows.length) {
       return res.status(400).json({
@@ -22,7 +22,13 @@ const loginAdmin = async (req, res) => {
 
     const user = result.rows[0];
 
-    // Check if account active
+    if (!user.email_verified) {
+      return res.status(403).json({
+        success: false,
+        message: "Email not verified",
+      });
+    }
+
     if (!user.is_active) {
       return res.status(403).json({
         success: false,
@@ -30,7 +36,14 @@ const loginAdmin = async (req, res) => {
       });
     }
 
-    // Compare password
+    // Google-only account case
+    if (!user.password_hash) {
+      return res.status(400).json({
+        success: false,
+        message: "Use Google login",
+      });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password_hash);
 
     if (!isMatch) {
@@ -40,9 +53,6 @@ const loginAdmin = async (req, res) => {
       });
     }
 
-    // Create JWT Token
-    // user data + secret key
-    // use karke JWT token generate karta hai.
     const token = jwt.sign(
       {
         id: user.id,
@@ -52,7 +62,7 @@ const loginAdmin = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1d" },
     );
-    // Token send to frontend  Controller response 
+
     res.json({
       success: true,
       token,
@@ -63,7 +73,6 @@ const loginAdmin = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({
       success: false,
       message: "Login error",
@@ -111,16 +120,13 @@ const profileAdmin = async (req, res) => {
 const deleteOwnAccount = async (req, res) => {
   try {
     const id = req.user.id;
-
-    await pool.query("DELETE FROM admin WHERE id=$1", [id]);
-
+    await pool.query("UPDATE admin SET is_deleted=true WHERE id=$1", [id]);
     res.json({
       success: true,
       message: "Account deleted successfully",
     });
   } catch (error) {
     console.error(error);
-
     res.status(500).json({
       success: false,
       message: "Delete account error",

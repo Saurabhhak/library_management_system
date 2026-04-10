@@ -1,8 +1,8 @@
 import API from "../../api/axiosInstance";
 
-/* ---------------- AUTH ---------------- */
-export const loginAdmin = (data) => API.post("/admin/login", data);
-/* ---------------- PROFILE ---------------- */
+// /* ---------------- AUTH ---------------- */
+// export const loginAdmin = (data) => API.post("/admin/login", data);
+// /* ---------------- PROFILE ---------------- */
 
 // get logged in admin profile
 // API axios instance me token automatically attach hota hai

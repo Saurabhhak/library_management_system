@@ -1,54 +1,38 @@
 import axios from "axios";
 
-/* -------------------------------------------------------
-   AXIOS INSTANCE  ·  Production Ready
-   baseURL = REACT_APP_API_URL + "/api"
-   REACT_APP_API_URL must NOT have a trailing slash or /api
-------------------------------------------------------- */
-const BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
+/* ______________BASE URL ______________*/
+// env me sirf domain rahe (no /api)
+const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
+/* ______________AXIOS INSTANCE ______________*/
 const API = axios.create({
-  baseURL: `${BASE}/api`,
-  withCredentials: true,
+  baseURL: `${BASE_URL}/api`,
 });
 
-/* -------------------------------------------------------
-   REQUEST INTERCEPTOR — attach JWT automatically
-------------------------------------------------------- */
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-
-  const publicRoutes = [
-    "/auth/login",
-    "/auth/send-otp",
-    "/auth/verify-otp",
-    "/auth/check-email",
-    "/password",
-  ];
-
-  const isPublicRoute = publicRoutes.some((route) =>
-    config.url.includes(route),
-  );
-
-  if (token && !isPublicRoute) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-
-  return config;
-});
-
-/* -------------------------------------------------------
-   RESPONSE INTERCEPTOR — auto-logout on 401
-------------------------------------------------------- */
-API.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
+/* ______________REQUEST INTERCEPTOR ______________*/
+API.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    // old logic (simple & working)
+    if (token && !config.url?.includes("/password")) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    return Promise.reject(error);
+    return config;
   },
+  (error) => Promise.reject(error),
 );
+
+// /* ______________RESPONSE INTERCEPTOR ______________*/
+// API.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     // optional safety (production friendly)
+//     if (error.response?.status === 401) {
+//       console.warn("Unauthorized - token removed");
+//       localStorage.removeItem("token");
+//     }
+//     return Promise.reject(error);
+//   }
+// );
 
 export default API;

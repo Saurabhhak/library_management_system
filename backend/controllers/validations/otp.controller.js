@@ -1,4 +1,4 @@
-const otpService = require("../../services/validations/otp.service");
+const otpService = require("../../services/mail/otp.service");
 const sendEmail = require("../../services/mail/email.service");
 const generateOtp = require("../../utils/generateOtp");
 
@@ -19,4 +19,20 @@ const sendOtp = async (req, res) => {
     res.status(500).json({ message: "Failed to send OTP" });
   }
 };
-module.exports = { sendOtp };
+
+
+const verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const isValid = await otpService.verifyOtp(email, otp); // ✅ fix
+
+    if (!isValid) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+    return res.json({ success: true, message: "OTP verified" });
+  } catch (err) {
+    res.status(500).json({ message: "Verification failed" });
+  }
+};
+module.exports = { verifyOtp, sendOtp };

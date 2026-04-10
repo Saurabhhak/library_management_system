@@ -1,24 +1,28 @@
 require("dotenv").config();
 const express = require("express");
-const app = express();
 const cors = require("cors");
-const routes = require("./routes"); // Route aggregator (routes/index.js)
 
-/* -------------------- Middleware -------------------- */
+const app = express();
+
+/* _______________ MIDDLEWARE _______________ */
 app.use(express.json());
+
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://lms-frontend-35yk.onrender.com"],
+    origin: [
+      "http://localhost:3000",
+      "https://lms-frontend-35yk.onrender.com",
+    ],
     credentials: true,
-  }),
+  })
 );
 
-/* -------------------- Server Running Check -------------------- */
+/* _______________ HEALTH CHECK _______________ */
 app.get("/", (req, res) => {
   res.send("LMS Backend Running");
 });
 
-/* -------------------- DB Test -------------------- */
+/* _______________ DB TEST _______________ */
 app.get("/db-test", async (req, res) => {
   try {
     const { rows } = await require("./config/db").query("SELECT NOW()");
@@ -34,21 +38,29 @@ app.get("/db-test", async (req, res) => {
   }
 });
 
-/* -------------------- API Routes -------------------- */
+/* _______________ ROUTES _______________ */
+const routes = require("./routes");
 app.use("/api", routes);
 
-/* -------------------- Server -------------------- */
+/* _______________ GLOBAL ERROR HANDLER _______________ */
+app.use((err, req, res, next) => {
+  console.error("Global Error:", err);
 
+  res.status(500).json({
+    success: false,
+    message: "Something went wrong",
+  });
+});
+
+/* _______________ SERVER _______________ */
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-/* -------------------- ENV Debug (optional) -------------------- */
-console.log(
-  "BREVO_API_KEY:",
-  process.env.BREVO_API_KEY ? "Loaded " : "Missing ",
-);
-
-console.log("SENDER_EMAIL:", process.env.BREVO_SENDER_EMAIL || "Not set ");
+/* _______________ ENV DEBUG _______________ */
+console.log("ENV CHECK ----------------");
+console.log("BREVO:", process.env.BREVO_API_KEY ? "OK" : "Missing");
+console.log("SENDGRID:", process.env.SENDGRID_API_KEY ? "OK" : "Missing");
+console.log("SMTP:", process.env.SMTP_USER ? "OK" : "Missing");

@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomeLayout from "./components/layout/HomeLayout";
 
 /* Route guards */
-import PrivateRoute from "./routes/PrivateRoute";
+// import PrivateRoute from "./routes/PrivateRoute";
 // import SuperAdminRoute from "./routes/SuperAdminRoute";
 
 /* Auth (ALL PUBLIC) */
@@ -55,69 +55,73 @@ function App() {
         {/* Password Recovery Routes (PUBLIC) */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-            {/* Admin management temprary public*/}
-        <Route
-          path="/createadmin"
-          element={
-            // <SuperAdminRoute>
-              <CreateAdmin />
-            // </SuperAdminRoute>
-          }
-        />
-        <Route
-          path="/updateadmin/:id"
-          element={
-            // <SuperAdminRoute>
-              <UpdateAdmin />
-            // </SuperAdminRoute>
-          }
-        />
-        <Route
-          path="/displayadmin"
-          element={
-            // <SuperAdminRoute>
-              <DisplayAdmin />
-            // </SuperAdminRoute>
-          }
-        />
+
         {/* -------- PROTECTED ROUTES -------- */}
-        <Route element={<PrivateRoute />}>
-          {/* All authenticated admins */}
-          <Route element={<HomeLayout />}>
-            {/* Dashboard */}
-            <Route path="/" element={<Home />} />
+        {/* <Route element={<PrivateRoute />}> */}
+        {/* All authenticated admins */}
+        <Route element={<HomeLayout />}>
+          {/* Dashboard */}
+          <Route path="/" element={<Home />} />
 
-            {/* Admin management */}
-            {/* ......... */}
+          {/* Admin management */}
+          {/* TEMP PUBLIC */}
+          <Route path="/createadmin" element={<CreateAdmin />} />
+          <Route path="/updateadmin/:id" element={<UpdateAdmin />} />
+          <Route path="/displayadmin" element={<DisplayAdmin />} />
 
-            {/* Profile */}
-            <Route path="/profile" element={<Profile />} />
+          {/* <Route
+              path="/createadmin"
+              element={
+                <SuperAdminRoute>
+                  <CreateAdmin />
+                </SuperAdminRoute>
+              }
+            />
+            <Route
+              path="/updateadmin/:id"
+              element={
+                <SuperAdminRoute>
+                  <UpdateAdmin />
+                </SuperAdminRoute>
+              }
+            />
+            <Route
+              path="/displayadmin"
+              element={
+                <SuperAdminRoute>
+                  <DisplayAdmin />
+                </SuperAdminRoute>
+              }
+            /> */}
 
-            {/* Charts */}
-            <Route path="/chart" element={<Chart />} />
-            <Route path="/adminchart" element={<AdminChart />} />
-            <Route path="/adminpage" element={<AdminPage />} />
+          {/* Profile */}
+          <Route path="/profile" element={<Profile />} />
 
-            {/* Books */}
-            <Route path="/createbook" element={<CreateBook />} />
-            <Route path="/updatebook/:id" element={<UpdateBook />} />
-            <Route path="/bookinventory" element={<BookInventory />} />
-            <Route element={<Books />} />
-            <Route path="/issuebook" element={<IssueBook />} />
-            <Route path="/bookslib" element={<Bookslib />} />
-            <Route path="/categories" element={<Category />} />
-            <Route path="/categoryinventory" element={<CategoryInventory />} />
+          {/* Charts */}
+          <Route path="/chart" element={<Chart />} />
+          <Route path="/adminchart" element={<AdminChart />} />
+          <Route path="/adminpage" element={<AdminPage />} />
 
-            {/* History */}
-            <Route path="/history" element={<History />} />
+          {/* Books */}
+          <Route path="/createbook" element={<CreateBook />} />
+          <Route path="/updatebook/:id" element={<UpdateBook />} />
+          <Route path="/bookinventory" element={<BookInventory />} />
+          <Route element={<Books />} />
+          <Route path="/issuebook" element={<IssueBook />} />
+          <Route path="/bookslib" element={<Bookslib />} />
+          <Route path="/categories" element={<Category />} />
+          <Route path="/categoryinventory" element={<CategoryInventory />} />
 
-            {/* Members */}
-            <Route path="/createmember" element={<CreateMember />} />
-            <Route path="/updatemember/:id" element={<UpdateMember />} />
-            <Route path="/displaymember" element={<DisplayMember />} />
-            <Route path="/memberpage" element={<MemberPage />} />
-          </Route>
+          {/* History */}
+          <Route path="/history" element={<History />} />
+
+          {/* Members */}
+          <Route path="/createmember" element={<CreateMember />} />
+          <Route path="/updatemember/:id" element={<UpdateMember />} />
+          <Route path="/displaymember" element={<DisplayMember />} />
+          <Route path="/memberpage" element={<MemberPage />} />
         </Route>
+        {/* </Route> */}
         {/* -------- If LSM routes does'nt matches to url route then 404 PAGE -------- */}
         <Route
           path="*"

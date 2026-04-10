@@ -13,26 +13,27 @@ const {
   deleteOwnAccount,
 } = require("../../controllers/admin/auth.controller");
 
-const authMiddleware = require("../../middleware/auth.middleware");
-const superAdminMiddleware = require("../../middleware/superAdmin.middleware");
+// SUPER ADMIN ROLE BASED ACCESS CONTROL
+// const superAdminMiddleware = require("../middleware/superAdmin.middleware");
 
-// _______ Profile OR Delete Own Account ________
-router.get("/profile", authMiddleware, profileAdmin);
-router.delete("/delete-account", authMiddleware, deleteOwnAccount);
+// Profile OR Delete Own Account
+const middleware = require("../../middleware/auth.middleware");
+router.get("/profile", middleware, profileAdmin);
+router.delete("/delete-account", middleware, deleteOwnAccount);
 
-// _______ Create admin ________
-router.post("/", authMiddleware, superAdminMiddleware, createAdmin);
+// Create admin
+router.post("/", middleware, createAdmin);
 
-// _______ Get all admins ________
-router.get("/", authMiddleware, superAdminMiddleware, getAllAdmins);
+// Get all admins
+router.get("/", middleware, getAllAdmins);
 
-// _______ Get admin by id ________
-router.get("/:id", authMiddleware, superAdminMiddleware, getAdminById);
+// Get admin by id
+router.get("/:id", middleware, getAdminById);
 
-// _______ Update admin ________
-router.put("/:id", authMiddleware, superAdminMiddleware, updateAdmin);
+// Update admin
+router.put("/:id", middleware, updateAdmin);
 
-// _______ Delete admin ________
-router.delete("/:id", authMiddleware, superAdminMiddleware, deleteAdmin);
+// Delete admin
+router.delete("/:id", middleware, deleteAdmin);
 
 module.exports = router;

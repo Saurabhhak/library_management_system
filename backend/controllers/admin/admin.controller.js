@@ -13,10 +13,12 @@ const createAdmin = async (req, res) => {
       city_id,
       role,
     } = req.body;
-    // Check if email already exists
-    const emailCheck = await pool.query("SELECT id FROM admin WHERE email=$1", [
-      email,
-    ]);
+
+    // Check existing (ignore deleted users)
+    const emailCheck = await pool.query(
+      "SELECT id FROM admin WHERE email=$1 AND is_deleted=false",
+      [email],
+    );
 
     if (emailCheck.rows.length > 0) {
       return res.status(409).json({
@@ -24,7 +26,8 @@ const createAdmin = async (req, res) => {
         message: "Email already exists",
       });
     }
-    // CHECK GMAIL OTP VERIFIED
+
+    // OTP verified check
     const otpCheck = await pool.query(
       `SELECT * FROM otp_verifications 
        WHERE email=$1 AND is_verified=true 
@@ -38,12 +41,13 @@ const createAdmin = async (req, res) => {
         message: "Please verify OTP first",
       });
     }
-    // Hash password before saving
+
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const result = await pool.query(
       `INSERT INTO admin
-      (first_name,last_name,email,password_hash,phone,state_id,city_id,role)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+      (first_name,last_name,email,password_hash,phone,state_id,city_id,role,email_verified)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
       RETURNING id,first_name,last_name,email,phone,state_id,city_id,role`,
       [
         first_name,
@@ -54,8 +58,10 @@ const createAdmin = async (req, res) => {
         state_id,
         city_id,
         role || "admin",
+        true, //  important
       ],
     );
+
     res.status(201).json({
       success: true,
       message: "Admin created successfully",

@@ -3,6 +3,7 @@
 
 -- ALTER TABLE members
 -- ADD COLUMN password VARCHAR(255);
+
 -- INSERT INTO categories (name, description) VALUES
 -- ('Technology', 'Books about modern technology, innovation, and technical advancements.'),
 -- ('Computer Science', 'Core computer science concepts, theory, and computing fundamentals.'),
@@ -55,7 +56,7 @@
 -- ('Design', 'Graphic, UI/UX, and product design.'),
 -- ('Photography', 'Photography techniques and guides.'),
 -- ('Music', 'Music theory, instruments, and songs.');
--- ----------------- Books
+-- _____________________ Books ______________________
 -- ALTER TABLE books 
 -- ALTER COLUMN available_copies SET DEFAULT 0,
 -- ALTER COLUMN status SET DEFAULT 'available',
@@ -74,7 +75,7 @@
 -- BEFORE INSERT ON books
 -- FOR EACH ROW
 -- EXECUTE FUNCTION set_available_copies();
-
+-- ____________________________________________
 -- Insert Books 
 -- INSERT INTO books (title, author, isbn, category_id, total_copies, shelf_location) VALUES
 -- -- Technology
@@ -164,7 +165,7 @@
 
 -- -- Education
 -- ('The Art of Teaching', 'Gilbert Highet', '9780674872554', 43, 3, 'ED-B3');
-
+-- ___________________________insert state______________________________________________
 -- INSERT INTO states (id, name) VALUES
 -- (1, 'Andhra Pradesh'),
 -- (2, 'Arunachal Pradesh'),
@@ -194,9 +195,10 @@
 -- (26, 'Uttar Pradesh'),
 -- (27, 'Uttarakhand'),
 -- (28, 'West Bengal');
--- --------------------- ADD Cities Data
--- INSERT INTO cities (state_id, name) VALUES
 
+
+-- _________________________ ADD Cities Data_________________________
+-- INSERT INTO cities (state_id, name) VALUES
 -- -- Andhra Pradesh
 -- (1,'Visakhapatnam'),(1,'Vijayawada'),(1,'Guntur'),(1,'Nellore'),(1,'Kurnool'),
 -- (1,'Rajahmundry'),(1,'Tirupati'),(1,'Anantapur'),(1,'Eluru'),(1,'Kadapa'),
@@ -309,79 +311,112 @@
 -- (28,'Kolkata'),(28,'Howrah'),(28,'Durgapur'),(28,'Asansol'),(28,'Siliguri'),
 -- (28,'Darjeeling'),(28,'Malda'),(28,'Kharagpur'),(28,'Haldia'),(28,'Bardhaman');
 
--- --------- Create Google id 
+--___________________________ Create Google id__________________ 
 -- ALTER TABLE members ADD COLUMN google_id VARCHAR(255);
 
--- ------------- Admin 
--- DROP TABLE IF EXISTS admin CASCADE;
+-- _______________________________ Admin __________________________________
 
+-- Drop only if you want fresh start
+
+-- DROP TABLE IF EXISTS admin CASCADE;
 -- CREATE TABLE admin (
 --     id SERIAL PRIMARY KEY,
 
+--     -- Basic Info
 --     first_name VARCHAR(80) NOT NULL,
 --     last_name VARCHAR(80),
 
---     email VARCHAR(150) UNIQUE NOT NULL,
+--     email VARCHAR(150) NOT NULL UNIQUE,
 --     phone VARCHAR(15) UNIQUE,
 
+--     -- Auth
 --     password_hash VARCHAR(255),
+--     google_id TEXT UNIQUE, -- for future Google login
 
+--     -- Role
 --     role VARCHAR(20) NOT NULL DEFAULT 'admin',
---     is_active BOOLEAN DEFAULT TRUE,
---     is_verified BOOLEAN DEFAULT FALSE,
 
---     verify_token TEXT,
---     token_expiry TIMESTAMP,
-
---     reset_otp VARCHAR(10),
---     otp_expiry TIMESTAMP,
-
+--     -- Location
 --     state_id INTEGER,
 --     city_id INTEGER,
 
---     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     -- Status
+--     is_active BOOLEAN DEFAULT TRUE,
+--     is_deleted BOOLEAN DEFAULT FALSE,
+--     is_profile_complete BOOLEAN DEFAULT FALSE,
+--     email_verified BOOLEAN DEFAULT FALSE,
 
+--     -- Tokens (ONLY if needed)
+--     invite_token TEXT,
+--     invite_token_expiry TIMESTAMP,
+
+--     -- Reset Password (NOT OTP login)
+--     reset_otp VARCHAR(10),
+--     reset_otp_expiry TIMESTAMP,
+
+--     -- Timestamps
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+--     -- Foreign Keys
 --     CONSTRAINT fk_admin_state
---     FOREIGN KEY (state_id)
---     REFERENCES states(id)
---     ON DELETE SET NULL,
+--         FOREIGN KEY (state_id)
+--         REFERENCES states(id)
+--         ON DELETE SET NULL,
 
 --     CONSTRAINT fk_admin_city
---     FOREIGN KEY (city_id)
---     REFERENCES cities(id)
---     ON DELETE SET NULL,
+--         FOREIGN KEY (city_id)
+--         REFERENCES cities(id)
+--         ON DELETE SET NULL,
 
+--     -- Role constraint
 --     CONSTRAINT role_check
---     CHECK (role IN ('admin','superadmin'))
+--         CHECK (role IN ('admin', 'superadmin'))
 -- );
+-- ___________________________________________________
+-- INSERT INTO admin (
+--     first_name,
+--     last_name,
+--     email,
+--     phone,
+--     password_hash,
+--     role,
+--     state_id,
+--     city_id,
+--     is_active,
+--     is_deleted,
+--     is_profile_complete,
+--     email_verified
+-- )
+-- VALUES (
+--     'Saurabh',
+--     'Kashyap',
+--     'onlinelibrarylms@gmail.com',
+--     '9193142041',
+--     '$2b$10$REPLACE_WITH_REAL_BCRYPT_HASH',
+--     'superadmin',
+--     27,
+--     (SELECT id FROM cities WHERE name = 'Rudrapur' AND state_id = 27),
+--     TRUE,
+--     FALSE,
+--     TRUE,
+--     TRUE
+-- );
+-- ________________ INSERT INTO members  _____________
+-- INSERT INTO members
+-- (first_name, last_name, email, phone, date_of_birth, state_id, city_id, membership_end, max_books_allowed, status)
+-- VALUES
+-- ('Rahul', 'Sharma', 'rahul.sharma@example.com', '9876543210', '1995-06-15', 1, 1, '2026-12-31', 5, 'active'),
 
+-- ('Priya', 'Verma', 'priya.verma@example.com', '9876543211', '1998-02-20', 1, 2, '2026-10-15', 3, 'active'),
 
--- — but not invite_token_expiry. Every invite insert will fail silently or crash.
---  Run this migration
--- ALTER TABLE admin 
--- ADD COLUMN IF NOT EXISTS invite_token TEXT,
--- ADD COLUMN IF NOT EXISTS invite_token_expiry TIMESTAMP,   
--- ADD COLUMN IF NOT EXISTS google_id TEXT UNIQUE,
--- ADD COLUMN IF NOT EXISTS is_profile_complete BOOLEAN DEFAULT FALSE,
--- ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE; 
+-- ('Amit', 'Kumar', 'amit.kumar@example.com', '9876543212', '1992-11-05', 2, 3, '2026-08-01', 4, 'inactive'),
 
+-- ('Neha', 'Singh', 'neha.singh@example.com', '9876543213', '2000-01-25', 2, 4, '2027-01-01', 2, 'active'),
+
+-- ('Rohit', 'Mehta', 'rohit.mehta@example.com', '9876543214', '1994-09-10', 3, 5, '2026-09-30', 3, 'active');
+-- ________________________
 TRUNCATE TABLE admin RESTART IDENTITY CASCADE;
-INSERT INTO admin (
-  first_name, last_name, email, password_hash,
-  role, is_active, is_verified, is_profile_complete, is_deleted, created_at
-)
-VALUES (
-  'Saurabh', 'Kashyap', 'skkashyap2328@gmail.com',
-  '$2b$10$UvX2PNhCRwv5GiZNHaoMe9nED.LcYXZsuWYrPYlLRot70QsCMOty',
-  'superadmin', true, true, true, false, NOW()
-)
-ON CONFLICT (email) DO UPDATE
-  SET role = 'superadmin',
-      is_active = true,
-      is_verified = true,
-      is_profile_complete = true,
-      is_deleted = false;
-
 -- bash
 -- psql -U postgres -d library_db -f backend/config/alter.sql
--- psql "postgresql://neondb_owner:npg_Q6RsxAM5KYvP@ep-wild-cloud-a1ifuvlk.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require" -f backend/config/alter.sql
+-- psql "postgresql://neondb_owner:npg_yeDzdtnq0av7@ep-wild-cloud-a1ifuvlk.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require" -f backend/config/alter.sql

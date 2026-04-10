@@ -2,10 +2,10 @@ const express = require("express");
 const router = express.Router();
 
 const { loginAdmin } = require("../../controllers/admin/auth.controller");
-const { sendOtp } = require("../../controllers/validations/sendotp.controller");
 const {
+  sendOtp,
   verifyOtp,
-} = require("../../controllers/validations/verifyotp.controller");
+} = require("../../controllers/validations/otp.controller");
 const {
   checkEmailExists,
 } = require("../..//controllers/validations/checkEmailExists.controller");

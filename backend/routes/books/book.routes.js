@@ -8,12 +8,12 @@ const {
   deleteBook,
 } = require("../../controllers/books/book.controller");
 
-const authMiddleware = require("../../middleware/auth.middleware");
+// const authMiddleware = require("../../middleware/auth.middleware");
 
 // Protected Routes
-router.post("/", authMiddleware, createBook);
-router.get("/", authMiddleware, getBooks);
-router.put("/:id", authMiddleware, updateBook);
-router.delete("/:id", authMiddleware, deleteBook);
+router.post("/", createBook);
+router.get("/", getBooks);
+router.put("/:id", updateBook);
+router.delete("/:id", deleteBook);
 
 module.exports = router;
