@@ -1,56 +1,48 @@
-// controllers/auth.controller.js
 const pool = require("../../config/db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-//  ---------------- login Admin ---------------- //
+/*  ________________ login Admin ________________ */
 const loginAdmin = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    console.log("Login attempt:", email);
+
     const result = await pool.query(
       "SELECT * FROM admin WHERE email=$1 AND is_deleted=false",
       [email],
     );
 
     if (!result.rows.length) {
-      return res.status(400).json({
-        success: false,
-        message: "User not found",
-      });
+      return res.status(400).json({ message: "User not found" });
     }
 
     const user = result.rows[0];
 
-    if (!user.email_verified) {
-      return res.status(403).json({
-        success: false,
-        message: "Email not verified",
-      });
-    }
-
     if (!user.is_active) {
       return res.status(403).json({
-        success: false,
-        message: "Account inactive",
+        message: "Account is inactive. Contact admin",
       });
     }
 
-    // Google-only account case
+    /* Prevent crash */
     if (!user.password_hash) {
       return res.status(400).json({
-        success: false,
-        message: "Use Google login",
+        message: "Password not set. Contact admin",
       });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password_hash);
+    const match = await bcrypt.compare(password, user.password_hash);
 
-    if (!isMatch) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid password",
-      });
+    if (!match) {
+      return res.status(400).json({ message: "Invalid password" });
+    }
+
+    /* Safe JWT */
+    if (!process.env.JWT_SECRET) {
+      console.error("JWT_SECRET missing");
+      return res.status(500).json({ message: "Server misconfigured" });
     }
 
     const token = jwt.sign(
@@ -72,14 +64,14 @@ const loginAdmin = async (req, res) => {
         role: user.role,
       },
     });
-  } catch (error) {
+  } catch (err) {
+    console.error(" Login error FULL:", err);
     res.status(500).json({
-      success: false,
-      message: "Login error",
+      message: err.message || "Server error",
     });
   }
 };
-// ----------------- Get Profile Of Logged-In Admin ------------------ //
+/* ________________ Get Profile Of Logged-In Admin ________________ */
 const profileAdmin = async (req, res) => {
   try {
     const result = await pool.query(
@@ -115,18 +107,21 @@ const profileAdmin = async (req, res) => {
   }
 };
 
-// --------------------  Delete Own Account -------------------- //
+/* ________________  Delete Own Account ________________ */
 
 const deleteOwnAccount = async (req, res) => {
   try {
     const id = req.user.id;
-    await pool.query("UPDATE admin SET is_deleted=true WHERE id=$1", [id]);
+
+    await pool.query("DELETE FROM admin WHERE id=$1", [id]);
+
     res.json({
       success: true,
       message: "Account deleted successfully",
     });
   } catch (error) {
     console.error(error);
+
     res.status(500).json({
       success: false,
       message: "Delete account error",

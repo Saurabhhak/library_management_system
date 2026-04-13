@@ -30,7 +30,7 @@ body {
   padding: 0.2rem;
   font-weight: 100;
   border: 1px solid rgba(237, 230, 222, 0.285);
-  border-radius: .3rem;
+  border-radius: 0.3rem;
 }
 
 /* ----- SEARCH ----- */
@@ -68,7 +68,7 @@ body {
   justify-content: center;
   animation: fadeInUp 0.5s ease;
   width: fit-content;
-  position: relative; 
+  position: relative;
 }
 
 .columnToggle summary {
@@ -89,7 +89,7 @@ body {
 .dropdownMenu {
   position: absolute;
   top: 100%; /* Sits right below the button */
-  right: 0;   /* Aligns to the right edge of button */
+  right: 0; /* Aligns to the right edge of button */
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
@@ -105,7 +105,7 @@ body {
 .dropdownItem {
   display: flex;
   flex-direction: row-reverse; /* Checkbox on right, text on left */
-  justify-content: flex-end;    /* Push everything to the end */
+  justify-content: flex-end; /* Push everything to the end */
   align-items: center;
   gap: 10px;
   padding: 0.4rem;
@@ -342,7 +342,25 @@ body {
   font-size: 0.85rem;
   color: #ccc;
 }
+/* Categories Loading */
+/* ---------- SKELETON ROW ---------- */
+.skeletonRow {
+  height: 38px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #49494b 25%, #3e4347 50%, #374841 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+}
 
+/* shimmer animation */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
 /* animation */
 @keyframes fadeIn {
   from {
@@ -356,12 +374,12 @@ body {
 }
 
 /*------------ Category Delete  hover Style ---------- */
-.deleteBtn{
+.deleteBtn {
   background: none;
   border: none;
   color: #e1e1e1;
 }
-.deleteBtn:hover{
+.deleteBtn:hover {
   color: #d33;
 }
 /* -----------------------    Fade In + Slide Up Animation -------------------*/

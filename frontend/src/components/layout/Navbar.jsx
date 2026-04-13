@@ -48,29 +48,24 @@ function NavbarSection() {
   return (
     <div className={styles.navbarHeader}>
       {/* ------ ADMIN ICON ------ */}
-      {role === "superadmin" ? (
+      {role !== "superadmin" ? (
+        // NOT SUPERADMIN → BLOCK
         <button
           className={styles.iconBtn}
           onClick={() => {
-            setMenuOpen(false);
-            setProfileOpen(false);
-
             Swal.fire({
               icon: "error",
               title: "Access Denied!",
               text: "Only Super Admin allowed",
-              confirmButtonColor: "#d33",
-              background: "#161b22",
-              color: "#c9d1d9",
             });
           }}
         >
           <i className="fa-solid fa-user-gear"></i>
         </button>
       ) : (
+        //  SUPERADMIN → ALLOW
         <button
           className={`${styles.iconBtn} ${adminBarOpen ? styles.active : ""}`}
-          title="Admin CURD Opration"
           onClick={() => {
             setAdminBarOpen(!adminBarOpen);
             setMenuOpen(false);
@@ -148,18 +143,18 @@ function NavbarSection() {
               <Link to="/bookslib" onClick={closeAll}>
                 <i class="fa-solid fa-book-open"></i> Library
               </Link>
-              <Link to="/issuebook" onClick={closeAll}>
+              {/* <Link to="/issuebook" onClick={closeAll}>
                 <i class="fa-solid fa-book-open"></i> Issue Books
-              </Link>
-              <Link to="/categories" onClick={closeAll}>
-                <i class="fa-solid fa-layer-group"></i> Categories
-              </Link>
+              </Link> */}
               <Link to="/categoryinventory" onClick={closeAll}>
                 <i class="fa-solid fa-layer-group"></i> Categories Inventory
               </Link>
-              <Link to="/bookchartpage" onClick={closeAll}>
-                <i class="fa-solid fa-layer-group"></i> Book Chart
+              <Link to="/addcategory" onClick={closeAll}>
+                <i class="fa-solid fa-layer-group"></i> Add Categories
               </Link>
+              {/* <Link to="/categorypage" onClick={closeAll}>
+                <i class="fa-solid fa-layer-group"></i> Categories Chart
+              </Link> */}
             </div>
           )}
         </div>

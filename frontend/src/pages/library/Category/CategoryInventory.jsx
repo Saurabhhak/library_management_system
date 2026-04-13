@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
-import styles from "../dashboard/DisplayAdmin.module.css";
-import { getCategories, deleteCategory } from "../../services/books/category.service";
+import styles from "../../dashboard/DisplayAdmin.module.css";
+import {
+  getCategories,
+  deleteCategory,
+} from "../../../services/books/category.service";
+import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import {
   useReactTable,
@@ -21,6 +25,7 @@ function CategoryInventory() {
   const [columnVisibility, setColumnVisibility] = useState({});
   const [pageSizeOpen, setPageSizeOpen] = useState(false);
 
+  const navigate = useNavigate();
   /* ---------------- FETCH CATEGORIES ---------------- */
   useEffect(() => {
     const fetchCategories = async () => {
@@ -98,13 +103,20 @@ function CategoryInventory() {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <button
-          onClick={() => handleDelete(row.original)}
-          className={styles.deleteBtn} // add appropriate CSS if needed
-          title="Delete Category"
-        >
-          <i className="fa-solid fa-trash" />
-        </button>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button
+            onClick={() => navigate(`/updatecategory/${row.original.id}`)}
+            className={styles.editBtn}
+          >
+            <i className="fa-solid fa-pen" />
+          </button>
+          <button
+            onClick={() => handleDelete(row.original)}
+            className={styles.deleteBtn}
+          >
+            <i className="fa-solid fa-trash" />
+          </button>
+        </div>
       ),
     },
   ];
@@ -135,6 +147,21 @@ function CategoryInventory() {
     <>
       {/* -------- HEADER SECTION -------- */}
       <div className={styles.headerBar}>
+        <Link
+          to="/categories"
+          className={styles.chartBtn}
+          title="Create Member"
+        >
+          + Add Category
+        </Link>
+        {/* -------- CHART NAV BUTTON -------- */}
+        <Link
+          to="/categorypage"
+          className={styles.chartBtn}
+          title="View Analytics Dashboard"
+        >
+          View Charts
+        </Link>
         <h1 className={styles.title}>Category Inventory</h1>
 
         <div className={styles.searchContainer}>
@@ -147,8 +174,7 @@ function CategoryInventory() {
         </div>
 
         {/* COLUMN VISIBILITY TOGGLE */}
-        <div className={styles.columnToggle}
-        title="Hide Columns feature">
+        <div className={styles.columnToggle} title="Hide Columns feature">
           <details>
             <summary>
               <i className="fa fa-ellipsis-v"></i>
@@ -218,14 +244,13 @@ function CategoryInventory() {
           {/* -------- TABLE BODY -------- */}
           <tbody className={styles.tbody}>
             {loading ? (
-              <tr>
-                <td colSpan={table.getAllColumns().length}>
-                  <span className={styles.loading}>
-                    <i className="fa-solid fa-spinner fa-spin-pulse"></i>{" "}
-                    Loading data...
-                  </span>
-                </td>
-              </tr>
+              [...Array(6)].map((_, i) => (
+                <tr key={i}>
+                  <td colSpan={table.getAllColumns().length}>
+                    <div className={styles.skeletonRow}></div>
+                  </td>
+                </tr>
+              ))
             ) : table.getRowModel().rows.length === 0 ? (
               <tr>
                 <td colSpan={table.getAllColumns().length}>No records found</td>

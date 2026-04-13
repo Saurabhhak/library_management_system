@@ -5,15 +5,19 @@ const verifyOtpMiddleware = async (req, res, next) => {
     const { email, otp } = req.body;
 
     if (!email || !otp) {
-      return res.status(400).json({ success: false, message: "Email & OTP required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Email & OTP required" });
     }
     const { rows } = await pool.query(
       "SELECT reset_otp, otp_expiry FROM admin WHERE email=$1",
-      [email]
+      [email],
     );
 
     if (!rows.length) {
-      return res.status(404).json({ success: false, message: "Admin not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Admin not found" });
     }
 
     const { reset_otp, otp_expiry } = rows[0];

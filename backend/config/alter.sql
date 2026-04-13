@@ -419,4 +419,4 @@
 TRUNCATE TABLE admin RESTART IDENTITY CASCADE;
 -- bash
 -- psql -U postgres -d library_db -f backend/config/alter.sql
--- psql "postgresql://neondb_owner:npg_yeDzdtnq0av7@ep-wild-cloud-a1ifuvlk.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require" -f backend/config/alter.sql
+-- psql "postgresql://neondb_owner:npg_duWGHa3qXV9C@ep-wild-cloud-a1ifuvlk.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require" -f backend/config/alter.sql

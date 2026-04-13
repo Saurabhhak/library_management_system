@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomeLayout from "./components/layout/HomeLayout";
 
 /* Route guards */
-// import PrivateRoute from "./routes/PrivateRoute";
+import PrivateRoute from "./routes/PrivateRoute";
 // import SuperAdminRoute from "./routes/SuperAdminRoute";
 
 /* Auth (ALL PUBLIC) */
@@ -30,14 +30,19 @@ import Home from "./pages/home/Home";
 import Profile from "./pages/profile/Profile";
 
 /* Books */
-import Books from "./pages/books/BooksLayout";
-import CreateBook from "./pages/books/book/CreateBook";
-import UpdateBook from "./pages/books/book/UpdateBook";
-import BookInventory from "./pages/books/BookInventory";
-import Bookslib from "./pages/books/Bookslib";
-import Category from "./pages/books/Category";
-import CategoryInventory from "./pages/books/CategoryInventory";
-import IssueBook from "./pages/books/IssueBook";
+import CreateBook from "./pages/library/books/CreateBook";
+import UpdateBook from "./pages/library/books/UpdateBook";
+import BookInventory from "./pages/library/books/BookInventory";
+import Bookslib from "./pages/library/books/Bookslib";
+
+/* books essue */
+import IssueBook from "./pages/library/IssueBook";
+
+/* Books Category */
+import CategoryPage from "./pages/library/Category/CategoryPage";
+import AddCategory from "./pages/library/Category/AddCategory";
+import CategoryInventory from "./pages/library/Category/CategoryInventory";
+import UpdateCategory from "./pages/library/Category/UpdateCategory";
 
 /* History */
 import History from "./pages/history/History";
@@ -46,6 +51,7 @@ import History from "./pages/history/History";
 import CreateMember from "./pages/members/CreateMember";
 import UpdateMember from "./pages/members/UpdateMember";
 import MemberPage from "./pages/members/MemberPage";
+
 function App() {
   return (
     <BrowserRouter>
@@ -57,19 +63,16 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* -------- PROTECTED ROUTES -------- */}
-        {/* <Route element={<PrivateRoute />}> */}
-        {/* All authenticated admins */}
-        <Route element={<HomeLayout />}>
-          {/* Dashboard */}
-          <Route path="/" element={<Home />} />
-
-          {/* Admin management */}
-          {/* TEMP PUBLIC */}
-          <Route path="/createadmin" element={<CreateAdmin />} />
+        <Route element={<PrivateRoute />}>
+          {/* All authenticated admins */}
+          <Route element={<HomeLayout />}>
+            {/* Admin management */}
+            {/* TEMP PUBLIC */}
+            <Route path="/createadmin" element={<CreateAdmin />} />
           <Route path="/updateadmin/:id" element={<UpdateAdmin />} />
           <Route path="/displayadmin" element={<DisplayAdmin />} />
 
-          {/* <Route
+            {/* <Route
               path="/createadmin"
               element={
                 <SuperAdminRoute>
@@ -94,34 +97,37 @@ function App() {
               }
             /> */}
 
-          {/* Profile */}
-          <Route path="/profile" element={<Profile />} />
+            {/* Dashboard */}
+            <Route path="/" element={<Home />} />
+            {/* Profile */}
+            <Route path="/profile" element={<Profile />} />
 
-          {/* Charts */}
-          <Route path="/chart" element={<Chart />} />
-          <Route path="/adminchart" element={<AdminChart />} />
-          <Route path="/adminpage" element={<AdminPage />} />
+            {/* Charts */}
+            <Route path="/chart" element={<Chart />} />
+            <Route path="/adminchart" element={<AdminChart />} />
+            <Route path="/adminpage" element={<AdminPage />} />
+            <Route path="/categorypage" element={<CategoryPage />} />
 
-          {/* Books */}
-          <Route path="/createbook" element={<CreateBook />} />
-          <Route path="/updatebook/:id" element={<UpdateBook />} />
-          <Route path="/bookinventory" element={<BookInventory />} />
-          <Route element={<Books />} />
-          <Route path="/issuebook" element={<IssueBook />} />
-          <Route path="/bookslib" element={<Bookslib />} />
-          <Route path="/categories" element={<Category />} />
-          <Route path="/categoryinventory" element={<CategoryInventory />} />
+            {/* Books */}
+            <Route path="/createbook" element={<CreateBook />} />
+            <Route path="/updatebook/:id" element={<UpdateBook />} />
+            <Route path="/bookinventory" element={<BookInventory />} />
+            <Route path="/issuebook" element={<IssueBook />} />
+            <Route path="/bookslib" element={<Bookslib />} />
+            <Route path="/addcategory" element={<AddCategory />} />
+            <Route path="/categoryinventory" element={<CategoryInventory />} />
+            <Route path="/updatecategory/:id" element={<UpdateCategory />} />
 
-          {/* History */}
-          <Route path="/history" element={<History />} />
+            {/* History */}
+            <Route path="/history" element={<History />} />
 
-          {/* Members */}
-          <Route path="/createmember" element={<CreateMember />} />
-          <Route path="/updatemember/:id" element={<UpdateMember />} />
-          <Route path="/displaymember" element={<DisplayMember />} />
-          <Route path="/memberpage" element={<MemberPage />} />
+            {/* Members */}
+            <Route path="/createmember" element={<CreateMember />} />
+            <Route path="/updatemember/:id" element={<UpdateMember />} />
+            <Route path="/displaymember" element={<DisplayMember />} />
+            <Route path="/memberpage" element={<MemberPage />} />
+          </Route>
         </Route>
-        {/* </Route> */}
         {/* -------- If LSM routes does'nt matches to url route then 404 PAGE -------- */}
         <Route
           path="*"

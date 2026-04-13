@@ -1,6 +1,6 @@
 // src/pages/BookChartPage/BookChartPage.jsx
 
-import CategoryChart from "../../components/charts/CategoryChart";
+import CategoryChart from "../../components/Chart";
 import styles from "./BookChartPage.module.css";
 
 function BookChartPage({ books = [], loading = false }) {

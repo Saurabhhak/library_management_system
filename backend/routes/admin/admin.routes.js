@@ -1,6 +1,6 @@
-const express = require("express");
-const router = express.Router();
-
+const router = require("express").Router();
+const auth = require("../../middleware/auth.middleware");
+const superAdmin = require("../../middleware/superAdmin.middleware");
 const {
   createAdmin,
   getAllAdmins,
@@ -13,27 +13,15 @@ const {
   deleteOwnAccount,
 } = require("../../controllers/admin/auth.controller");
 
-// SUPER ADMIN ROLE BASED ACCESS CONTROL
-// const superAdminMiddleware = require("../middleware/superAdmin.middleware");
+// Own-account routes (any authenticated admin)
+router.get("/profile", auth, profileAdmin);
+router.delete("/delete-account", auth, deleteOwnAccount);
 
-// Profile OR Delete Own Account
-const middleware = require("../../middleware/auth.middleware");
-router.get("/profile", middleware, profileAdmin);
-router.delete("/delete-account", middleware, deleteOwnAccount);
-
-// Create admin
-router.post("/", middleware, createAdmin);
-
-// Get all admins
-router.get("/", middleware, getAllAdmins);
-
-// Get admin by id
-router.get("/:id", middleware, getAdminById);
-
-// Update admin
-router.put("/:id", middleware, updateAdmin);
-
-// Delete admin
-router.delete("/:id", middleware, deleteAdmin);
+// SuperAdmin-only CRUD
+router.post("/", auth, superAdmin, createAdmin);
+router.get("/", auth, superAdmin, getAllAdmins);
+router.get("/:id", auth, superAdmin, getAdminById);
+router.put("/:id", auth, superAdmin, updateAdmin);
+router.delete("/:id", auth, superAdmin, deleteAdmin);
 
 module.exports = router;

@@ -9,12 +9,9 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://lms-frontend-35yk.onrender.com",
-    ],
+    origin: ["http://localhost:3000", "https://lms-frontend-35yk.onrender.com"],
     credentials: true,
-  })
+  }),
 );
 
 /* _______________ HEALTH CHECK _______________ */
@@ -45,7 +42,6 @@ app.use("/api", routes);
 /* _______________ GLOBAL ERROR HANDLER _______________ */
 app.use((err, req, res, next) => {
   console.error("Global Error:", err);
-
   res.status(500).json({
     success: false,
     message: "Something went wrong",
@@ -53,7 +49,7 @@ app.use((err, req, res, next) => {
 });
 
 /* _______________ SERVER _______________ */
-const PORT = process.env.PORT || 5000;
+const PORT = 5000 || process.env.PORT;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
