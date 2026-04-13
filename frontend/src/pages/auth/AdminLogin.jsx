@@ -56,7 +56,7 @@ function AdminLoginForm() {
         title: "Login successful",
       });
 
-      setTimeout(() => navigate("/", { replace: true }), 1200);
+      navigate("/dashboard");
     } catch (err) {
       console.error("Login error:", err);
 
