@@ -5,7 +5,7 @@ const nodemailer = require("nodemailer");
 
 const sendMail = async ({ to, subject, html }) => {
   try {
-    // ✅ PRIMARY: SendGrid
+    //  PRIMARY: SendGrid
     if (process.env.SENDGRID_API_KEY) {
       sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -16,11 +16,11 @@ const sendMail = async ({ to, subject, html }) => {
         html,
       });
 
-      console.log("📤 Sent via SendGrid");
+      console.log("Sent via SendGrid");
       return;
     }
 
-    // ✅ FALLBACK: Nodemailer
+    //  FALLBACK: Nodemailer
     if (process.env.SMTP_USER) {
       const transporter = nodemailer.createTransport({
         service: "gmail",
@@ -37,7 +37,7 @@ const sendMail = async ({ to, subject, html }) => {
         html,
       });
 
-      console.log("📤 Sent via Nodemailer");
+      console.log("Sent via Nodemailer");
       return;
     }
 

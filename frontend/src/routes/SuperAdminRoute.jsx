@@ -1,10 +1,13 @@
-// src/routes/SuperAdminRoute.jsx
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 
 const SuperAdminRoute = ({ children }) => {
-  const { user } = useAuth();
-  return user?.role === "superadmin" ? children : <Navigate to="/" replace />;
+  const role = localStorage.getItem("role");
+
+  if (role !== "superadmin") {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
 };
 
 export default SuperAdminRoute;

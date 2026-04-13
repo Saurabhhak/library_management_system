@@ -56,7 +56,7 @@ function AdminLoginForm() {
         title: "Login successful",
       });
 
-      navigate("/dashboard");
+      navigate("/");
     } catch (err) {
       console.error("Login error:", err);
 

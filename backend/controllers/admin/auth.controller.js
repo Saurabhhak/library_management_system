@@ -76,20 +76,20 @@ const profileAdmin = async (req, res) => {
   try {
     const result = await pool.query(
       `
-      SELECT 
-        a.id,
-        a.first_name,
-        a.last_name,
-        a.email,
-        a.phone,
-        s.name AS state,
-        c.name AS city,
-        a.role
-      FROM admin a
-      LEFT JOIN states s ON a.state_id = s.id
-      LEFT JOIN cities c ON a.city_id = c.id
-      WHERE a.id = $1
-      `,
+        SELECT 
+          a.id,
+          a.first_name,
+          a.last_name,
+          a.email,
+          a.phone,
+          s.name AS state,
+          c.name AS city,
+          a.role
+        FROM admin a
+        LEFT JOIN states s ON a.state_id = s.id
+        LEFT JOIN cities c ON a.city_id = c.id
+        WHERE a.id = $1
+        `,
       [req.user.id],
     );
 

@@ -1,34 +1,34 @@
-import { Navigate, Outlet } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+  import { Navigate, Outlet } from "react-router-dom";
+  import { jwtDecode } from "jwt-decode";
 
-const PrivateRoute = () => {
-  const token = localStorage.getItem("token");
+  const PrivateRoute = () => {
+    const token = localStorage.getItem("token");
 
-  // ❌ No token → go login
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-
-  try {
-    const decoded = jwtDecode(token);
-
-    // ❌ Token expired
-    if (decoded.exp * 1000 < Date.now()) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("role");
+    // ❌ No token → go login
+    if (!token) {
       return <Navigate to="/login" replace />;
     }
 
-    // ✅ OK → allow access
-    return <Outlet />;
-  } catch (error) {
-    console.error("Token decode error:", error);
+    try {
+      const decoded = jwtDecode(token);
 
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
+      // ❌ Token expired
+      if (decoded.exp * 1000 < Date.now()) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        return <Navigate to="/login" replace />;
+      }
 
-    return <Navigate to="/login" replace />;
-  }
-};
+      // ✅ OK → allow access
+      return <Outlet />;
+    } catch (error) {
+      console.error("Token decode error:", error);
 
-export default PrivateRoute;
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+
+      return <Navigate to="/login" replace />;
+    }
+  };
+
+  export default PrivateRoute;

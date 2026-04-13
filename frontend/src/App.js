@@ -98,7 +98,7 @@ function App() {
             />
 
             {/* Dashboard */}
-            <Route path="/dashboard" element={<Home />} />
+            <Route path="/" element={<Home />} />
             {/* Profile */}
             <Route path="/profile" element={<Profile />} />
 

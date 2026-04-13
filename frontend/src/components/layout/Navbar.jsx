@@ -184,7 +184,7 @@ function NavbarSection() {
               <Link to="/createmember" onClick={closeAll}>
                 <i class="fa-solid fa-user-plus"></i> Add Member
               </Link>
-              <Link to="/memberfilter" onClick={closeAll}>
+              <Link to="/memberpage" onClick={closeAll}>
                 <i class="fa-solid fa-graph"></i> Member Chart
               </Link>
             </div>
