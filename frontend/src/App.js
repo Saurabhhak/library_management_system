@@ -5,7 +5,7 @@ import HomeLayout from "./components/layout/HomeLayout";
 
 /* Route guards */
 import PrivateRoute from "./routes/PrivateRoute";
-// import SuperAdminRoute from "./routes/SuperAdminRoute";
+import SuperAdminRoute from "./routes/SuperAdminRoute";
 
 /* Auth (ALL PUBLIC) */
 import AdminLoginForm from "./pages/auth/AdminLogin";
@@ -68,11 +68,11 @@ function App() {
           <Route element={<HomeLayout />}>
             {/* Admin management */}
             {/* TEMP PUBLIC */}
-            <Route path="/createadmin" element={<CreateAdmin />} />
+            {/* <Route path="/createadmin" element={<CreateAdmin />} />
           <Route path="/updateadmin/:id" element={<UpdateAdmin />} />
-          <Route path="/displayadmin" element={<DisplayAdmin />} />
+          <Route path="/displayadmin" element={<DisplayAdmin />} /> */}
 
-            {/* <Route
+            <Route
               path="/createadmin"
               element={
                 <SuperAdminRoute>
@@ -95,7 +95,7 @@ function App() {
                   <DisplayAdmin />
                 </SuperAdminRoute>
               }
-            /> */}
+            />
 
             {/* Dashboard */}
             <Route path="/" element={<Home />} />
