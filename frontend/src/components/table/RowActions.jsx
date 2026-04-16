@@ -6,15 +6,15 @@ function RowActions({ admin, onDelete }) {
   const id = admin.id;
 
   return (
-    <div className={styles.ActionsBTN}>
+    <div className={styles.acitonsbtn}>
       <button
-        className={styles.ActionEdit}
+        className={styles.editBtn}
         onClick={() => navigate(`/updateadmin/${id}`)}
       >
         <i class="fa-solid fa-user-pen"></i>
       </button>
       <button
-        className={styles.ActionsDel}
+        className={styles.deleteBtn}
         onClick={() => onDelete(admin)}
         // Button Disabled Option
         // disabled={admin.role === "superadmin"}
