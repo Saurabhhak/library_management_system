@@ -5,10 +5,10 @@ function MemberRowActions({ member, onDelete }) {
   const navigate = useNavigate();
 
   return (
-    <div className={styles.ActionsBTN}>
+    <div className={styles.acitonsbtn}>
       {/* EDIT */}
       <button
-        className={styles.ActionEdit}
+        className={styles.editBtn}
         onClick={() => navigate(`/updatemember/${member.id}`)}
         title="Edit Member"
       >
@@ -17,7 +17,7 @@ function MemberRowActions({ member, onDelete }) {
 
       {/* DELETE */}
       <button
-        className={styles.ActionsDel}
+        className={styles.deleteBtn}
         onClick={() => onDelete(member)}
         title="Delete Member"
       >
