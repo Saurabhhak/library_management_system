@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 
-import CategoryForm from "./Category.module.css";
+import CategoryForm from "./CategoryForm"; // ✅ FIXED
+
 import {
   updateCategory,
   getCategories,
@@ -38,7 +39,7 @@ function UpdateCategory() {
           });
         }
       } catch (err) {
-        console.error(err);
+        console.error("Fetch error:", err);
       }
     };
 
@@ -81,7 +82,6 @@ function UpdateCategory() {
       });
 
       navigate("/categoryinventory");
-
     } catch (err) {
       Swal.fire(
         "Error",
