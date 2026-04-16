@@ -43,7 +43,6 @@ function CategoryForm({
             <p className={styles.errorMsg}>{errors.name}</p>
           )}
         </div>
-
         {/* DESCRIPTION */}
         <div className={`${styles.field} ${styles.fieldFull}`}>
           <label className={styles.label}>Description</label>
