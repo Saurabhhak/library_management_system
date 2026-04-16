@@ -27,7 +27,7 @@ body {
   color: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(237, 230, 222, 0.144);
   background: #0e141d;
-  box-shadow: inset 0 0 .4rem #ffffff3c;
+  box-shadow: inset 0 0 0.4rem #ffffff3c;
   display: flex;
   justify-content: center;
   font-size: 1.25rem;
@@ -374,14 +374,33 @@ body {
     transform: translateY(0);
   }
 }
-
-/*_____________ Category Delete  hover Style _____________ */
-.deleteBtn {
-  background: none;
-  border: none;
-  color: #e1e1e1;
+/* Category Actions */
+.acitonsbtn {
+  display: flex;
+  gap: -1rem;
+  border: 1px solid #27374195;
+  justify-content:space-evenly;
+  border-radius: .4rem;
+  padding: .3rem;
 }
+
+/*_____________ Category Edit  hover Style _____________ */
+.editBtn ,.deleteBtn  {
+  background: none;
+  /* border: 1px solid #e1e1e1; */
+  background: none;
+  color: #e1e1e1;
+  border: none;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+.editBtn:hover {
+  color: rgb(0, 255, 217);
+  transform: scale(1.25);
+}
+/*_____________ Category Delete  hover Style _____________ */
 .deleteBtn:hover {
+  transform: scale(1.25);
   color: #d33;
 }
 /*  Fade In + Slide Up Animation */
