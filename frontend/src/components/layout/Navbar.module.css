@@ -44,9 +44,9 @@ a:hover {
   justify-content: space-between;
   padding: 0 1rem;
   background: var(--bg-dark);
-  border-bottom: 1px solid var(--border-color);
+  /* border-bottom: 1px solid var(--border-color); */
   z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 2px 8px rgba(42, 57, 79, 0.314);
 }
 
 /* _____ NAV GROUPS ______ */
@@ -70,7 +70,6 @@ a:hover {
   background: transparent;
   color: var(--text-light);
   cursor: pointer;
-
   transition: all var(--transition-speed);
 }
 
