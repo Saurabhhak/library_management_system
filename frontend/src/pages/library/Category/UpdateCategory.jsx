@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 
-import CategoryForm from "./CategoryForm"; // ✅ FIXED
+import CategoryForm from "./CategoryForm"; //  FIXED
 
 import {
   updateCategory,
