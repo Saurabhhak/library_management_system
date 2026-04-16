@@ -19,7 +19,6 @@ function AddCategory() {
 
   const categoryRegex = /^(?=.*[A-Za-z])[A-Za-z0-9 &(),./-]{3,50}$/;
 
-  /* CHANGE */
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -27,13 +26,11 @@ function AddCategory() {
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  /* RESET */
   const handleReset = () => {
     setForm(initial_state);
     setErrors({});
   };
 
-  /* SUBMIT */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -42,8 +39,7 @@ function AddCategory() {
     if (!form.name) {
       newErrors.name = "Category name is required";
     } else if (!categoryRegex.test(form.name)) {
-      newErrors.name =
-        "3–50 chars, valid format required";
+      newErrors.name = "3–50 chars, valid format required";
     }
 
     setErrors(newErrors);
@@ -62,7 +58,6 @@ function AddCategory() {
       });
 
       navigate("/categoryinventory");
-
     } catch (err) {
       if (err.response?.data?.message?.includes("exists")) {
         Swal.fire("Duplicate", "Category already exists", "warning");
