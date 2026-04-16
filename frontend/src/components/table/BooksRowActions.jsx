@@ -4,14 +4,19 @@ function BooksRowActions({ books, onDelete }) {
   const navigate = useNavigate();
   const id = books.id;
   return (
-    <div className={styles.ActionsBTN}>
+    <div className={styles.acitonsbtn}>
       <button
-        className={styles.ActionEdit}
+        className={styles.editBtn}
         onClick={() => navigate(`/updatebook/${id}`)}
+        title="Edit Book"
       >
-        <i className="fa-solid fa-user-pen"></i>
+        <i className="fa-solid fa-file-pen" />
       </button>
-      <button className={styles.ActionsDel} onClick={() => onDelete(books)}>
+      <button
+        className={styles.deleteBtn}
+        onClick={() => onDelete(books)}
+        title="Delete Member"
+      >
         <i className="fa-solid fa-trash"></i>
       </button>
     </div>
