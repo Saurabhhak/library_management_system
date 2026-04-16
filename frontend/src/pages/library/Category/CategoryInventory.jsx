@@ -103,12 +103,12 @@ function CategoryInventory() {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <div style={{ display: "flex", gap: "8px" }}>
+        <div className={styles.acitonsbtn}>
           <button
             onClick={() => navigate(`/updatecategory/${row.original.id}`)}
             className={styles.editBtn}
           >
-            <i className="fa-solid fa-pen" />
+            <i className="fa-solid fa-file-pen" />
           </button>
           <button
             onClick={() => handleDelete(row.original)}
