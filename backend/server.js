@@ -9,7 +9,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://lms-frontend-35yk.onrender.com"],
+    origin: ["https://localhost:3000", "https://library-management-system-jm0d.onrender.com"],
     credentials: true,
   }),
 );
