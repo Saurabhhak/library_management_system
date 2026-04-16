@@ -1,6 +1,14 @@
+/* _____________ PAGE BACKGROUND _____________ */
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background: #161b22;
+  color: #c9d1d9;
+}
+
 .container {
   padding: 28px;
-  background: #f8fafc;
+  /* background: #47515c; */
   min-height: 100vh;
   margin-top: 3rem;
 }
@@ -13,8 +21,8 @@
 }
 
 .header h1 {
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 500;
 }
 
 .filters {
@@ -22,25 +30,32 @@
   gap: 10px;
 }
 
-input,
-select {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
+.selectItem {
+  width: auto;
+  padding: 0.5rem;
+  background: #12161b;
+  color: #c9c9c9;
+  border-radius: 0.4rem;
+}
+.options {
+  color: rgb(130, 190, 255);
+  font-family: "Inter", sans-serif;
+  background: rgb(10, 13, 18);
+  border: 1px solid #06b6d4;
 }
 
 /* ---------- STATS ---------- */
 .stats {
   display: flex;
-  gap: 12px;
+  gap: 0.75rem;
   margin-bottom: 20px;
 }
 
 .card {
-  background: #fff;
-  padding: 12px 18px;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
+  background: #171a20;
+  padding: 0.5rem;
+  border-radius: 0.4rem;
+  border: 1px solid #e2e8f032;
 }
 
 /* ---------- GRID ---------- */
@@ -50,31 +65,9 @@ select {
   gap: 15px;
   margin-bottom: 20px;
 }
-
 .chartCard {
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px;
-  border: 1px solid #e2e8f0;
-}
-
-/* ---------- TABLE ---------- */
-.tableWrapper {
-  background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid #e2e8f0;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.table th,
-.table td {
-  padding: 10px;
-  border-bottom: 1px solid #f1f5f9;
+  background: none;
+  border: none;
 }
 
 /* ---------- LOADER ---------- */
@@ -106,12 +99,7 @@ select {
 .skeleton {
   height: 12px;
   width: 100%;
-  background: linear-gradient(
-    90deg,
-    #e2e8f0 25%,
-    #f1f5f9 50%,
-    #e2e8f0 75%
-  );
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
   animation: shimmer 1.2s infinite;
   border-radius: 6px;
 }
@@ -120,7 +108,7 @@ select {
   width: 150px;
   height: 40px;
   border-radius: 8px;
-  background: #e2e8f0;
+  background: #101317;
 }
 
 @keyframes shimmer {

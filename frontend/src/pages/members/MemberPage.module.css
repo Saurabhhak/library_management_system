@@ -1,228 +1,138 @@
-/* ── Container ── */
+/* ───────── CONTAINER ───────── */
 .container {
   padding: 28px 32px;
-  background: #f0f2f8;
+  background: #0d1117;
   min-height: 100vh;
   font-family: "Segoe UI", sans-serif;
   margin-top: 3rem;
+  color: #c9d1d9;
 }
 
-/* ── Loading ── */
-.loadingWrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 60vh;
-  gap: 16px;
-}
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #e5e7eb;
-  border-top-color: #4f46e5;
-  border-radius: 50%;
-  animation: spin 0.75s linear infinite;
-}
-.loadingText {
-  color: #6b7280;
+/* ───────── LOADING ───────── */
+.loading {
+  text-align: center;
+  padding: 60px 0;
+  color: #8b949e;
   font-size: 14px;
 }
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
 
-/* ── Header ── */
+/* ───────── HEADER ───────── */
 .header {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
+  align-items: center;
   flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 24px;
 }
-.title {
-  font-size: 26px;
+
+.header h1 {
+  font-size: 24px;
   font-weight: 700;
-  color: #111827;
+  color: #ffffff;
   margin: 0;
 }
-.subtitle {
-  font-size: 14px;
-  color: #6b7280;
-  margin: 4px 0 0;
-}
 
-/* ── Filters ── */
+/* ───────── FILTERS ───────── */
 .filters {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
+  align-items: center;
 }
-.filterSelect {
-  font-size: 13px;
-  padding: 7px 12px;
+
+.filters select {
+  padding: 8px 12px;
   border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  color: #374151;
+  border: 1px solid #30363d;
+  background: #161b22;
+  color: #c9d1d9;
+  font-size: 13px;
   cursor: pointer;
   outline: none;
-  transition: border-color 0.15s;
+  transition: all 0.2s ease;
 }
-.filterSelect:hover,
-.filterSelect:focus {
+
+.filters select:hover,
+.filters select:focus {
   border-color: #4f46e5;
+  background: #1f2937;
 }
+
 .clearBtn {
-  font-size: 13px;
-  padding: 7px 14px;
+  padding: 8px 14px;
   border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  background: #fff;
+  border: 1px solid #30363d;
+  background: #161b22;
   color: #ef4444;
+  font-size: 13px;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  transition: all 0.2s ease;
 }
+
 .clearBtn:hover {
-  background: #fef2f2;
+  background: #2a1a1a;
   border-color: #ef4444;
 }
 
-/* ── Stat Cards ── */
-.statsGrid {
+/* ───────── STATS ───────── */
+.stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 16px;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
-.statCard {
-  padding: 20px;
-  border-radius: 14px;
-  color: #fff;
-  position: relative;
-  overflow: hidden;
-}
-.statIcon {
-  font-size: 22px;
-  display: block;
-  margin-bottom: 8px;
-}
-.statLabel {
-  font-size: 12px;
-  opacity: 0.85;
-  margin: 0 0 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.statValue {
-  font-size: 34px;
-  font-weight: 700;
-  margin: 0;
-  line-height: 1;
-}
-.blue   { background: linear-gradient(135deg, #4f46e5, #6366f1); }
-.green  { background: linear-gradient(135deg, #059669, #10b981); }
-.orange { background: linear-gradient(135deg, #d97706, #f59e0b); }
-.purple { background: linear-gradient(135deg, #7c3aed, #a855f7); }
 
-/* ── Charts Grids ── */
-.chartsGrid2 {
+.stat {
+  background: #161b22;
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid #30363d;
+  transition: all 0.2s ease;
+}
+
+.stat:hover {
+  border-color: #4f46e5;
+  transform: translateY(-2px);
+}
+
+.statLabel {
+  font-size: 13px;
+  color: #8b949e;
+  margin-bottom: 6px;
+}
+
+.statValue {
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.statActive .statValue {
+  color: #10b981;
+}
+
+.statInactive .statValue {
+  color: #ef4444;
+}
+
+/* ───────── CHART GRID ───────── */
+.grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 20px;
-  margin-bottom: 20px;
 }
 
-/* ── Table Section ── */
-.tableSection {
-  margin-top: 12px;
-}
-.sectionTitle {
-  font-size: 18px;
-  font-weight: 600;
-  color: #111827;
-  margin: 0 0 14px;
-}
-.tableWrapper {
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
-  overflow: hidden;
-}
-.emptyTable {
-  text-align: center;
-  color: #9ca3af;
-  font-size: 14px;
-  padding: 32px;
-}
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-.table thead {
-  background: #f9fafb;
-  border-bottom: 2px solid #e5e7eb;
-}
-.table th {
-  padding: 12px 18px;
-  text-align: left;
-  font-weight: 600;
-  color: #374151;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-.table td {
-  padding: 13px 18px;
-  border-bottom: 1px solid #f3f4f6;
-  color: #374151;
-  vertical-align: middle;
-}
-.table tbody tr:last-child td { border-bottom: none; }
-.table tbody tr:hover td {
-  background: #f9fafb;
-  transition: background 0.15s;
-}
-.idx       { color: #9ca3af; font-size: 13px; width: 40px; }
-.stateName { font-weight: 500; color: #111827; }
-.count     { font-weight: 700; color: #4f46e5; font-size: 15px; }
-
-/* ── Inline Bar ── */
-.barCell {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 160px;
-}
-.barTrack {
-  flex: 1;
-  height: 7px;
-  background: #e5e7eb;
-  border-radius: 99px;
-  overflow: hidden;
-}
-.barFill {
-  height: 100%;
-  background: linear-gradient(90deg, #4f46e5, #818cf8);
-  border-radius: 99px;
-  transition: width 0.5s ease;
-  min-width: 4px;
-}
-.pct {
-  font-size: 12px;
-  color: #6b7280;
-  white-space: nowrap;
-  min-width: 38px;
-  text-align: right;
-}
-
-/* ── Responsive ── */
+/* ───────── RESPONSIVE ───────── */
 @media (max-width: 640px) {
-  .container { padding: 16px; }
-  .header { flex-direction: column; align-items: flex-start; }
-  .statsGrid { grid-template-columns: repeat(2, 1fr); }
-  .chartsGrid2 { grid-template-columns: 1fr; }
+  .container {
+    padding: 16px;
+  }
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }

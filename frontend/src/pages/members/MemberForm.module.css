@@ -16,7 +16,7 @@
   gap: 1rem;
   padding: 2rem;
   border-radius: 8px;
-  background: #fff;
+  background: #0a0c13;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
@@ -26,7 +26,7 @@
   text-align: center;
   font-size: 1.6rem;
   font-weight: 600;
-  color: #333;
+  color: #d9edff;
 }
 
 /* ---------- FORM ---------- */
@@ -36,9 +36,10 @@
 }
 
 .formGroup label {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: .85rem;
+  font-weight: 500;
   margin-bottom: 5px;
+  color: #c2c9d5d2;
 }
 
 /* ---------- INPUT ---------- */
@@ -46,7 +47,9 @@
   width: 100%;
   padding: 0.65rem 0.8rem;
   border-radius: 5px;
-  border: 1px solid #ccc;
+  border: 1px solid #cccccc6a;
+  background: #07090b;
+  color: rgb(208, 221, 235);
   font-size: 0.9rem;
   transition: 0.2s;
 }
@@ -76,7 +79,6 @@
 .inputError {
   border-color: #e53935 !important;
 }
-
 
 /* ---------- PASSWORD ---------- */
 .password_wrapper {
@@ -124,7 +126,7 @@
   background: #a0aab5;
   cursor: not-allowed;
 }
-  
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 480px) {
   .formSection {

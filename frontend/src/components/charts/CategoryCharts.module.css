@@ -1,0 +1,80 @@
+/* ───────────────── CARD ───────────────── */
+
+.card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 0.5rem;
+  padding: 16px;
+  height: 30rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+}
+
+.card:hover {
+  border-color: #3b83f67e;
+}
+
+/* ───────────────── TITLE ───────────────── */
+
+.title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #c9d1d9;
+  background: #0d1117;
+  text-align: center;
+  width: fit-content;
+  padding: 6px 12px;
+  border: 1px solid #30363d;
+  border-radius: 0.35rem;
+  margin: 0 auto 2rem auto;
+}
+
+/* ───────────────── CHART ───────────────── */
+
+.chartWrapper {
+  flex: 1;
+  position: relative;
+}
+
+/* ───────────────── EMPTY STATE ───────────────── */
+
+.empty {
+  font-size: 13px;
+  color: #8b949e;
+  text-align: center;
+  margin-top: auto;
+}
+
+/* ───────────────── CUSTOM LEGEND ───────────────── */
+
+.customLegend {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #8b949e;
+  transition: 0.2s ease;
+}
+
+.legendItem:hover {
+  color: #ffffff;
+}
+
+.legendColor {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legendLabel {
+  font-weight: 500;
+}

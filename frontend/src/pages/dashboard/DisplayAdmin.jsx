@@ -15,10 +15,8 @@ import {
 
 function DisplayAdmin() {
   /* ---------------- STATE ---------------- */
-
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -141,8 +139,7 @@ function DisplayAdmin() {
         </div>
 
         {/* COLUMN VISIBILITY */}
-        <div className={styles.columnToggle}
-        title="Hide Columns feature">
+        <div className={styles.columnToggle} title="Hide Columns feature">
           <details>
             <summary>
               <i className="fa fa-ellipsis-v"></i>

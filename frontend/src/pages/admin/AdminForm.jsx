@@ -36,7 +36,7 @@ function AdminForm({
 
         {/* First Name */}
         <div className={styles.formGroup}>
-          <label>First Name</label>
+          <label className={styles.labels}>First Name</label>
           <input
             name="first_name"
             value={userinfo.first_name}
@@ -50,7 +50,7 @@ function AdminForm({
 
         {/* Last Name */}
         <div className={styles.formGroup}>
-          <label>Last Name</label>
+          <label className={styles.labels}>Last Name</label>
           <input
             name="last_name"
             value={userinfo.last_name}
@@ -65,7 +65,7 @@ function AdminForm({
         {/* EMAIL + OTP */}
         {!isEdit && (
           <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-            <label>Email address</label>
+            <label className={styles.labels}>Email address</label>
             <div className={styles.otpRow}>
               <input
                 name="email"
@@ -78,10 +78,16 @@ function AdminForm({
                 <button
                   type="button"
                   onClick={handleSendOtp}
-                  disabled={otpSent && resendDisabled}
+                  disabled={loading || (otpSent && resendDisabled)}
                   className={styles.btnFeature}
                 >
-                  {otpSent ? "Sent" : "Send OTP"}
+                  {loading ? (
+                    <span className={styles.loaderWrapper}>
+                      <i className="fa-solid fa-spinner fa-spin"></i> Sending...
+                    </span>
+                  ) : (
+                    "Send OTP"
+                  )}
                 </button>
               ) : (
                 <div className={styles.verifiedBadge}>
@@ -134,7 +140,7 @@ function AdminForm({
 
         {/* PHONE */}
         <div className={styles.formGroup}>
-          <label>Phone</label>
+          <label className={styles.labels}>Phone</label>
           <input
             name="phone"
             value={userinfo.phone}
@@ -146,7 +152,7 @@ function AdminForm({
 
         {/* ROLE */}
         <div className={styles.formGroup}>
-          <label>Role</label>
+          <label className={styles.labels}>Role</label>
           <select
             name="role"
             value={userinfo.role}
@@ -162,7 +168,7 @@ function AdminForm({
 
         {/* STATE */}
         <div className={styles.formGroup}>
-          <label>State</label>
+          <label className={styles.labels}>State</label>
           <select
             name="state_id"
             value={userinfo.state_id}
@@ -182,7 +188,7 @@ function AdminForm({
         </div>
         {/* CITY */}
         <div className={styles.formGroup}>
-          <label>City</label>
+          <label className={styles.labels}>City</label>
           <select
             name="city_id"
             value={userinfo.city_id}
@@ -205,7 +211,7 @@ function AdminForm({
         {!isEdit && (
           <>
             <div className={styles.password_wrapper}>
-              <label>Password</label>
+              <label className={styles.labels}>Password</label>
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
@@ -227,7 +233,7 @@ function AdminForm({
             </div>
 
             <div className={styles.password_wrapper}>
-              <label>Confirm Password</label>
+              <label className={styles.labels}>Confirm Password</label>
               <input
                 type={showConfirm ? "text" : "password"}
                 name="confirm_password"

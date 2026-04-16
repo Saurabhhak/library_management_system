@@ -1,6 +1,4 @@
-/* =========================================================
-   VARIABLES
-========================================================= */
+/* _____ VARIABLES ______ */
 :root {
   --bg-dark: #0d1117;
   --bg-darker: #161b22;
@@ -9,19 +7,14 @@
   --text-light: #c9d1d9;
   --text-muted: #8b949e;
   --text-white: #ffffff;
-
   --transition-speed: 0.3s;
   --border-radius: 8px;
-
   --gap-sm: 0.4rem;
   --gap-md: 0.6rem;
-
   --font-family: 'Materials', sans-serif;
 }
 
-/* =========================================================
-   RESET
-========================================================= */
+/* _____ RESET ______ */
 * {
   margin: 0;
   padding: 0;
@@ -39,31 +32,24 @@ a:hover {
   color: var(--text-white);
 }
 
-/* =========================================================
-   NAVBAR CONTAINER
-========================================================= */
+/* _____ NAVBAR CONTAINER ______ */
 .navbarHeader {
   position: fixed;
   top: 0;
   left: 0;
   height: 50px;
   width: 100%;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   padding: 0 1rem;
   background: var(--bg-dark);
   border-bottom: 1px solid var(--border-color);
-
   z-index: 1000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
 }
 
-/* =========================================================
-   NAV GROUPS
-========================================================= */
+/* _____ NAV GROUPS ______ */
 .leftIcons,
 .rightIcons {
   display: flex;
@@ -71,22 +57,17 @@ a:hover {
   gap: var(--gap-md);
 }
 
-/* =========================================================
-   NAV LINKS (TEXT BUTTONS)
-========================================================= */
+/* _____ NAV LINKS (TEXT BUTTONS) ______ */
 .navlink {
   display: flex;
   align-items: center;
   gap: var(--gap-sm);
-
   height: 36px;
   min-width: 100px;
   padding: 0.4rem 0.9rem;
-
   border-radius: var(--border-radius);
   border: 1px solid transparent;
   background: transparent;
-
   color: var(--text-light);
   cursor: pointer;
 
@@ -100,9 +81,7 @@ a:hover {
   box-shadow: 0 0 10px var(--bg-hover);
 }
 
-/* =========================================================
-   ICON BUTTONS (ADMIN / MENU / PROFILE)
-========================================================= */
+/* _____ ICON BUTTONS (ADMIN / MENU / PROFILE) ______ */
 .iconBtn {
   display: flex;
   align-items: center;
@@ -138,9 +117,8 @@ a:hover {
   display: none;
 }
 
-/* =========================================================
-   DROPDOWN
-========================================================= */
+/*
+   DROPDOWN */
 .dropdown {
   position: relative;
 }
@@ -206,9 +184,8 @@ a:hover {
   height: 10px;
 }
 
-/* =========================================================
-   ADMIN SIDEBAR
-========================================================= */
+/*
+   ADMIN SIDEBAR */
 .adminSidebar {
   position: fixed;
   top: 3.13rem;
@@ -299,9 +276,8 @@ a:hover {
   color: var(--text-white);
 }
 
-/* =========================================================
-   PROFILE PANEL
-========================================================= */
+/*
+   PROFILE PANEL */
 .profilePanel {
   position: fixed;
   top: 2.67rem;
@@ -319,9 +295,8 @@ a:hover {
   padding: 0.5rem;
 }
 
-/* =========================================================
-   RESPONSIVE
-========================================================= */
+/*
+   RESPONSIVE */
 @media (max-width: 768px) {
   .leftIcons {
     position: fixed;
@@ -367,9 +342,8 @@ a:hover {
   }
 }
 
-/* =========================================================
-   SMALL DEVICES
-========================================================= */
+/*
+   SMALL DEVICES */
 @media (max-width: 480px) {
   .adminSidebar {
     width: 220px;

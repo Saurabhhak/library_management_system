@@ -69,8 +69,12 @@ function AdminPage() {
         <div className={styles.card}>
           <AdminChart admins={admins} type="line" title="Admin Trend" />
         </div>
-                <div className={styles.card}>
-          <AdminChart admins={admins} type="polararea" title="Admin Role Distribution" />
+        <div className={styles.card}>
+          <AdminChart
+            admins={admins}
+            type="polararea"
+            title="Admin Role Distribution"
+          />
         </div>
       </div>
     </div>

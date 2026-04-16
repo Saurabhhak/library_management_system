@@ -23,7 +23,7 @@ import UpdateAdmin from "./pages/admin/UpdateAdmin";
 /* Charts */
 import Chart from "./components/Chart";
 import AdminChart from "./components/charts/AdminChart";
-import AdminPage from "./pages/dashboard/AdminPage";
+import AdminPage from "./pages/admin/AdminPage";
 
 /* Pages */
 import Home from "./pages/home/Home";

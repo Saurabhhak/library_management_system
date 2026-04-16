@@ -42,9 +42,7 @@ function NavbarSection() {
     setMemberOpen(false);
     setHistoryOpen(false);
   };
-
   const role = localStorage.getItem("role");
-
   return (
     <div className={styles.navbarHeader}>
       {/* ------ ADMIN ICON ------ */}

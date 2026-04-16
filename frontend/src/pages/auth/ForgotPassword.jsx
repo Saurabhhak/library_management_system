@@ -10,7 +10,7 @@ function ForgotPassword() {
   const [error, setError] = useState("");
   const [notification, setNotification] = useState("");
   const [notifyType, setNotifyType] = useState("");
-  
+
   const showNotification = (msg, type) => {
     setNotification(msg);
     setNotifyType(type);
@@ -32,7 +32,10 @@ function ForgotPassword() {
       showNotification("OTP sent to your email", "success");
       setTimeout(() => navigate("/reset-password", { state: { email } }), 1000);
     } catch (err) {
-      showNotification(err.response?.data?.message || "Error sending OTP", "error");
+      showNotification(
+        err.response?.data?.message || "Error sending OTP",
+        "error",
+      );
     } finally {
       setLoading(false);
     }
@@ -40,7 +43,20 @@ function ForgotPassword() {
 
   return (
     <>
-      {notification && <div className={`${styles.notify} ${styles[notifyType]}`}>{notification}</div>}
+      {notification && (
+        <div className={`${styles.notify} ${styles[notifyType]}`}>
+          {notification}
+        </div>
+      )}
+      {/* HEADER */}
+      <header className={styles.headers}>
+        <div className={styles.leftIcon}>
+          <i className="fa-solid fa-book-open-reader"></i>
+        </div>
+        <div className={styles.headingTitle}>
+          <h2>APV Tech Library</h2>
+        </div>
+      </header>
       <form onSubmit={handleSubmit} className={styles.formSection}>
         <h2>Forgot Password</h2>
         <input

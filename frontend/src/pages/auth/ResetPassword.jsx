@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { resetPassword, forgotPassword } from "../../services/validations/password.service";
+import {
+  resetPassword,
+  forgotPassword,
+} from "../../services/validations/password.service";
 import styles from "./ForgotPassword.module.css";
 
 function ResetPassword() {
@@ -22,14 +25,17 @@ function ResetPassword() {
 
   useEffect(() => {
     if (timer === 0) return setResendDisabled(false);
-    const interval = setInterval(() => setTimer(prev => prev - 1), 1000);
+    const interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
     return () => clearInterval(interval);
   }, [timer]);
 
   const showNotificationFn = (msg, type) => {
     setNotification(msg);
     setNotifyType(type);
-    setTimeout(() => { setNotification(""); setNotifyType(""); }, 4000);
+    setTimeout(() => {
+      setNotification("");
+      setNotifyType("");
+    }, 4000);
   };
 
   const handleSubmit = async (e) => {
@@ -51,7 +57,7 @@ function ResetPassword() {
     if (password !== confirm) {
       newErrors.confirm = "Passwords do not match";
     }
-    //  IMPORTANT FIX ERROR AUTO REMOVE IF CORERCT INPUT 
+    //  IMPORTANT FIX ERROR AUTO REMOVE IF CORERCT INPUT
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
@@ -63,7 +69,7 @@ function ResetPassword() {
     } catch (err) {
       showNotificationFn(
         err.response?.data?.message || "Error resetting password",
-        "error"
+        "error",
       );
     } finally {
       setLoading(false);
@@ -78,13 +84,31 @@ function ResetPassword() {
       setTimer(120);
       setResendDisabled(true);
     } catch (err) {
-      showNotificationFn(err.response?.data?.message || "Failed to resend OTP", "error");
-    } finally { setLoading(false); }
+      showNotificationFn(
+        err.response?.data?.message || "Failed to resend OTP",
+        "error",
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
-      {notification && <div className={`${styles.notify} ${styles[notifyType]}`}>{notification}</div>}
+      {notification && (
+        <div className={`${styles.notify} ${styles[notifyType]}`}>
+          {notification}
+        </div>
+      )}
+      {/* HEADER */}
+      <header className={styles.headers}>
+        <div className={styles.leftIcon}>
+          <i className="fa-solid fa-book-open-reader"></i>
+        </div>
+        <div className={styles.headingTitle}>
+          <h2>APV Tech Library</h2>
+        </div>
+      </header>
       <form onSubmit={handleSubmit}>
         <h2>Reset Password</h2>
         <input
@@ -118,11 +142,18 @@ function ResetPassword() {
             }}
             className={`${styles.formInput} ${errors.password ? styles.inputError : ""}`}
           />
-          <span className={styles.eye_icon} onClick={() => setShowPassword(!showPassword)}>
-            <i className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
+          <span
+            className={styles.eye_icon}
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            <i
+              className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
+            ></i>
           </span>
         </div>
-        {errors.password && <p className={styles.errorMsg}>{errors.password}</p>}
+        {errors.password && (
+          <p className={styles.errorMsg}>{errors.password}</p>
+        )}
         <div className={styles.password_wrapper}>
           <input
             type={showConfirm ? "text" : "password"}
@@ -138,16 +169,25 @@ function ResetPassword() {
             }}
             className={`${styles.formInput} ${errors.confirm ? styles.inputError : ""}`}
           />
-          <span className={styles.eye_icon} onClick={() => setShowConfirm(!showConfirm)}>
-            <i className={`fa-solid ${showConfirm ? "fa-eye-slash" : "fa-eye"}`}></i>
+          <span
+            className={styles.eye_icon}
+            onClick={() => setShowConfirm(!showConfirm)}
+          >
+            <i
+              className={`fa-solid ${showConfirm ? "fa-eye-slash" : "fa-eye"}`}
+            ></i>
           </span>
         </div>
         {errors.confirm && <p className={styles.errorMsg}>{errors.confirm}</p>}
         <button type="submit" disabled={loading} className={styles.btnFeature}>
           {loading ? "Updating..." : "Update Password"}
         </button>
-        <button type="button" disabled={resendDisabled} onClick={handleResendOtp}
-          className={`${styles.btnFeature} ${styles.resendBtn}`}>
+        <button
+          type="button"
+          disabled={resendDisabled}
+          onClick={handleResendOtp}
+          className={`${styles.btnFeature} ${styles.resendBtn}`}
+        >
           {resendDisabled ? `Resend OTP (${timer}s)` : "Resend OTP"}
         </button>
       </form>

@@ -2,18 +2,18 @@
 .container {
   padding: 28px;
   margin-top: 2.5rem;
-  background: #f2fdff;
+  background: #161b22;
   min-height: 100vh;
-  color: #262626;
+  color: #d1d7e0;
 }
 
 /* TITLE */
 .title {
-  font-size: 1.35rem;
+  font-size: 1.5rem;
   margin-bottom: 24px;
-  color: #131313;
-  font-weight: 600;
-  border-bottom: 1px solid #979797ac;
+  color: #d1d7e0;
+  font-weight: 500;
+  border-bottom: 1px solid #97979751;
   padding-bottom: 10px;
   font-family: 'Materials', sans-serif;
 }
@@ -28,7 +28,7 @@
 
 /* STATS CARD */
 .statCard {
-  background:#dee5e5b5;
+  background: #0c0f14;
   border: none;
   border-radius: .5rem;
   padding: 1rem;
@@ -42,13 +42,13 @@
 
 .statCard p {
   font-size: 1rem;
-  color: #000000;
+  color: #c8c8c8;
   margin-bottom: 6px;
 }
 
 .statCard h2 {
   font-size: 1rem;
-  color: #000000;
+  color: #00ffbb;
 }
 
 /* GRID */

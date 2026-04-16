@@ -1,44 +1,37 @@
 import { useEffect, useState, useMemo } from "react";
 import { getCategories } from "../../../services/books/category.service";
-import MemberCharts from "../../../components/charts/MemberCharts";
+import CategoryCharts from "../../../components/charts/CategoryCharts";
 import styles from "./CategoryPage.module.css";
 
 function CategoryPage() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const [search, setSearch] = useState("");
   const [hasDescription, setHasDescription] = useState("");
 
-  /* ---------------- FETCH ---------------- */
+  // ─── fetch ─────────────────────────────────────
   useEffect(() => {
-    const fetchData = async () => {
+    (async () => {
       try {
         const res = await getCategories();
-        setCategories(res?.data?.data || res.data || []);
+        setCategories(res?.data?.data || []);
       } catch (err) {
-        console.error(err);
+        console.error("Category fetch failed:", err);
       } finally {
         setLoading(false);
       }
-    };
-    fetchData();
+    })();
   }, []);
 
-  /* ---------------- FILTER ---------------- */
+  // ─── filter ────────────────────────────────────
   const filtered = useMemo(() => {
     return categories.filter((c) => {
-      if (search && !c.name.toLowerCase().includes(search.toLowerCase()))
-        return false;
-
       if (hasDescription === "yes" && !c.description) return false;
       if (hasDescription === "no" && c.description) return false;
-
       return true;
     });
-  }, [categories, search, hasDescription]);
+  }, [categories, hasDescription]);
 
-  /* ---------------- CHART DATA ---------------- */
+  // ─── charts ────────────────────────────────────
   const charts = useMemo(() => {
     const withDesc = filtered.filter((c) => c.description).length;
     const withoutDesc = filtered.length - withDesc;
@@ -49,24 +42,23 @@ function CategoryPage() {
         values: [withDesc, withoutDesc],
       },
       nameLengthChart: {
-        labels: ["<10", "10-20", "20+"],
+        labels: ["<10", "10–20", "20+"],
         values: [
-          filtered.filter((c) => c.name.length < 10).length,
-          filtered.filter(
-            (c) => c.name.length >= 10 && c.name.length <= 20
-          ).length,
-          filtered.filter((c) => c.name.length > 20).length,
+          filtered.filter((c) => c.name?.length < 10).length,
+          filtered.filter((c) => c.name?.length >= 10 && c.name?.length <= 20)
+            .length,
+          filtered.filter((c) => c.name?.length > 20).length,
         ],
       },
     };
   }, [filtered]);
 
-  /* ---------------- STATS ---------------- */
+  // ─── stats ─────────────────────────────────────
   const total = filtered.length;
-  const withDesc = filtered.filter((c) => c.description).length;
-  const withoutDesc = total - withDesc;
+  const withDesc = charts.descriptionChart.values[0] || 0;
+  const withoutDesc = charts.descriptionChart.values[1] || 0;
 
-  /* ---------------- PAGE LOADER ---------------- */
+  // ─── loading ───────────────────────────────────
   if (loading) {
     return (
       <div className={styles.loaderPage}>
@@ -82,91 +74,37 @@ function CategoryPage() {
       <div className={styles.header}>
         <h1>Category Analytics</h1>
 
-        <div className={styles.filters}>
-          <input
-            placeholder="Search category..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-
-          <select
-            value={hasDescription}
-            onChange={(e) => setHasDescription(e.target.value)}
-          >
-            <option value="">All</option>
-            <option value="yes">With Description</option>
-            <option value="no">Without Description</option>
-          </select>
-        </div>
+        <select
+          value={hasDescription}
+          className={styles.selectItem}
+          onChange={(e) => setHasDescription(e.target.value)}
+        >
+          <option className={styles.options} value="">All</option>
+          <option className={styles.options} value="yes">With Description</option>
+          <option className={styles.options} value="no">Without Description</option>
+        </select>
       </div>
 
       {/* STATS */}
       <div className={styles.stats}>
-        {loading ? (
-          <div className={styles.skeletonCard}></div>
-        ) : (
-          <>
-            <div className={styles.card}>Total: {total}</div>
-            <div className={styles.card}>With Desc: {withDesc}</div>
-            <div className={styles.card}>Without Desc: {withoutDesc}</div>
-          </>
-        )}
+        <div className={styles.card}>Total: {total}</div>
+        <div className={styles.card}>With Desc: {withDesc}</div>
+        <div className={styles.card}>Without Desc: {withoutDesc}</div>
       </div>
 
       {/* CHARTS */}
       <div className={styles.grid}>
-        <div className={styles.chartCard}>
-          <MemberCharts
-            chartData={charts.descriptionChart}
-            type="doughnut"
-            title="Description Distribution"
-          />
-        </div>
+        <CategoryCharts
+          chartData={charts.descriptionChart}
+          type="doughnut"
+          title="Description Distribution"
+        />
 
-        <div className={styles.chartCard}>
-          <MemberCharts
-            chartData={charts.nameLengthChart}
-            type="bar"
-            title="Category Name Length"
-          />
-        </div>
-      </div>
-
-      {/* TABLE */}
-      <div className={styles.tableWrapper}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {loading
-              ? Array.from({ length: 5 }).map((_, i) => (
-                  <tr key={i}>
-                    <td><div className={styles.skeleton}></div></td>
-                    <td><div className={styles.skeleton}></div></td>
-                    <td><div className={styles.skeleton}></div></td>
-                  </tr>
-                ))
-              : filtered.length === 0 ? (
-                  <tr>
-                    <td colSpan="3">No data</td>
-                  </tr>
-                ) : (
-                  filtered.map((c) => (
-                    <tr key={c.id}>
-                      <td>{c.id}</td>
-                      <td>{c.name}</td>
-                      <td>{c.description || "—"}</td>
-                    </tr>
-                  ))
-                )}
-          </tbody>
-        </table>
+        <CategoryCharts
+          chartData={charts.nameLengthChart}
+          type="bar"
+          title="Category Name Length"
+        />
       </div>
     </div>
   );
