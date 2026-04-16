@@ -1,25 +1,51 @@
-require("dotenv").config();
+/* ___________________________ ENV LOAD ___________________________*/
+const dotenv = require("dotenv");
+
+/* Set NODE_ENV default FIRST */
+const ENV = process.env.NODE_ENV || "development";
+
+dotenv.config({
+  path: ENV === "production" ? ".env.production" : ".env.development",
+});
+
+/* ___________________________ IMPORTS ___________________________*/
 const express = require("express");
 const cors = require("cors");
 
 const app = express();
 
-/* _______________ MIDDLEWARE _______________ */
+/* ___________________________ CONFIG ___________________________*/
+const PORT = process.env.PORT || 5000;
+const FRONTEND_URL = process.env.FRONTEND_URL;
+
+/* ___________________________ MIDDLEWARE ___________________________*/
 app.use(express.json());
 
+/* Dynamic CORS (Production Ready) */
 app.use(
   cors({
-    origin: ["https://localhost:3000", "https://library-management-system-jm0d.onrender.com"],
+    origin: function (origin, callback) {
+      // allow requests with no origin (mobile apps, Postman)
+      if (!origin) return callback(null, true);
+
+      const allowedOrigins = ["http://localhost:3000", FRONTEND_URL];
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("CORS not allowed"), false);
+      }
+    },
     credentials: true,
   }),
 );
 
-/* _______________ HEALTH CHECK _______________ */
+/* ___________________________ HEALTH CHECK ___________________________*/
 app.get("/", (req, res) => {
-  res.send("LMS Backend Running");
+  res.send(`LMS Backend Running (${process.env.NODE_ENV})`);
 });
 
-/* _______________ DB TEST _______________ */
+/* ___________________________ DB TEST ___________________________*/
 app.get("/db-test", async (req, res) => {
   try {
     const { rows } = await require("./config/db").query("SELECT NOW()");
@@ -28,6 +54,7 @@ app.get("/db-test", async (req, res) => {
       time: rows[0],
     });
   } catch (error) {
+    console.error("DB ERROR:", error);
     res.status(500).json({
       success: false,
       message: "Database connection failed",
@@ -35,28 +62,31 @@ app.get("/db-test", async (req, res) => {
   }
 });
 
-/* _______________ ROUTES _______________ */
+/* ___________________________ ROUTES ___________________________*/
 const routes = require("./routes");
 app.use("/api", routes);
 
-/* _______________ GLOBAL ERROR HANDLER _______________ */
+/* ___________________________ GLOBAL ERROR ___________________________*/
 app.use((err, req, res, next) => {
-  console.error("Global Error:", err);
+  console.error("Global Error:", err.message);
   res.status(500).json({
     success: false,
-    message: "Something went wrong",
+    message: err.message || "Something went wrong",
   });
 });
 
-/* _______________ SERVER _______________ */
-const PORT = process.env.PORT || 5000;
-
+/* ___________________________ SERVER ___________________________*/
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port http://localhost:${PORT}`);
+  console.log(`Mode: ${process.env.NODE_ENV}`);
+  console.log(`Frontend: ${FRONTEND_URL}`);
 });
 
-/* _______________ ENV DEBUG _______________ */
-console.log("ENV CHECK ----------------");
+console.log("__________________________________________________")
+console.log("ENV FILE:", ENV);
+console.log("FRONTEND:", process.env.FRONTEND_URL);
+/* ___________________________ ENV DEBUG ___________________________*/
+console.log("------ ENV CHECK ------");
 console.log("BREVO:", process.env.BREVO_API_KEY ? "OK" : "Missing");
 console.log("SENDGRID:", process.env.SENDGRID_API_KEY ? "OK" : "Missing");
 console.log("SMTP:", process.env.SMTP_USER ? "OK" : "Missing");

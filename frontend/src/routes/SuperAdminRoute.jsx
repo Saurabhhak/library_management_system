@@ -11,3 +11,10 @@ const SuperAdminRoute = ({ children }) => {
 };
 
 export default SuperAdminRoute;
+
+// const SuperAdminRoute = ({ children }) => {
+//   // TEMP BYPASS
+//   return children;
+// };
+
+// export default SuperAdminRoute;

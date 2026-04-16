@@ -1,7 +1,15 @@
 {
   
   "dependencies": {
-    "jwt-decode": "^4.0.0",
-    "resend": "^6.9.4"
+  
+    
+  "cross-env": "^10.1.0",
+  
+    
+  "jwt-decode": "^4.0.0",
+  
+    
+  "resend": "^6.9.4"
+  
   }
 }

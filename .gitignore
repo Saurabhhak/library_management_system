@@ -15,7 +15,11 @@ frontend/node_modules/
 backend/.env
 backend/.env.*
 frontend/.env.production
+frontend/.env.development
+backend/.env.production
+backend/.env.development
 frontend/.env.*
+
 
 # ==============================
 # Build / Production Files

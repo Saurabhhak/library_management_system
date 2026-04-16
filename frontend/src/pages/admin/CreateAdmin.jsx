@@ -5,7 +5,10 @@ import {
   getStates,
   getCitiesByState,
 } from "../../services/admin/admin.service";
-import { sendOtpAPI, verifyOtpAPI } from "../../services/validations/otp.service";
+import {
+  sendOtpAPI,
+  verifyOtpAPI,
+} from "../../services/validations/otp.service";
 
 import AdminForm from "./AdminForm";
 import styles from "./CreateAdmin.module.css";
@@ -99,28 +102,25 @@ function CreateAdmin() {
       showNotification("Enter email first", "error");
       return;
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(userinfo.email)) {
-      showNotification("Invalid email", "error");
-      return;
-    }
+
     try {
-      // STEP 1: Check email first
       const res = await checkEmailAPI({ email: userinfo.email });
 
       if (res.data.exists) {
-        showNotification("Admin already exists with this email", "error");
+        showNotification("Admin already exists", "error");
         return;
       }
-      // STEP 2: Send OTP
+
       await sendOtpAPI({ email: userinfo.email });
+
       setOtpSent(true);
-      setOtpVerified(false);
       setTimer(30);
       setResendDisabled(true);
-      showNotification("OTP sent successfully", "success");
-    } catch {
-      showNotification("Something went wrong", "error");
+
+      showNotification("OTP sent", "success");
+    } catch (err) {
+      console.error(err);
+      showNotification("Failed to send OTP", "error");
     }
   };
 
