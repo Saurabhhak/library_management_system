@@ -1,15 +1,39 @@
-.ActionsBTN {
+/* ______________________Category Actions */
+.acitonsbtn {
   display: flex;
-  flex-direction: row;
-  gap: 8px;
-  justify-content: center;
+  /* border: 1px solid #27374195; */
+  justify-content: space-evenly;
+  border-radius: 0.4rem;
+  padding: 0;
+  margin: 0;
 }
-.ActionsBTN button {
-  transition: all 0.2s ease;
+
+/*_____________ Category Edit Delete hover Style */
+.editBtn {
+  background: none;
+  /* border: 1px solid #e1e1e1; */
+  background: none;
+  color: #898989;
+  border: none;
+  font-size: 1rem;
+  transition: all 0.3s ease;
 }
-.ActionsBTN button:hover {
-  transform: scale(1.1);
+.deleteBtn {
+  background: none;
+  color: #eb685ebf;
+  font-size: 1rem;
+  border: none;
+  transition: all ease 0.2s;
 }
+.editBtn:hover {
+  color: rgb(255, 255, 255);
+  transform: scale(1.11);
+}
+.deleteBtn:hover {
+  transform: scale(1.11);
+  color: rgb(255, 0, 0);
+}
+
 /* Fade In + Slide Up */
 @keyframes fadeInUp {
   from {
