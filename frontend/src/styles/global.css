@@ -3,8 +3,9 @@
     text-align: center;
     align-items: center;
     border: none;
-    background-color: rgb(65, 65, 65);
+    background-color: rgb(11, 14, 20);
     color: aliceblue;
     border-radius: .3rem;
+    font-weight: 500;
     width: auto;
 }
