@@ -107,12 +107,14 @@ function CategoryInventory() {
           <button
             onClick={() => navigate(`/updatecategory/${row.original.id}`)}
             className={styles.editBtn}
+            title="Edit Category"
           >
             <i className="fa-solid fa-file-pen" />
           </button>
           <button
             onClick={() => handleDelete(row.original)}
             className={styles.deleteBtn}
+            title="Delete Category"
           >
             <i className="fa-solid fa-trash" />
           </button>
