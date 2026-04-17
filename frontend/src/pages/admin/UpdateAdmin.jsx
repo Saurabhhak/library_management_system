@@ -34,10 +34,8 @@ function UpdateAdmin() {
   };
 
   const [userinfo, setUserInfo] = useState(initialState);
-
   const [notification, setNotification] = useState("");
   const [notifyType, setNotifyType] = useState("");
-
   const showNotification = (msg, type) => {
     setNotification(msg);
     setNotifyType(type);
@@ -117,7 +115,7 @@ function UpdateAdmin() {
       const roleLabel = userinfo.role === "superadmin" ? "SuperAdmin" : "Admin";
       showNotification(`${roleLabel} updated successfully`, "success");
       setTimeout(() => {
-        navigate("/displayadmin");
+        navigate("/admininventory");
       }, 1500);
     } catch (error) {
       console.error(error);
@@ -132,7 +130,7 @@ function UpdateAdmin() {
   };
 
   const handleCancel = () => {
-    navigate("/displayadmin");
+    navigate("/admininventory");
   };
 
   return (
