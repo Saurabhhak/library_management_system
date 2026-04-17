@@ -104,7 +104,7 @@ function UpdateMember() {
         timer: 1500,
         showConfirmButton: false,
       });
-      navigate("/displaymember");
+      navigate("/memberinventory");
     } catch (error) {
       Swal.fire(
         "Error",
@@ -127,7 +127,7 @@ function UpdateMember() {
     });
 
     if (confirm.isConfirmed) {
-      navigate("/displaymember");
+      navigate("/memberinventory");
     }
   };
 
