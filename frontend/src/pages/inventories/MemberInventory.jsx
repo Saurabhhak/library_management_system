@@ -97,7 +97,6 @@ function MemberInventory() {
     initialState: {
       pagination: { pageSize: 10 },
       sorting: [{ id: "id", desc: false }],
-
     },
 
     onGlobalFilterChange: setGlobalFilter,
@@ -214,17 +213,15 @@ function MemberInventory() {
               </tr>
             ))}
           </thead>
-
           <tbody className={styles.tbody}>
             {loading ? (
-              <tr>
-                <td colSpan={columns.length}>
-                  <span className={styles.loading}>
-                    <i className="fa-solid fa-spinner fa-spin-pulse"></i>{" "}
-                    Loading data...
-                  </span>
-                </td>
-              </tr>
+              [...Array(6)].map((_, i) => (
+                <tr key={i}>
+                  <td colSpan={table.getAllColumns().length}>
+                    <div className={styles.skeletonRow}></div>
+                  </td>
+                </tr>
+              ))
             ) : table.getRowModel().rows.length === 0 ? (
               <tr>
                 <td colSpan={columns.length}>No members found</td>

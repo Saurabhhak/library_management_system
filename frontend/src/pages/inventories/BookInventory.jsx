@@ -196,14 +196,13 @@ function BookInventory() {
           {/* -------- TABLE BODY -------- */}
           <tbody className={styles.tbody}>
             {loading ? (
-              <tr>
-                <td colSpan={table.getAllColumns().length}>
-                  <span className={styles.loading}>
-                    <i className="fa-solid fa-spinner fa-spin-pulse"></i>{" "}
-                    Loading data...
-                  </span>
-                </td>
-              </tr>
+              [...Array(6)].map((_, i) => (
+                <tr key={i}>
+                  <td colSpan={table.getAllColumns().length}>
+                    <div className={styles.skeletonRow}></div>
+                  </td>
+                </tr>
+              ))
             ) : table.getRowModel().rows.length === 0 ? (
               <tr>
                 <td colSpan={table.getAllColumns().length}>No records found</td>

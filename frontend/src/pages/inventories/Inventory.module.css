@@ -345,7 +345,6 @@ body {
   color: #ccc;
 }
 
-/* Categories Loading */
 /* _____________ SKELETON ROW _____________ */
 .skeletonRow {
   height: 2.5rem;
@@ -354,7 +353,6 @@ body {
   background-size: 200% 100%;
   animation: shimmer 1.2s infinite;
 }
-
 /* shimmer animation */
 @keyframes shimmer {
   0% {
@@ -364,6 +362,7 @@ body {
     background-position: -200% 0;
   }
 }
+
 /* animation */
 @keyframes fadeIn {
   from {
