@@ -24,7 +24,7 @@ function MemberForm({
     if (handleCancel) {
       handleCancel();
     } else {
-      navigate("/displayadmin");
+      navigate("/memberinventory");
     }
   };
 
