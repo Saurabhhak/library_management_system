@@ -98,7 +98,7 @@ function NavbarSection() {
           <Link to="/createadmin" onClick={closeAll}>
             <i className="fa-solid fa-user-plus"></i> Create Admin
           </Link>
-          <Link to="/displayadmin" onClick={closeAll}>
+          <Link to="/admininventory" onClick={closeAll}>
             <i className="fa-solid fa-users"></i> All Admins
           </Link>
         </div>
@@ -176,7 +176,7 @@ function NavbarSection() {
           </button>
           {memberOpen && (
             <div className={styles.dropdownMenu}>
-              <Link to="/displaymember" onClick={closeAll}>
+              <Link to="/memberinventory" onClick={closeAll}>
                 <i class="fa-solid fa-users"></i> All Members
               </Link>
               <Link to="/createmember" onClick={closeAll}>
