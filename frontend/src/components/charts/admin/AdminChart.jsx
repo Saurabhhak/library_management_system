@@ -12,7 +12,7 @@ import {
   Legend,
 } from "chart.js";
 
-import { getAdminRoleData } from "../../utils/chartHelpers";
+import { getAdminRoleData } from "../../../utils/chartHelpers";
 import styles from "./AdminChart.module.css";
 
 ChartJS.register(
