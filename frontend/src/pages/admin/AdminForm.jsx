@@ -27,7 +27,7 @@ function AdminForm({
   const [showConfirm, setShowConfirm] = useState(false);
   const navigate = useNavigate();
 
-  const handleCancel = () => navigate("/displayadmin");
+  const handleCancel = () => navigate("/admininventory");
 
   return (
     <div className={styles.formContainer}>
