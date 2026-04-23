@@ -1,2 +1,0 @@
--- Default Data
--- psql "NEON_CONNECTION_STRING" -f backend/config/seed.sql
