@@ -1,5 +1,3 @@
-// src/components/charts/AdminChart.jsx
-import { Doughnut, Bar, Line, PolarArea } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,9 +10,10 @@ import {
   Legend,
 } from "chart.js";
 
-import { getAdminRoleData } from "../../../utils/chartHelpers";
+import { Bar, Doughnut } from "react-chartjs-2";
 import styles from "./AdminChart.module.css";
 
+/* ───── REGISTER ───── */
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -26,60 +25,92 @@ ChartJS.register(
   Legend,
 );
 
-function AdminChart({
-  admins = [],
-  type = "donut",
-  title = "Admin Distribution",
-}) {
-  const { labels, data } = getAdminRoleData(admins);
-  const COLORS = [
-    "rgba(255, 99, 132, 0.6)",
-    "rgba(54, 162, 235, 0.6)",
-    "rgba(255, 206, 86, 0.6)",
-    "rgba(75, 192, 192, 0.6)",
-    "rgba(153, 102, 255, 0.6)",
-    "rgba(255, 159, 64, 0.6)",
-  ];
+/* COLOR SYSTEM (ADMIN ROLES) */
+const ROLE_COLORS = {
+  superadmin: "#22c55e", // green
+  admin: "#3b82f6", // blue
+};
 
-  const BORDER_COLORS = COLORS.map((color) => color.replace("0.6", "1"));
-  const chartData = {
-    labels,
-    datasets: [
-      {
-        label: "Admins",
-        data,
+const DEFAULT_PALETTE = ["#22c55e", "#3b82f6"];
 
-        // MULTI COLOR for all chart types
-        backgroundColor: COLORS,
-        borderColor: BORDER_COLORS,
+/* resolve color */
+const getColor = (label, i) =>
+  ROLE_COLORS[label.toLowerCase()] || DEFAULT_PALETTE[i % 2];
 
-        borderWidth: 2,
-
-        //  Only for line chart
-        fill: type === "line",
-        tension: type === "line" ? 0.4 : 0,
+/* COMMON OPTIONS */
+const COMMON_OPTIONS = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      display: true,
+      position: "bottom",
+      labels: {
+        boxWidth: 10,
+        font: { size: 13 },
       },
-    ],
-  };
-  return (
-    <div className={styles.chartWrapper}>
-      <h3 className={styles.chartTitle}>{title}</h3>
+    },
+  },
+};
 
-      <div className={styles.canvasContainer}>
-        {data.length > 0 ? (
-          <>
-            {type === "donut" && <Doughnut data={chartData} />}
-            {type === "bar" && <Bar data={chartData} />}
-            {type === "line" && <Line data={chartData} />}
-            {type === "polararea" && <PolarArea data={chartData} />}
-          </>
-        ) : (
-          <div
-            style={{ textAlign: "center", marginTop: "10%", color: "#8b949e" }}
-          >
-            No admin data available
-          </div>
-        )}
+/* DONUT DATA */
+const buildDonutData = (labels, values) => ({
+  labels,
+  datasets: [
+    {
+      data: values,
+      backgroundColor: labels.map(getColor),
+      borderWidth: 0,
+    },
+  ],
+});
+
+/* BAR DATA */
+const buildBarData = (labels, values) => ({
+  labels: ["Admins"],
+  datasets: labels.map((label, i) => ({
+    label,
+    data: [values[i]],
+    backgroundColor: getColor(label, i),
+    borderColor: getColor(label, i),
+    borderWidth: 1,
+  })),
+});
+
+/* ___________________________ COMPONENT _____________________________ */
+function AdminChart({
+  chartData = {},
+  type = "bar", // doughnut | bar
+  title = "",
+}) {
+  const { labels = [], values = [] } = chartData;
+
+  /* EMPTY */
+  if (!labels.length) {
+    return (
+      <div className={styles.card}>
+        <h3 className={styles.title}>{title}</h3>
+        <p className={styles.empty}>No data</p>
+      </div>
+    );
+  }
+
+  let data;
+  let options = COMMON_OPTIONS;
+
+  if (type === "doughnut") {
+    data = buildDonutData(labels, values);
+  } else {
+    data = buildBarData(labels, values);
+  }
+
+  return (
+    <div className={styles.card}>
+      <h3 className={styles.title}>{title}</h3>
+
+      <div className={styles.chartWrapper}>
+        {type === "doughnut" && <Doughnut data={data} options={options} />}
+        {type === "bar" && <Bar data={data} options={options} />}
       </div>
     </div>
   );
