@@ -26,7 +26,7 @@ function AdminLoginForm() {
     toast: true,
     position: "top-end",
     showConfirmButton: false,
-    timer: 1500,
+    timer: 3500,
     timerProgressBar: true,
   });
 
@@ -41,7 +41,6 @@ function AdminLoginForm() {
 
     //  ONLY stop submit (NO Swal for validation)
     if (Object.keys(newErrors).length) return;
-
     try {
       setLoading(true);
 
