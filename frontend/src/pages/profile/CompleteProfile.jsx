@@ -1,20 +1,16 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-
 import styles from "./CompleteProfile.module.css";
-
 import { completeProfile } from "../../services/admin/profile.service";
 import { getStates, getCitiesByState } from "../../services/meta.service";
 import { validateAdminForm } from "../../utils/validateAdminForm";
-
 function CompleteProfile() {
   const navigate = useNavigate();
 
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(false);
-
   const [form, setForm] = useState({
     first_name: "",
     last_name: "",
