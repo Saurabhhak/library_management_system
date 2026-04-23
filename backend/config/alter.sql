@@ -402,21 +402,30 @@
 --     TRUE,
 --     TRUE
 -- );
+
 -- ________________ INSERT INTO members  _____________
+-- TRUNCATE TABLE members RESTART IDENTITY CASCADE;
 -- INSERT INTO members
 -- (first_name, last_name, email, phone, date_of_birth, state_id, city_id, membership_end, max_books_allowed, status)
 -- VALUES
--- ('Rahul', 'Sharma', 'rahul.sharma@example.com', '9876543210', '1995-06-15', 1, 1, '2026-12-31', 5, 'active'),
+-- ('Rahul', 'Sharma', 'rahul.sharma007@example.com', '9876543210', '1995-06-15', 1, 1, '2026-12-31', 5, 'active'),
 
--- ('Priya', 'Verma', 'priya.verma@example.com', '9876543211', '1998-02-20', 1, 2, '2026-10-15', 3, 'active'),
+-- ('Priya', 'Verma', 'priya.verma007@example.com', '9876543211', '1998-02-20', 1, 2, '2026-10-15', 3, 'active'),
 
--- ('Amit', 'Kumar', 'amit.kumar@example.com', '9876543212', '1992-11-05', 2, 3, '2026-08-01', 4, 'inactive'),
+-- ('Amit', 'Kumar', 'amit.kumar007@example.com', '9876543212', '1992-11-05', 2, 3, '2026-08-01', 4, 'inactive'),
 
--- ('Neha', 'Singh', 'neha.singh@example.com', '9876543213', '2000-01-25', 2, 4, '2027-01-01', 2, 'active'),
+-- ('Neha', 'Singh', 'neha.singh007@example.com', '9876543213', '2000-01-25', 2, 4, '2027-01-01', 2, 'active'),
 
--- ('Rohit', 'Mehta', 'rohit.mehta@example.com', '9876543214', '1994-09-10', 3, 5, '2026-09-30', 3, 'active');
--- ________________________
-TRUNCATE TABLE admin RESTART IDENTITY CASCADE;
+-- ('Rohit', 'Mehta', 'rohit.mehta007@example.com', '9876543214', '1994-09-10', 3, 5, '2026-09-30', 3, 'active');
+
+
+-- TRUNCATE TABLE admin RESTART IDENTITY CASCADE;
+
+
+-- ____________________Admin Status ONline or Offline
+ALTER TABLE admin
+ADD COLUMN is_online BOOLEAN DEFAULT FALSE,
+ADD COLUMN last_seen TIMESTAMP;
 -- bash
--- psql -U postgres -d library_db -f backend/config/alter.sql
--- psql "postgresql://neondb_owner:npg_duWGHa3qXV9C@ep-wild-cloud-a1ifuvlk.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require" -f backend/config/alter.sql
+psql -U postgres -d library_db -f backend/config/alter.sql
+psql "postgresql://neondb_owner:npg_ALzB0NJKql2n@ep-wild-cloud-a1ifuvlk.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require" -f backend/config/alter.sql
