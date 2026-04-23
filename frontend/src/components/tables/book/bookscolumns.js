@@ -5,6 +5,7 @@ export const getBooksColumns = (handleBooksDelete) => [
   {
     header: "ID",
     accessorKey: "id",
+    size:70,
     cell: boldCell,
   },
 
@@ -52,8 +53,9 @@ export const getBooksColumns = (handleBooksDelete) => [
   {
     id: "actions",
     header: "Actions",
+    size:90,
     enableSorting: false,
-    enableColumnFilter: false,
+    enableColumnFilter: false, 
     cell: ({ row }) => (
       <BooksRowActions books={row.original} onDelete={handleBooksDelete} />
     ),
