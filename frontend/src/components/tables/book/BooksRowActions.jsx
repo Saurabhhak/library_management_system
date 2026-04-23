@@ -5,6 +5,7 @@ function BooksRowActions({ books, onDelete }) {
   const id = books.id;
   return (
     <div className={styles.acitonsbtn}>
+      {/* Edit */}
       <button
         className={styles.editBtn}
         onClick={() => navigate(`/updatebook/${id}`)}
@@ -12,6 +13,7 @@ function BooksRowActions({ books, onDelete }) {
       >
         <i className="fa-solid fa-file-pen" />
       </button>
+      {/* Delete */}
       <button
         className={styles.deleteBtn}
         onClick={() => onDelete(books)}
