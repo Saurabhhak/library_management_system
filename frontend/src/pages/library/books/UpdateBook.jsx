@@ -51,6 +51,8 @@ function UpdateBook() {
       text: "Do you want to update this book?",
       icon: "question",
       showCancelButton: true,
+      background: "#0f172a",
+      color: "#e5e7eb",
       confirmButtonText: "Update",
       cancelButtonText: "Cancel",
     });
@@ -74,6 +76,8 @@ function UpdateBook() {
         text: "Book updated successfully",
         timer: 1500,
         showConfirmButton: false,
+        background: "#0f172a",
+        color: "#e5e7eb",
       });
 
       navigate("/bookinventory");

@@ -19,7 +19,9 @@ function BookForm({
 
         {/* TITLE */}
         <div className={styles.formGroup}>
-          <label>Title</label>
+          <label className={styles.label}>
+            Title<span>*</span>
+          </label>
           <input
             name="title"
             value={form.title}
@@ -31,7 +33,9 @@ function BookForm({
 
         {/* AUTHOR */}
         <div className={styles.formGroup}>
-          <label>Author</label>
+          <label className={styles.label}>
+            Author<span>*</span>
+          </label>
           <input
             name="author"
             value={form.author}
@@ -44,7 +48,9 @@ function BookForm({
         {/* ISBN */}
         {!isEdit && (
           <div className={styles.formGroup}>
-            <label>ISBN</label>
+            <label className={styles.label}>
+              ISBN<span>*</span>
+            </label>
             <input
               name="isbn"
               value={form.isbn}
@@ -57,7 +63,9 @@ function BookForm({
 
         {/* CATEGORY */}
         <div className={styles.formGroup}>
-          <label>Category</label>
+          <label className={styles.label}>
+            Category<span>*</span>
+          </label>
           <select
             name="category_id"
             value={form.category_id}
@@ -80,7 +88,10 @@ function BookForm({
 
         {/* COPIES */}
         <div className={styles.formGroup}>
-          <label>Total Copies</label>
+          <label className={styles.label}>
+            Total Copies<span>*</span>
+          </label>
+
           <input
             type="number"
             name="total_copies"
@@ -97,7 +108,9 @@ function BookForm({
 
         {/* LOCATION */}
         <div className={styles.formGroup}>
-          <label>Shelf Location</label>
+          <label className={styles.label}>
+            Shelf Location<span>*</span>
+          </label>
           <input
             name="shelf_location"
             value={form.shelf_location}
@@ -129,8 +142,8 @@ function BookForm({
                 ? "Updating..."
                 : "Creating..."
               : isEdit
-              ? "Update Book"
-              : "Create Book"}
+                ? "Update Book"
+                : "Create Book"}
           </button>
         </div>
       </form>

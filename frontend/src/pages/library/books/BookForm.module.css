@@ -38,10 +38,23 @@
 }
 
 .formGroup label {
-  font-size: .85rem;
+  font-size: 0.85rem;
   font-weight: 500;
   margin-bottom: 5px;
   color: #c2c9d5d2;
+}
+
+/* ---------- LABEL ---------- */
+.label {
+  color: #cbd5f5;
+  font-size: 0.82rem;
+  font-weight: 500;
+  gap: .4rem;
+  display: flex;
+}
+
+.label span {
+  color: #ef4444;
 }
 
 /* ---------- INPUT / SELECT ---------- */

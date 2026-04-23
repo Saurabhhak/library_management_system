@@ -20,9 +20,7 @@ function CreateBook() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    getCategories().then((res) =>
-      setCategories(res?.data?.data || [])
-    );
+    getCategories().then((res) => setCategories(res?.data?.data || []));
   }, []);
 
   const handleChange = (e) => {
@@ -71,14 +69,9 @@ function CreateBook() {
       });
 
       Swal.fire("Success", "Book created", "success");
-
-      handleReset(); // 🔥 reset everything
+      handleReset(); // reset everything
     } catch (error) {
-      Swal.fire(
-        "Error",
-        error.response?.data?.message || "Error",
-        "error"
-      );
+      Swal.fire("Error", error.response?.data?.message || "Error", "error");
     } finally {
       setLoading(false);
     }
