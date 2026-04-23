@@ -2,16 +2,12 @@ const pool = require("../../config/db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-/* ─────────────────────────────────────────
-   HELPER: stamp last_seen (called on every
-   meaningful action: login, logout, heartbeat)
-───────────────────────────────────────── */
+/*________ HELPER: stamp last_seen (called on everymeaningful action: login, 
+ _________ logout, heartbeat) ________*/
 const stampSeen = (id) =>
   pool.query("UPDATE admin SET last_seen = NOW() WHERE id = $1", [id]);
 
-/* ─────────────────────────────────────────
-   LOGIN
-───────────────────────────────────────── */
+/* ___________ LOGIN ________*/
 const loginAdmin = async (req, res) => {
   const { email, password } = req.body;
 
@@ -63,9 +59,7 @@ const loginAdmin = async (req, res) => {
   }
 };
 
-/* ─────────────────────────────────────────
-   LOGOUT
-───────────────────────────────────────── */
+/* ___________ LOGOUT ________*/
 const logoutAdmin = async (req, res) => {
   try {
     // Stamp last_seen so the "last seen" time is accurate after logout
@@ -77,13 +71,11 @@ const logoutAdmin = async (req, res) => {
   }
 };
 
-/* ─────────────────────────────────────────
-   HEARTBEAT  ← NEW
+/*   HEARTBEAT  ← NEW
    Frontend pings this every 30s while active.
    This keeps last_seen fresh → we derive
    online/offline from it instead of a boolean.
-   Route: POST /api/admin/heartbeat  (auth required)
-───────────────────────────────────────── */
+   Route: POST /api/admin/heartbeat  (auth required) ________*/
 const heartbeat = async (req, res) => {
   try {
     await stampSeen(req.user.id);
@@ -94,9 +86,7 @@ const heartbeat = async (req, res) => {
   }
 };
 
-/* ─────────────────────────────────────────
-   PROFILE
-───────────────────────────────────────── */
+/* ____________ PROFILE ________*/
 const profileAdmin = async (req, res) => {
   try {
     const { rows } = await pool.query(
@@ -115,9 +105,7 @@ const profileAdmin = async (req, res) => {
   }
 };
 
-/* ─────────────────────────────────────────
-   DELETE OWN ACCOUNT
-───────────────────────────────────────── */
+/* ___________ DELETE OWN ACCOUNT ________*/
 const deleteOwnAccount = async (req, res) => {
   try {
     await pool.query("DELETE FROM admin WHERE id = $1", [req.user.id]);

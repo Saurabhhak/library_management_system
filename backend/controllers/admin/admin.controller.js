@@ -1,10 +1,10 @@
 const pool = require("../../config/db");
 const bcrypt = require("bcrypt");
 
-/* ── "active"/"inactive" string → true/false for DB BOOLEAN column ── */
+/* ______ "active"/"inactive" string → true/false for DB BOOLEAN column ______ */
 const toBoolean = (val) => val === "active" || val === true;
 
-/* ── Create admin ── */
+/* ______ Create admin ______ */
 const createAdmin = async (req, res) => {
   const {
     first_name,
@@ -88,7 +88,7 @@ const createAdmin = async (req, res) => {
   }
 };
 
-/* ── Get all admins ── */
+/* ______ Get all admins ______ */
 const getAllAdmins = async (req, res) => {
   try {
     const { rows } = await pool.query(`
@@ -110,7 +110,7 @@ const getAllAdmins = async (req, res) => {
   }
 };
 
-/* ── Get single admin ── */
+/* ______ Get single admin ______ */
 const getAdminById = async (req, res) => {
   const { id } = req.params;
   try {
@@ -133,7 +133,7 @@ const getAdminById = async (req, res) => {
   }
 };
 
-/* ── Update admin ── */
+/* ______ Update admin ______ */
 const updateAdmin = async (req, res) => {
   const { id } = req.params;
   const {
@@ -222,7 +222,7 @@ const updateAdmin = async (req, res) => {
   }
 };
 
-/* ── Delete admin (superadmin protected) ── */
+/* ______ Delete admin (superadmin protected) ______ */
 const deleteAdmin = async (req, res) => {
   try {
     const { rows } = await pool.query(
