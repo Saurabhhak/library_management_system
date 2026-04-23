@@ -76,7 +76,6 @@ const createAdmin = async (req, res) => {
         true,
       ],
     );
-
     res.status(201).json({
       success: true,
       message: "Admin created successfully",
