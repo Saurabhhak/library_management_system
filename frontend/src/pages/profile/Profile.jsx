@@ -19,6 +19,8 @@ function Profile({ closeAll }) {
       title: "Action Not Allowed",
       text: "Profile page update coming soon!",
       confirmButtonColor: "#3085d6",
+      background: "#0f172a",
+      color: "#e5e7eb",
     });
   };
 
@@ -53,6 +55,8 @@ function Profile({ closeAll }) {
       `,
       icon: "question", // Better icon for logout
       showCancelButton: true,
+      background: "#0f172a",
+      color: "#e5e7eb",
       confirmButtonColor: "#3085d6", // Blue for safe action
       cancelButtonColor: "#d33", // Red for cancel
       confirmButtonText: "Yes, Logout!",
@@ -73,6 +77,8 @@ function Profile({ closeAll }) {
         text: "Successfully logged out.",
         timer: 1500,
         showConfirmButton: false,
+        background: "#0f172a",
+        color: "#e5e7eb",
       });
 
       navigate("/login");
@@ -95,6 +101,8 @@ function Profile({ closeAll }) {
       `,
       icon: "warning",
       showCancelButton: true,
+      background: "#0f172a",
+      color: "#e5e7eb",
       confirmButtonColor: "#d33", // Red for Danger/Delete
       cancelButtonColor: "#3085d6", // Blue for Cancel
       confirmButtonText: "Yes, delete it!",
@@ -127,6 +135,8 @@ function Profile({ closeAll }) {
         title: "Error!",
         text: "Something went wrong. Try again.",
         confirmButtonColor: "#3085d6",
+        background: "#0f172a",
+        color: "#e5e7eb",
       });
     }
   };
@@ -202,8 +212,6 @@ function Profile({ closeAll }) {
 }
 
 export default Profile;
-
-
 
 // import { useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
