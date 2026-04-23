@@ -1,11 +1,11 @@
-/* ---------- CONTAINER ---------- */
+/* ___________CONTAINER ___________*/
 .container {
   width: min(900px, 100%);
   margin: 0 auto;
   padding: clamp(1rem, 2vw, 2rem);
 }
 
-/* ---------- FORM CARD ---------- */
+/* ___________FORM CARD ___________*/
 .form {
   animation: fadeInUp 0.35s ease;
   background: #0b1220; /* softer dark (not black) */
@@ -17,7 +17,7 @@
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
 }
 
-/* ---------- TITLE ---------- */
+/* ___________TITLE ___________*/
 .formTitle {
   display: flex;
   align-items: center;
@@ -28,7 +28,7 @@
 
 .titleIcon {
   color: #06b6d4;
-  background: rgba(6, 182, 212, 0.12);
+  /* background: rgba(6, 182, 212, 0.12);  */
   border: 1px solid rgba(6, 182, 212, 0.25);
   padding: 9px;
   border-radius: 8px;
@@ -39,10 +39,10 @@
   margin: 0;
   font-size: clamp(1.3rem, 2vw, 1.55rem);
   font-weight: 600;
-  color: #1dc35a;
+  color: #b2c0ce;
 }
 
-/* ---------- FIELD ---------- */
+/* ___________FIELD ___________*/
 .field {
   display: flex;
   flex-direction: column;
@@ -53,7 +53,7 @@
   grid-column: 1 / -1;
 }
 
-/* ---------- LABEL ---------- */
+/* ___________LABEL ___________*/
 .label {
   color: #cbd5f5;
   font-size: 0.82rem;
@@ -64,7 +64,7 @@
   color: #ef4444;
 }
 
-/* ---------- INPUT ---------- */
+/* ___________INPUT ___________*/
 .input,
 .textarea {
   width: 100%;
@@ -87,7 +87,7 @@
   resize: vertical;
 }
 
-/* ---------- FOCUS ---------- */
+/* ___________FOCUS ___________*/
 .input:focus,
 .textarea:focus {
   border-color: #06b6d4;
@@ -95,7 +95,7 @@
   outline: none;
 }
 
-/* ---------- ERROR ---------- */
+/* ___________ERROR ___________*/
 .inputError {
   border-color: #ef4444;
 }
@@ -105,7 +105,7 @@
   color: #ef4444;
 }
 
-/* ---------- BUTTON GROUP ---------- */
+/* ___________BUTTON GROUP ___________*/
 .buttonGroup {
   display: flex;
   gap: 8px;
@@ -113,7 +113,7 @@
   flex-wrap: wrap;
 }
 
-/* ---------- PRIMARY BUTTON ---------- */
+/* ___________PRIMARY BUTTON ___________*/
 .buttonPrimary {
   padding: 0.65rem 1.1rem;
   border: none;
@@ -131,7 +131,7 @@
   box-shadow: 0 4px 12px rgba(6, 182, 212, 0.25);
 }
 
-/* ---------- SECONDARY BUTTON ---------- */
+/* ___________SECONDARY BUTTON ___________*/
 .buttonSecondary {
   padding: 0.65rem 1.1rem;
   border-radius: 8px;
@@ -148,14 +148,14 @@
   border-color: #06b6d4;
 }
 
-/* ---------- DISABLED ---------- */
+/* ___________DISABLED ___________*/
 .buttonPrimary:disabled,
 .buttonSecondary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* ---------- ANIMATION ---------- */
+/* ___________ANIMATION ___________*/
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -167,7 +167,7 @@
   }
 }
 
-/* ---------- RESPONSIVE ---------- */
+/* ___________RESPONSIVE ___________*/
 @media (max-width: 768px) {
   .formTitle {
     justify-content: flex-start;
