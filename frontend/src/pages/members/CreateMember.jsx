@@ -3,15 +3,12 @@ import { validateAdminForm } from "../../utils/validateAdminForm";
 import { createMember } from "../../services/member/member.service";
 import { getStates, getCitiesByState } from "../../services/meta/meta.service";
 import MemberForm from "./MemberForm";
-import styles from "./CreateMember.module.css";
-
+import Swal from "sweetalert2";
 function CreateMember() {
   const [loading, setLoading] = useState(false);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [errors, setErrors] = useState({});
-  const [notification, setNotification] = useState("");
-  const [notifyType, setNotifyType] = useState("");
 
   const initialState = {
     first_name: "",
@@ -26,15 +23,6 @@ function CreateMember() {
 
   const [userinfo, setUserInfo] = useState(initialState);
 
-  const showNotification = (msg, type) => {
-    setNotification(msg);
-    setNotifyType(type);
-    setTimeout(() => {
-      setNotification("");
-      setNotifyType("");
-    }, 4000);
-  };
-
   // Load states
   useEffect(() => {
     getStates().then((res) => setStates(res?.data?.data || []));
@@ -47,7 +35,7 @@ function CreateMember() {
       return;
     }
     getCitiesByState(userinfo.state_id).then((res) =>
-      setCities(res?.data?.data || [])
+      setCities(res?.data?.data || []),
     );
   }, [userinfo.state_id]);
 
@@ -78,36 +66,49 @@ function CreateMember() {
     e.preventDefault();
 
     const validationErrors = validateAdminForm(userinfo, "create");
+
     if (Object.keys(validationErrors).length) {
       setErrors(validationErrors);
-      return;
+      /* VALIDATION ALERT */
+      return Swal.fire({
+        icon: "warning",
+        title: "Validation Error",
+        text: "Please fix the form errors",
+        background: "#0f172a",
+        color: "#e5e7eb",
+        confirmButtonColor: "#f59e0b",
+      });
     }
 
     try {
       setLoading(true);
       await createMember(userinfo);
-
-      showNotification("Member created successfully", "success");
+      Swal.fire({
+        icon: "success",
+        title: "Member Created!",
+        text: "Member created successfully",
+        timer: 1500,
+        showConfirmButton: false,
+        background: "#0f172a",
+        color: "#e5e7eb",
+      });
 
       handleReset();
     } catch (error) {
-      showNotification(
-        error?.response?.data?.message || "Something went wrong",
-        "error"
-      );
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error?.response?.data?.message || "Something went wrong",
+        background: "#0f172a",
+        color: "#e5e7eb",
+        confirmButtonColor: "#ef4444",
+      });
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <>
-      {notification && (
-        <div className={`${styles.notify} ${styles[notifyType]}`}>
-          {notification}
-        </div>
-      )}
-
       <MemberForm
         title="Create Member Account"
         userinfo={userinfo}

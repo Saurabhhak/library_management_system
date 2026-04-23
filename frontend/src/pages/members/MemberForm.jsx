@@ -35,7 +35,7 @@ function MemberForm({
 
         {/* First Name */}
         <div className={styles.formGroup}>
-          <label>First Name</label>
+          <label className={styles.label}> First Name<span>*</span></label>
           <input
             type="text"
             name="first_name"
@@ -43,12 +43,14 @@ function MemberForm({
             onChange={handleChange}
             className={`${styles.formInput} ${errors?.first_name ? styles.inputError : ""}`}
           />
-          {errors?.first_name && <p className={styles.errorMsg}>{errors.first_name}</p>}
+          {errors?.first_name && (
+            <p className={styles.errorMsg}>{errors.first_name}</p>
+          )}
         </div>
 
         {/* Last Name */}
         <div className={styles.formGroup}>
-          <label>Last Name</label>
+          <label className={styles.label}> Last Name<span>*</span></label>
           <input
             type="text"
             name="last_name"
@@ -56,13 +58,15 @@ function MemberForm({
             onChange={handleChange}
             className={`${styles.formInput} ${errors?.last_name ? styles.inputError : ""}`}
           />
-          {errors?.last_name && <p className={styles.errorMsg}>{errors.last_name}</p>}
+          {errors?.last_name && (
+            <p className={styles.errorMsg}>{errors.last_name}</p>
+          )}
         </div>
 
         {/* Email */}
         {!isEdit && (
           <div className={styles.formGroup}>
-            <label>Email</label>
+            <label className={styles.label}> Email<span>*</span></label>
             <input
               type="email"
               name="email"
@@ -76,7 +80,7 @@ function MemberForm({
 
         {/* Phone */}
         <div className={styles.formGroup}>
-          <label>Phone</label>
+          <label className={styles.label}> Phone<span>*</span></label>
           <input
             type="text"
             name="phone"
@@ -89,7 +93,7 @@ function MemberForm({
 
         {/* State */}
         <div className={styles.formGroup}>
-          <label>State</label>
+          <label className={styles.label}> State<span>*</span></label>
           <select
             name="state_id"
             value={userinfo.state_id}
@@ -103,12 +107,14 @@ function MemberForm({
               </option>
             ))}
           </select>
-          {errors?.state_id && <p className={styles.errorMsg}>{errors.state_id}</p>}
+          {errors?.state_id && (
+            <p className={styles.errorMsg}>{errors.state_id}</p>
+          )}
         </div>
 
         {/* City */}
         <div className={styles.formGroup}>
-          <label>City</label>
+          <label className={styles.label}> City<span>*</span></label>
           <select
             name="city_id"
             value={userinfo.city_id}
@@ -122,14 +128,16 @@ function MemberForm({
               </option>
             ))}
           </select>
-          {errors?.city_id && <p className={styles.errorMsg}>{errors.city_id}</p>}
+          {errors?.city_id && (
+            <p className={styles.errorMsg}>{errors.city_id}</p>
+          )}
         </div>
 
         {/* Password */}
         {!isEdit && (
           <>
             <div className={styles.password_wrapper}>
-              <label>Password</label>
+              <label className={styles.label}> Password<span>*</span></label>
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
@@ -137,14 +145,21 @@ function MemberForm({
                 onChange={handleChange}
                 className={`${styles.formInput} ${errors?.password ? styles.inputError : ""}`}
               />
-              <span className={styles.eye_icon} onClick={() => setShowPassword(!showPassword)}>
-                <i className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"}`} />
+              <span
+                className={styles.eye_icon}
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                <i
+                  className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
+                />
               </span>
-              {errors?.password && <p className={styles.errorMsg}>{errors.password}</p>}
+              {errors?.password && (
+                <p className={styles.errorMsg}>{errors.password}</p>
+              )}
             </div>
 
             <div className={styles.password_wrapper}>
-              <label>Confirm Password</label>
+              <label className={styles.label}> Confirm Password<span>*</span></label>
               <input
                 type={showConfirm ? "text" : "password"}
                 name="confirm_password"
@@ -152,8 +167,13 @@ function MemberForm({
                 onChange={handleChange}
                 className={`${styles.formInput} ${errors?.confirm_password ? styles.inputError : ""}`}
               />
-              <span className={styles.eye_icon} onClick={() => setShowConfirm(!showConfirm)}>
-                <i className={`fa-solid ${showConfirm ? "fa-eye-slash" : "fa-eye"}`} />
+              <span
+                className={styles.eye_icon}
+                onClick={() => setShowConfirm(!showConfirm)}
+              >
+                <i
+                  className={`fa-solid ${showConfirm ? "fa-eye-slash" : "fa-eye"}`}
+                />
               </span>
               {errors?.confirm_password && (
                 <p className={styles.errorMsg}>{errors.confirm_password}</p>
@@ -165,23 +185,35 @@ function MemberForm({
         {/* Buttons */}
         <div className={styles.btnSection}>
           {isEdit ? (
-            <button type="button" onClick={onCancel} className={styles.btnFeature}>
+            <button
+              type="button"
+              onClick={onCancel}
+              className={styles.btnFeature}
+            >
               Cancel
             </button>
           ) : (
-            <button type="button" onClick={handleReset} className={styles.btnFeature}>
+            <button
+              type="button"
+              onClick={handleReset}
+              className={styles.btnFeature}
+            >
               Reset
             </button>
           )}
 
-          <button type="submit" className={styles.btnFeature} disabled={loading}>
+          <button
+            type="submit"
+            className={styles.btnFeature}
+            disabled={loading}
+          >
             {loading
               ? isEdit
                 ? "Updating..."
                 : "Creating..."
               : isEdit
-              ? "Update Member"
-              : "Create Member"}
+                ? "Update Member"
+                : "Create Member"}
           </button>
         </div>
       </form>

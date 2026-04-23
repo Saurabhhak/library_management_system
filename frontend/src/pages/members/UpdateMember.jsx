@@ -3,7 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 
 import MemberForm from "./MemberForm";
-import { getMemberById, updateMember } from "../../services/member/member.service";
+import {
+  getMemberById,
+  updateMember,
+} from "../../services/member/member.service";
 import { validateAdminForm } from "../../utils/validateAdminForm";
 import { useFetchStatesCities } from "../../utils/useFetchStatesCities";
 
@@ -90,6 +93,8 @@ function UpdateMember() {
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes, Update",
+      background: "#0f172a",
+      color: "#e5e7eb",
     });
 
     if (!confirm.isConfirmed) return;
@@ -103,6 +108,8 @@ function UpdateMember() {
         text: "Member updated successfully",
         timer: 1500,
         showConfirmButton: false,
+        background: "#0f172a",
+        color: "#e5e7eb",
       });
       navigate("/memberinventory");
     } catch (error) {
@@ -110,6 +117,7 @@ function UpdateMember() {
         "Error",
         error?.response?.data?.message || "Update failed",
         "error",
+        { background: "#0f172a", color: "#e5e7eb" },
       );
     } finally {
       setLoading(false);
@@ -124,6 +132,8 @@ function UpdateMember() {
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes",
+      background: "#0f172a",
+      color: "#e5e7eb",
     });
 
     if (confirm.isConfirmed) {
