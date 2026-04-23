@@ -1,7 +1,14 @@
-import { useState } from "react";
-import styles from "./AdminForm.module.css";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle, Mail } from "lucide-react";
+import { Eye, EyeOff, CheckCircle, Mail } from "lucide-react";
+import styles from "./AdminForm.module.css";
+
+/* max DOB = today − 18 years (enforced natively + validated on submit) */
+const getMaxDob = () => {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() - 18);
+  return d.toISOString().split("T")[0];
+};
 
 function AdminForm({
   title,
@@ -9,11 +16,12 @@ function AdminForm({
   handleChange,
   handleSubmit,
   handleReset,
-  states,
-  cities,
-  errors,
-  isEdit,
-  loading,
+  states = [],
+  cities = [],
+  errors = {},
+  isEdit = false,
+  loading = false,
+  /* OTP (create only) */
   handleSendOtp,
   handleVerifyOtp,
   otp,
@@ -23,246 +31,270 @@ function AdminForm({
   timer,
   resendDisabled,
 }) {
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPw, setShowPw] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const navigate = useNavigate();
+  const maxDob = useMemo(getMaxDob, []);
 
-  const handleCancel = () => navigate("/admininventory");
+  /* Spread common attributes onto every controlled input / select */
+  const bind = (name, extra = {}) => ({
+    name,
+    value: userinfo[name] ?? "",
+    onChange: handleChange,
+    className: `${styles.input} ${errors[name] ? styles.inputErr : ""}`,
+    ...extra,
+  });
+
+  /* Inline error line */
+  const Err = ({ name }) =>
+    errors[name] ? <p className={styles.errMsg}>{errors[name]}</p> : null;
 
   return (
-    <div className={styles.formContainer}>
-      <form onSubmit={handleSubmit} className={styles.formSection}>
-        <h1 className={styles.tagh1}>{title}</h1>
+    <div className={styles.page}>
+      <form onSubmit={handleSubmit} className={styles.form} noValidate>
+        {/* ── Title ─────────────────────────────────── */}
+        <h1 className={styles.title}>{title}</h1>
 
-        {/* First Name */}
-        <div className={styles.formGroup}>
-          <label className={styles.labels}>First Name</label>
-          <input
-            name="first_name"
-            value={userinfo.first_name}
-            onChange={handleChange}
-            className={`${styles.formInput} ${errors?.first_name ? styles.inputError : ""}`}
-          />
-          {errors?.first_name && (
-            <p className={styles.errorMsg}>{errors.first_name}</p>
-          )}
+        {/* _______ PERSONAL INFO _______ */}
+        <p className={styles.divider}>Personal Info</p>
+
+        <div className={styles.field}>
+          <label className={styles.label}>
+            First Name <sup>*</sup>
+          </label>
+          <input {...bind("first_name")} />
+          <Err name="first_name" />
         </div>
 
-        {/* Last Name */}
-        <div className={styles.formGroup}>
-          <label className={styles.labels}>Last Name</label>
-          <input
-            name="last_name"
-            value={userinfo.last_name}
-            onChange={handleChange}
-            className={`${styles.formInput} ${errors?.last_name ? styles.inputError : ""}`}
-          />
-          {errors?.last_name && (
-            <p className={styles.errorMsg}>{errors.last_name}</p>
-          )}
+        <div className={styles.field}>
+          <label className={styles.label}>
+            Last Name <sup>*</sup>
+          </label>
+          <input {...bind("last_name")} />
+          <Err name="last_name" />
         </div>
 
-        {/* EMAIL + OTP */}
+        <div className={styles.field}>
+          <label className={styles.label}>
+            Phone <sup>*</sup>
+          </label>
+          <input {...bind("phone")} inputMode="tel" />
+          <Err name="phone" />
+        </div>
+
+        {/* DOB — browser picker limited to ≥ 18 yrs ago */}
+        <div className={styles.field}>
+          <label className={styles.label}>
+            Date of Birth <sup>*</sup>
+          </label>
+          <input type="date" max={maxDob} {...bind("dob")} />
+          <Err name="dob" />
+        </div>
+
+        {/* _______ EMAIL + OTP (create only) _______ */}
         {!isEdit && (
-          <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-            <label className={styles.labels}>Email address</label>
+          <div className={`${styles.field} ${styles.span2}`}>
+            <label className={styles.label}>
+              Email Address <sup>*</sup>
+            </label>
+
             <div className={styles.otpRow}>
               <input
                 name="email"
                 value={userinfo.email}
                 onChange={handleChange}
-                className={`${styles.formInput} ${errors?.email ? styles.inputError : ""}`}
                 disabled={otpVerified}
+                inputMode="email"
+                autoComplete="email"
+                className={`${styles.input} ${errors.email ? styles.inputErr : ""}`}
               />
-              {!otpVerified ? (
+              {otpVerified ? (
+                <div className={styles.verifiedBadge}>
+                  <CheckCircle size={14} strokeWidth={2.5} />
+                  Verified
+                </div>
+              ) : (
                 <button
                   type="button"
                   onClick={handleSendOtp}
                   disabled={loading || (otpSent && resendDisabled)}
-                  className={styles.btnFeature}
+                  className={styles.btnInline}
                 >
                   {loading ? (
-                    <span className={styles.loaderWrapper}>
-                      <i className="fa-solid fa-spinner fa-spin"></i> Sending...
+                    <span className={styles.spinner}>
+                      <i className="fa-solid fa-spinner fa-spin" />
+                      Sending…
                     </span>
+                  ) : otpSent ? (
+                    "Resend OTP"
                   ) : (
                     "Send OTP"
                   )}
                 </button>
-              ) : (
-                <div className={styles.verifiedBadge}>
-                  <CheckCircle size={16} />
-                  Verified
-                </div>
               )}
             </div>
-            {errors?.email && <p className={styles.errorMsg}>{errors.email}</p>}
-            {/* OTP INPUT + VERIFY BUTTON */}
+            <Err name="email" />
+
+            {/* OTP verify row */}
             {otpSent && !otpVerified && (
               <div className={styles.otpBox}>
-                <div style={{ display: "flex", gap: "0.5rem" }}>
+                <div className={styles.otpInputRow}>
                   <input
                     type="text"
-                    maxLength="6"
-                    placeholder="Enter OTP"
+                    inputMode="numeric"
+                    maxLength={6}
+                    placeholder="6-digit OTP"
                     value={otp}
                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                    className={styles.formInput}
+                    className={styles.input}
                   />
                   <button
                     type="button"
                     onClick={handleVerifyOtp}
-                    disabled={otpVerified || otp.length < 6}
-                    className={`${styles.btnFeature} ${otpVerified ? styles.verifiedBtn : styles.verifyBtn}`}
+                    disabled={otp.length < 6}
+                    className={styles.btnInline}
                   >
-                    <Mail size={16} className={styles.iconDefault} />
+                    <Mail size={13} />
                     Verify
                   </button>
                 </div>
 
-                {/* Resend OTP */}
-                {!otpVerified &&
-                  (resendDisabled ? (
-                    <p className={styles.timerText}>Resend in {timer}s</p>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleSendOtp}
-                      className={styles.resendBtn}
-                    >
-                      Resend OTP
-                    </button>
-                  ))}
+                {resendDisabled ? (
+                  <p className={styles.timer}>Resend in {timer}s</p>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleSendOtp}
+                    className={styles.resendBtn}
+                  >
+                    Resend OTP
+                  </button>
+                )}
               </div>
             )}
           </div>
         )}
 
-        {/* PHONE */}
-        <div className={styles.formGroup}>
-          <label className={styles.labels}>Phone</label>
-          <input
-            name="phone"
-            value={userinfo.phone}
-            onChange={handleChange}
-            className={`${styles.formInput} ${errors?.phone ? styles.inputError : ""}`}
-          />
-          {errors?.phone && <p className={styles.errorMsg}>{errors.phone}</p>}
-        </div>
+        {/* _______ ACCOUNT SETTINGS _______ */}
+        <p className={styles.divider}>Account Settings</p>
 
-        {/* ROLE */}
-        <div className={styles.formGroup}>
-          <label className={styles.labels}>Role</label>
-          <select
-            name="role"
-            value={userinfo.role}
-            onChange={handleChange}
-            className={`${styles.formInput} ${errors?.role ? styles.inputError : ""}`}
-          >
-            <option value="">Choose role</option>
+        <div className={styles.field}>
+          <label className={styles.label}>
+            Role <sup>*</sup>
+          </label>
+          <select {...bind("role")}>
+            <option value="">Select role</option>
             <option value="admin">Admin</option>
             <option value="superadmin">Super Admin</option>
           </select>
-          {errors?.role && <p className={styles.errorMsg}>{errors.role}</p>}
+          <Err name="role" />
         </div>
 
-        {/* STATE */}
-        <div className={styles.formGroup}>
-          <label className={styles.labels}>State</label>
-          <select
-            name="state_id"
-            value={userinfo.state_id}
-            onChange={handleChange}
-            className={`${styles.formInput} ${errors?.state_id ? styles.inputError : ""}`}
-          >
-            <option value="">Choose state</option>
-            {states.map((state) => (
-              <option key={state.id} value={state.id}>
-                {state.name}
+        <div className={styles.field}>
+          <label className={styles.label}>
+            Account Status <sup>*</sup>
+          </label>
+          <select {...bind("is_active")}>
+            <option value="">Select status</option>
+            <option value="active">Active — can log in</option>
+            <option value="inactive">Inactive — login blocked</option>
+          </select>
+          <Err name="is_active" />
+        </div>
+
+        {/* _______ LOCATION _______ */}
+        <p className={styles.divider}>Location</p>
+
+        <div className={styles.field}>
+          <label className={styles.label}>
+            State <sup>*</sup>
+          </label>
+          <select {...bind("state_id")}>
+            <option value="">Select state</option>
+            {states.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
               </option>
             ))}
           </select>
-          {errors?.state_id && (
-            <p className={styles.errorMsg}>{errors.state_id}</p>
-          )}
+          <Err name="state_id" />
         </div>
-        {/* CITY */}
-        <div className={styles.formGroup}>
-          <label className={styles.labels}>City</label>
-          <select
-            name="city_id"
-            value={userinfo.city_id}
-            onChange={handleChange}
-            className={`${styles.formInput} ${errors?.city_id ? styles.inputError : ""}`}
-          >
-            <option value="">Choose city</option>
-            {cities.map((city) => (
-              <option key={city.id} value={city.id}>
-                {city.name}
+
+        <div className={styles.field}>
+          <label className={styles.label}>
+            City <sup>*</sup>
+          </label>
+          <select {...bind("city_id")}>
+            <option value="">Select city</option>
+            {cities.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
               </option>
             ))}
           </select>
-          {errors?.city_id && (
-            <p className={styles.errorMsg}>{errors.city_id}</p>
-          )}
+          <Err name="city_id" />
         </div>
 
-        {/* PASSWORD */}
+        {/* _______ SECURITY — create only _______ */}
         {!isEdit && (
           <>
-            <div className={styles.password_wrapper}>
-              <label className={styles.labels}>Password</label>
+            <p className={styles.divider}>Security</p>
+
+            {/* Password */}
+            <div className={styles.pwField}>
+              <label className={styles.label}>
+                Password <sup>*</sup>
+              </label>
               <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={userinfo.password}
-                onChange={handleChange}
-                className={`${styles.formInput} ${errors?.password ? styles.inputError : ""}`}
+                type={showPw ? "text" : "password"}
+                autoComplete="new-password"
+                {...bind("password", {
+                  className: `${styles.input} ${styles.pwInput} ${errors.password ? styles.inputErr : ""}`,
+                })}
               />
-              <span
-                className={styles.eye_icon}
-                onClick={() => setShowPassword(!showPassword)}
+              <button
+                type="button"
+                className={styles.eyeBtn}
+                onClick={() => setShowPw((v) => !v)}
+                aria-label={showPw ? "Hide password" : "Show password"}
               >
-                <i
-                  className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
-                ></i>
-              </span>
-              {errors?.password && (
-                <p className={styles.errorMsg}>{errors.password}</p>
-              )}
+                {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+              <Err name="password" />
             </div>
 
-            <div className={styles.password_wrapper}>
-              <label className={styles.labels}>Confirm Password</label>
+            {/* Confirm Password */}
+            <div className={styles.pwField}>
+              <label className={styles.label}>
+                Confirm Password <sup>*</sup>
+              </label>
               <input
                 type={showConfirm ? "text" : "password"}
-                name="confirm_password"
-                value={userinfo.confirm_password}
-                onChange={handleChange}
-                className={`${styles.formInput} ${errors?.confirm_password ? styles.inputError : ""}`}
+                autoComplete="new-password"
+                {...bind("confirm_password", {
+                  className: `${styles.input} ${styles.pwInput} ${errors.confirm_password ? styles.inputErr : ""}`,
+                })}
               />
-              <span
-                className={styles.eye_icon}
-                onClick={() => setShowConfirm(!showConfirm)}
+              <button
+                type="button"
+                className={styles.eyeBtn}
+                onClick={() => setShowConfirm((v) => !v)}
+                aria-label={showConfirm ? "Hide password" : "Show password"}
               >
-                <i
-                  className={`fa-solid ${showConfirm ? "fa-eye-slash" : "fa-eye"}`}
-                ></i>
-              </span>
-              {errors?.confirm_password && (
-                <p className={styles.errorMsg}>{errors.confirm_password}</p>
-              )}
+                {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+              <Err name="confirm_password" />
             </div>
           </>
         )}
 
-        {/* BUTTONS */}
-        <div className={styles.btnSection}>
+        {/* _______ ACTIONS _______ */}
+        <div className={styles.actions}>
           {isEdit ? (
             <button
               type="button"
-              onClick={handleCancel}
-              className={styles.btnFeature}
+              onClick={() => navigate("/admininventory")}
+              className={styles.btnGhost}
             >
               Cancel
             </button>
@@ -270,20 +302,21 @@ function AdminForm({
             <button
               type="button"
               onClick={handleReset}
-              className={styles.btnFeature}
+              className={styles.btnGhost}
             >
               Reset
             </button>
           )}
+
           <button
             type="submit"
-            className={styles.btnFeature}
+            className={styles.btnPrimary}
             disabled={loading}
           >
             {loading
               ? isEdit
-                ? "Updating..."
-                : "Creating..."
+                ? "Updating…"
+                : "Creating…"
               : isEdit
                 ? "Update Admin"
                 : "Create Admin"}

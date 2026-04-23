@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 import { validateAdminForm } from "../../utils/validateAdminForm";
 import {
   createAdmin,
@@ -9,59 +10,90 @@ import {
   sendOtpAPI,
   verifyOtpAPI,
 } from "../../services/validations/otp.service";
-
-import AdminForm from "./AdminForm";
-import styles from "./CreateAdmin.module.css";
 import { checkEmailAPI } from "../../services/admin/auth.service";
-function CreateAdmin() {
-  // OTP states
+import AdminForm from "./AdminForm";
+
+/* ── Swal helpers ───────────────────────────────────────────────────── */
+const Toast = Swal.mixin({
+  toast: true,
+  position: "top-end",
+  showConfirmButton: false,
+  timer: 3500,
+  timerProgressBar: true,
+  background: "#0b0e18",
+  color: "#dde6f8",
+  iconColor: "#10b981",
+});
+
+const toast = (icon, title) => Toast.fire({ icon, title });
+
+const alertError = (text) =>
+  Swal.fire({
+    icon: "error",
+    title: "Something went wrong",
+    text,
+    background: "#0b0e18",
+    color: "#dde6f8",
+    confirmButtonColor: "#2563eb",
+  });
+
+/* ── DOB guard — must be ≥ 18 years old ────────────────────────────── */
+const dobError = (dob) => {
+  if (!dob) return "Date of birth is required.";
+  const cutoff = new Date();
+  cutoff.setFullYear(cutoff.getFullYear() - 18);
+  if (new Date(dob) > cutoff) return "Admin must be at least 18 years old.";
+  return "";
+};
+
+/* ── Initial form state ─────────────────────────────────────────────── */
+const INIT = {
+  first_name: "",
+  last_name: "",
+  dob: "",
+  email: "",
+  phone: "",
+  role: "admin",
+  state_id: "",
+  city_id: "",
+  password: "",
+  confirm_password: "",
+  is_active: "",
+};
+
+/* ─────────────────────────────────────────────────────────────────────
+   CreateAdmin
+───────────────────────────────────────────────────────────────────── */
+export default function CreateAdmin() {
+  const [userinfo, setUserInfo] = useState(INIT);
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
-
-  // Timer states (ONLY HERE)
   const [timer, setTimer] = useState(0);
   const [resendDisabled, setResendDisabled] = useState(true);
 
-  const [loading, setLoading] = useState(false);
-  const [states, setStates] = useState([]);
-  const [cities, setCities] = useState([]);
-  const [errors, setErrors] = useState({});
-  const initialState = {
-    first_name: "",
-    last_name: "",
-    email: "",
-    phone: "",
-    role: "admin", // Default role set
-    state_id: "",
-    city_id: "",
-    password: "",
-    confirm_password: "",
-  };
-  const [userinfo, setUserInfo] = useState(initialState);
-  const [notification, setNotification] = useState("");
-  const [notifyType, setNotifyType] = useState("");
-  const showNotification = (msg, type) => {
-    setNotification(msg);
-    setNotifyType(type);
-    setTimeout(() => {
-      setNotification("");
-      setNotifyType("");
-    }, 5000);
-  };
+  /* fetch states */
+  useEffect(() => {
+    getStates()
+      .then((r) => setStates(r?.data?.data || []))
+      .catch(() => alertError("Failed to load states."));
+  }, []);
 
-  // ---------- handle Change ------------
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUserInfo((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: "" }));
-  };
+  /* fetch cities on state change */
+  useEffect(() => {
+    if (!userinfo.state_id) return;
+    getCitiesByState(userinfo.state_id)
+      .then((r) => setCities(r?.data?.data || []))
+      .catch(() => alertError("Failed to load cities."));
+  }, [userinfo.state_id]);
 
-  // ---------- handle Change ------------
-  const handleReset = () => {
-    setUserInfo(initialState);
-  };
-  // --------- Reset on email change
+  /* reset OTP when email changes */
   useEffect(() => {
     setOtp("");
     setOtpSent(false);
@@ -70,104 +102,103 @@ function CreateAdmin() {
     setResendDisabled(true);
   }, [userinfo.email]);
 
-  // useEffect Timer Logic (single source of truth)
+  /* countdown */
   useEffect(() => {
-    if (!otpSent) return;
-    if (timer === 0) {
-      setResendDisabled(false);
+    if (!otpSent || timer === 0) {
+      if (timer === 0) setResendDisabled(false);
       return;
     }
-    const interval = setInterval(() => {
-      setTimer((prev) => prev - 1);
-    }, 1000);
-    return () => clearInterval(interval);
+    const id = setInterval(() => setTimer((t) => t - 1), 1000);
+    return () => clearInterval(id);
   }, [timer, otpSent]);
 
-  // useEffect onchange states
-  useEffect(() => {
-    getStates().then((res) => setStates(res?.data?.data || []));
-  }, []);
+  /* field change */
+  const handleChange = ({ target: { name, value } }) => {
+    setUserInfo((p) => ({ ...p, [name]: value }));
+    setErrors((p) => ({ ...p, [name]: "" }));
+  };
 
-  // useEffect onchange cities
-  useEffect(() => {
-    if (!userinfo.state_id) return;
-    getCitiesByState(userinfo.state_id).then((res) =>
-      setCities(res?.data?.data || []),
-    );
-  }, [userinfo.state_id]);
+  /* reset */
+  const handleReset = () => {
+    setUserInfo(INIT);
+    setErrors({});
+  };
 
-  // SEND OTP
+  /* send OTP */
   const handleSendOtp = async () => {
     if (!userinfo.email) {
-      showNotification("Enter email first", "error");
+      toast("warning", "Enter an email address first.");
       return;
     }
-
     try {
-      const res = await checkEmailAPI({ email: userinfo.email });
-
-      if (res.data.exists) {
-        showNotification("Admin already exists", "error");
+      const { data } = await checkEmailAPI({ email: userinfo.email });
+      if (data.exists) {
+        toast("error", "An admin with this email already exists.");
         return;
       }
-
       await sendOtpAPI({ email: userinfo.email });
-
       setOtpSent(true);
       setTimer(30);
       setResendDisabled(true);
-
-      showNotification("OTP sent", "success");
+      toast("success", "OTP sent — check your inbox.");
     } catch (err) {
-      console.error(err);
-      showNotification("Failed to send OTP", "error");
+      console.error("[CreateAdmin] sendOtp:", err);
+      alertError(err?.response?.data?.message || "Failed to send OTP.");
     }
   };
 
-  // VERIFY OTP
+  /* verify OTP */
   const handleVerifyOtp = async () => {
     if (otp.length !== 6) {
-      showNotification("Enter valid 6 digit OTP", "error");
+      toast("warning", "Enter the 6-digit OTP.");
       return;
     }
     try {
-      // STEP 3: Verify OTP
       await verifyOtpAPI({ email: userinfo.email, otp });
       setOtpVerified(true);
-      showNotification("OTP verified", "success");
-    } catch {
-      showNotification("Invalid OTP", "error");
+      toast("success", "Email verified successfully.");
+    } catch (err) {
+      console.error("[CreateAdmin] verifyOtp:", err);
+      toast("error", "Invalid OTP — please try again.");
     }
   };
 
-  // SUBMIT
+  /* submit */
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!otpVerified) {
-      showNotification("Verify OTP first", "error");
+      toast("warning", "Please verify your email before submitting.");
       return;
     }
-    const validationErrors = validateAdminForm(userinfo, "create");
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
+
+    const errs = validateAdminForm(userinfo, "create");
+    const dob = dobError(userinfo.dob);
+    if (dob) errs.dob = dob;
+
+    if (Object.keys(errs).length) {
+      setErrors(errs);
+      toast("error", Object.values(errs)[0]);
       return;
     }
+
     try {
       setLoading(true);
-      // Data modify karne ke liye (before sending)
-      const payload = {
-        ...userinfo,
-      };
-      // payload = argument
-      await createAdmin(payload);
-      // role based notify notification
-      const roleLabel = userinfo.role === "superadmin" ? "SuperAdmin" : "Admin";
-      showNotification(`${roleLabel} created successfully`, "success");
-      setUserInfo(initialState);
-    } catch (error) {
-      showNotification(
-        error?.response?.data?.message || "Something went wrong",
-        "error",
+      await createAdmin(userinfo);
+      toast(
+        "success",
+        `${userinfo.role === "superadmin" ? "Super Admin" : "Admin"} created successfully.`,
+      );
+      setUserInfo(INIT);
+      setErrors({});
+      setOtp("");
+      setOtpSent(false);
+      setOtpVerified(false);
+    } catch (err) {
+      console.error("[CreateAdmin] submit:", err);
+      alertError(
+        err?.response?.data?.message ||
+          "Could not create admin. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -175,34 +206,28 @@ function CreateAdmin() {
   };
 
   return (
-    <>
-      {notification && (
-        <div className={`${styles.notify} ${styles[notifyType]}`}>
-          {notification}
-        </div>
-      )}
-
-      <AdminForm
-        title="Create Admin Account"
-        handleReset={handleReset}
-        userinfo={userinfo}
-        handleChange={handleChange}
-        handleSubmit={handleSubmit}
-        states={states}
-        cities={cities}
-        errors={errors}
-        loading={loading}
-        handleSendOtp={handleSendOtp}
-        handleVerifyOtp={handleVerifyOtp}
-        otp={otp}
-        setOtp={setOtp}
-        otpSent={otpSent}
-        otpVerified={otpVerified}
-        timer={timer}
-        resendDisabled={resendDisabled}
-      />
-    </>
+    <AdminForm
+      title={
+        <>
+          <i className="fa-solid fa-user-shield" /> Create Admin Account
+        </>
+      }
+      userinfo={userinfo}
+      handleChange={handleChange}
+      handleSubmit={handleSubmit}
+      handleReset={handleReset}
+      states={states}
+      cities={cities}
+      errors={errors}
+      loading={loading}
+      handleSendOtp={handleSendOtp}
+      handleVerifyOtp={handleVerifyOtp}
+      otp={otp}
+      setOtp={setOtp}
+      otpSent={otpSent}
+      otpVerified={otpVerified}
+      timer={timer}
+      resendDisabled={resendDisabled}
+    />
   );
 }
-
-export default CreateAdmin;

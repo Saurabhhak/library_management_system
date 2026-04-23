@@ -1,235 +1,414 @@
-/* ---------- CONTAINER ---------- */
-.formContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
+/*_______________ TOKENS ________________*/
+:root {
+  --bg-card: #121317;
+  --bg-input: #07090f;
+  --bg-input-hover: #0d1120;
+
+  --border: #4d51607e;
+  --border-focus: #2563eb;
+  --border-error: #ef4444;
+  --border-success: #10b981;
+
+  --text: #dde6f8;
+  --text-sub: #6b7a9e;
+  --text-muted: #8f94a4;
+  --text-label: #8fa0c2;
+
+  --blue: #2563eb;
+  --blue-hover: #1d4fd8;
+  --blue-glow: rgba(37, 99, 235, 0.18);
+  --green: #10b981;
+  --green-bg: rgba(16, 185, 129, 0.08);
+  --green-border: rgba(16, 185, 129, 0.32);
+  --red: #ef4444;
+  --red-glow: rgba(239, 68, 68, 0.12);
+
+  --radius: 6px;
+  --radius-lg: 12px;
+  --shadow:
+    0 24px 60px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.03) inset;
+  --ease: 170ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/*________________ PAGE________________*/
+.page {
   min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2.5rem 1rem 3rem;
 }
 
-/* ---------- FORM CARD ---------- */
-.formSection {
-  max-width: 30rem;
+/*________________ CARD  —  3-column grid________________*/
+.form {
   width: 100%;
+  max-width: 980px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  padding: 2rem;
-  border-radius: 8px;
-  background: #0a0c13;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem 1.375rem;
+  align-items: start;
+  padding: 2.25rem 2.5rem;
+  /* border-radius: var(--radius-lg);  
+  /* border: 1px solid var(--border); */
+  background: var(--bg-card); 
+  margin-top: 3rem;
 }
 
-/* ---------- HEADING ---------- */
-.tagh1 {
-  grid-column: span 2;
+/*________________ TITLE________________*/
+.title {
+  grid-column: 1 / -1;
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
   text-align: center;
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: #d9edff;
+  padding-bottom: 1.25rem;
+  /* border-bottom: 1px solid var(--border);   */
 }
 
-/* ---------- FORM ---------- */
-.formGroup {
+/*________________ SECTION DIVIDER________________*/
+.divider {
+  grid-column: 1 / -1;
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding-bottom: 0.28rem;
+  border-bottom: 1px solid var(--border);
+  /* margin-top: 0.5rem; */
+  margin-bottom: .1rem;
+}
+
+/*________________ FIELD________________*/
+.field {
   display: flex;
   flex-direction: column;
+  gap: 0.28rem;
 }
 
-.labels {
-  font-size: 0.85rem;
+.span2 {
+  grid-column: span 2;
+}
+.full {
+  grid-column: 1 / -1;
+}
+
+/*________________ LABEL________________*/
+.label {
+  font-size: 0.76rem;
   font-weight: 500;
-  color: #c2c9d5d2;
+  color: var(--text-label);
+  user-select: none;
+}
+.label sup {
+  color: var(--red);
+  font-size: 0.7rem;
+  margin-left: 1px;
 }
 
-/* ---------- INPUT ---------- */
-.formInput {
+/*________________ INPUT / SELECT________________*/
+.input {
   width: 100%;
-  margin-top: 0.3rem;
-  padding: 0.65rem 0.8rem;
-  border-radius: 5px;
-  border: 1px solid #cccccc6a;
-  background: #07090b;
-  color: rgb(208, 221, 235);
-  font-size: 0.9rem;
-  transition: 0.2s;
-}
-
-.formInput:hover {
-  border-color: #1088ff;
-}
-
-.formInput:focus {
+  height: 40px;
+  padding: 0 0.8rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text);
+  font-size: 0.875rem;
+  font-family: inherit;
   outline: none;
-  border-color: #00c853;
-  box-shadow: 0 0 0 2px rgba(0, 200, 83, 0.15);
+  appearance: none;
+  -webkit-appearance: none;
 }
 
-.formInput:disabled {
-  background: #f1fdf4;
-  border-color: #00c853;
+.input::placeholder {
+  color: var(--text-muted);
 }
 
-/* ---------- ERROR ---------- */
-.errorMsg {
-  font-size: 11px;
-  color: #e53935;
-  margin-top: 4px;
+.input:hover:not(:disabled):not(.inputErr) {
+  border-color: #2a3045;  
+  background: var(--bg-input-hover);
 }
-
-.inputError {
-  border-color: #e53935 !important;
+.input:focus:not(.inputErr) {
+  border-color: var(--border-focus);
+  /* box-shadow: 0 0 0 3px var(--blue-glow); */
+  background: var(--bg-input-hover);
 }
-
-/* ---------- FULL WIDTH ---------- */
-.fullWidth {
-  grid-column: span 2;
-}
-
-/* ---------- OTP SECTION ---------- */
-.otpRow {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.otpRow button {
-  width: 7.5rem;
-}
-
-/* OTP input + verify button same row */
-.otpBox {
-  margin-top: 0.5rem;
-}
-
-.otpInline {
-  display: flex;
-  gap: 0.5rem;
-}
-
-/* timer */
-.timerText {
-  font-size: 12px;
-  color: #555555;
-}
-
-/* resend */
-.resendBtn {
-  background: none;
-  border: none;
-  color: #1088ff;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.resendBtn:hover {
-  text-decoration: underline;
-}
-
-/* ---------- PASSWORD ---------- */
-.password_wrapper {
-  position: relative;
-}
-
-.password_wrapper input {
-  padding-right: 2.5rem;
-}
-
-.eye_icon {
-  position: absolute;
-  right: 10px;
-  font-size: .75rem;
-  top: 70%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: #9b9b9b;
-}
-
-/* ---------- BUTTONS ---------- */
-.btnSection {
-  grid-column: span 2;
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-}
-
-.btnFeature {
-  margin-top: .3rem;
-  height: 6vh;
-  width: 14rem;
-  border: none;
-  border-radius: 0.3rem;
-  background: #1389ffdc;
-  color: #fff;
-  font-weight: 500;
-  cursor: pointer;
-  transition: 0.2s;
-  text-transform:uppercase;
-  letter-spacing: .2px;
-  font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
-.btnFeature:hover {
-  background: #085bc1;
-  transform: scale(.99);
-}
-.btnFeature:focus{
-  outline: none;
-  border-color: #feffff;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.796);
-}
-
-.btnFeature:disabled {
-  background: #a0aab5;
+.input:disabled {
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
-/* ---------- VERIFY STATES ---------- */
-.verifyBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+/* date picker */
+.input[type="date"] {
+  cursor: pointer;
+}
+.input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.45) brightness(1.5);
+  cursor: pointer;
 }
 
-.verifiedBox {
+/* select arrow */
+select.input {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2338415c' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.2rem;
+  cursor: pointer;
+}
+select.input option {
+  background: #0b0e18;
+}
+
+/* error */
+.inputErr {
+  border-color: var(--border-error) !important;
+  box-shadow: 0 0 0 3px var(--red-glow) !important;
+}
+.errMsg {
+  font-size: 0.7rem;
+  color: var(--red);
+  line-height: 1.3;
+}
+
+/*________________ PASSWORD FIELD________________*/
+.pwField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  position: relative;
+}
+.pwInput {
+  padding-right: 2.5rem;
+}
+
+.eyeBtn {
+  position: absolute;
+  right: 0.7rem;
+  bottom: 0;
+  height: 40px;
   display: flex;
   align-items: center;
-  gap: 6px;
-  color: #00c853;
-  font-weight: 600;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: color var(--ease);
+  line-height: 1;
 }
+.eyeBtn:hover {
+  color: var(--text-sub);
+}
+/* push eye up above error text if present */
+.pwField .errMsg ~ .eyeBtn,
+.pwField:has(.errMsg) .eyeBtn {
+  bottom: calc(0.7rem + 1em);
+}
+
+/*________________ OTP ROW________________*/
+.otpRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.otpRow .input {
+  flex: 1;
+  min-width: 0;
+}
+
+.otpBox {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.otpInputRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.timer {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.resendBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--blue);
+  cursor: pointer;
+  transition: color var(--ease);
+}
+.resendBtn:hover {
+  color: #60a5fa;
+  text-decoration: underline;
+}
+
 .verifiedBadge {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 0.6rem 0.8rem;
-  min-width: 8rem;
-  background: #07090b;
-  color: #00c853;
-  border-radius: 5px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  border: 1px solid #00c853;
+  gap: 5px;
+  flex-shrink: 0;
+  height: 40px;
+  padding: 0 0.85rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--green-border);
+  background: var(--green-bg);
+  color: var(--green);
+  font-size: 0.78rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
-/* ---------- RESPONSIVE ---------- */
-@media (max-width: 480px) {
-  .formSection {
+/*________________ BUTTONS________________*/
+.actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  padding-top: 0.65rem;
+  margin-top: 0.1rem;
+  border-top: 1px solid var(--border);
+}
+
+/* primary — submit */
+.btnPrimary {
+  height: 40px;
+  min-width: 136px;
+  padding: 0 1.25rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--blue);
+  color: #fff;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition:
+    background var(--ease),
+    box-shadow var(--ease),
+    transform var(--ease);
+}
+.btnPrimary:hover:not(:disabled) {
+  background: #10b981;
+  /* box-shadow: 0 4px 18px rgba(37, 99, 235, 0.38); */
+  color: #ffffff;
+
+  transform: translateY(-1px);
+}
+.btnPrimary:active:not(:disabled) {
+  transform: translateY(0);
+}
+.btnPrimary:disabled {
+  opacity: 0.44;
+  cursor: not-allowed;
+}
+
+/* ghost — cancel / reset */
+.btnGhost {
+  height: 40px;
+  min-width: 110px;
+  padding: 0 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-sub);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    border-color var(--ease),
+    color var(--ease),
+    background var(--ease);
+}
+.btnGhost:hover {
+  border-color: #242d4a;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+}
+
+/* compact inline — Send OTP / Verify */
+.btnInline {
+  height: 40px;
+  padding: 0 0.95rem;
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--blue);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  transition:
+    background var(--ease),
+    opacity var(--ease);
+}
+.btnInline:hover:not(:disabled) {
+  background: var(--blue-hover);
+}
+.btnInline:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.spinner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/*________________ RESPONSIVE — tablet ≤ 768 px  →  2 cols________________*/
+@media (max-width: 768px) {
+  .form {
+    grid-template-columns: 1fr 1fr;
+    padding: 1.75rem;
+    gap: 0.9rem 1.1rem;
+  }
+  .title,
+  .divider,
+  .full,
+  .span2,
+  .actions {
+    grid-column: 1 / -1;
+  }
+}
+
+/*________________ RESPONSIVE — mobile ≤ 520 px  →  1 col________________*/
+@media (max-width: 520px) {
+  .page {
+    padding: 1.25rem 0.75rem 2rem;
+  }
+  .form {
     grid-template-columns: 1fr;
-    padding: 1.5rem;
+    padding: 1.5rem 1.25rem;
+    gap: 0.85rem;
+    border-radius: 10px;
   }
-
-  .tagh1,
-  .btnSection,
-  .fullWidth {
-    grid-column: span 1;
+  .form > * {
+    grid-column: 1 / -1 !important;
   }
-
-  .btnSection {
-    flex-direction: column;
+  .actions {
+    flex-direction: column-reverse;
+    gap: 0.5rem;
   }
-
-  .btnFeature {
+  .btnPrimary,
+  .btnGhost {
     width: 100%;
+    justify-content: center;
+    text-align: center;
   }
 }
