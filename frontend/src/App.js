@@ -6,6 +6,7 @@ import HomeLayout from "./components/layout/HomeLayout";
 /* ___ Route guards ______________________________________________*/
 import PrivateRoute from "./routes/PrivateRoute";
 import SuperAdminRoute from "./routes/SuperAdminRoute";
+import PublicRoute from "./routes/PublicRoute";
 
 /* ___ Auth (ALL PUBLIC) ________________________________________*/
 import AdminLoginForm from "./pages/auth/AdminLogin";
@@ -22,10 +23,11 @@ import CategoryInventory from "./pages/inventories/CategoryInventory";
 import CreateAdmin from "./pages/admin/CreateAdmin";
 import UpdateAdmin from "./pages/admin/UpdateAdmin";
 
-/* ___ Charts _______________________________________________*/
-import Chart from "./components/charts/book/Chart";
-import AdminChart from "./components/charts/admin/AdminChart";
+/* ___ Charts Page _______________________________________________*/
 import AdminPage from "./pages/analytics/admin/AdminPage";
+import BookChartPage from "./pages/analytics/book/BookChartPage";
+import CategoryPage from "./pages/analytics/categories/CategoryPage";
+import MemberPage from "./pages/analytics/members/MemberPage";
 
 /* ___ Pages ______________________________________________*/
 import Profile from "./pages/profile/Profile";
@@ -36,14 +38,13 @@ import Home from "./pages/home/Home";
 /* ___ Books ____________________________________________*/
 import CreateBook from "./pages/library/books/CreateBook";
 import UpdateBook from "./pages/library/books/UpdateBook";
-import Bookslib from "./pages/library/books/Bookslib";
+import Bookslib from "./pages/library/library/Bookslib";
 
 /* ___ books essue ____________________________________*/
 import IssueBook from "./pages/library/transactions/IssueBook";
 
 /* ___ Books Category _______________________________*/
 import UpdateCategory from "./pages/library/categories/UpdateCategory";
-import CategoryPage from "./pages/analytics/categories/CategoryPage";
 import AddCategory from "./pages/library/categories/AddCategory";
 
 /* ___ History ____________________________________*/
@@ -52,17 +53,18 @@ import History from "./pages/history/History";
 /* ___ Members __________________________________*/
 import CreateMember from "./pages/members/CreateMember";
 import UpdateMember from "./pages/members/UpdateMember";
-import MemberPage from "./pages/analytics/members/MemberPage";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* ___________ PUBLIC ROUTES ___________ */}
-        <Route path="/login" element={<AdminLoginForm />} />
-        {/* Password Recovery Routes (PUBLIC) */}
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        {/* ___________ PUBLIC ROUTES (BUT PROTECTED AFTER LOGIN) ___________ */}
+        <Route element={<PublicRoute />}>
+          <Route path="/login" element={<AdminLoginForm />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+        </Route>
 
         {/* ___________ PROTECTED ROUTES ___________ */}
         <Route element={<PrivateRoute />}>
@@ -104,11 +106,11 @@ function App() {
             {/* _____________ Profile ______________*/}
             <Route path="/profile" element={<Profile />} />
 
-            {/* _____________ Charts ______________*/}
+            {/* _____________ Charts Page ______________*/}
             <Route path="/categorypage" element={<CategoryPage />} />
-            <Route path="/adminchart" element={<AdminChart />} />
             <Route path="/adminpage" element={<AdminPage />} />
-            <Route path="/chart" element={<Chart />} />
+            <Route path="/bookchartpage" element={<BookChartPage />} />
+            <Route path="/memberpage" element={<MemberPage />} />
 
             {/* _____________ Books ______________*/}
             <Route path="/updatecategory/:id" element={<UpdateCategory />} />
@@ -129,7 +131,6 @@ function App() {
             {/* _____________ Members ______________*/}
             <Route path="/updatemember/:id" element={<UpdateMember />} />
             <Route path="/createmember" element={<CreateMember />} />
-            <Route path="/memberpage" element={<MemberPage />} />
           </Route>
         </Route>
         {/* ___________ If LSM routes does'nt matches to url route then 404 PAGE ___________ */}
