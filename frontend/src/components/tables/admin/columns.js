@@ -54,8 +54,31 @@ const OnlineStatus = ({ last_seen }) => {
 
 export const getColumns = (handleDelete) => [
   { header: "ID", accessorKey: "id", size: 70 },
-  { header: "First Name", accessorKey: "first_name", enableColumnFilter: true },
-  { header: "Last Name", accessorKey: "last_name", enableColumnFilter: true },
+  {
+    header: "First Name",
+    accessorKey: "first_name",
+    enableColumnFilter: true,
+    size: 100,
+  },
+  {
+    header: "Last Name",
+    accessorKey: "last_name",
+    enableColumnFilter: true,
+    size: 100,
+  },
+  {
+    header: "DOB",
+    accessorKey: "dob",
+    size: 80,
+    cell: ({ row }) => {
+      const dob = row.original.dob;
+
+      if (!dob) return "-";
+
+      return new Date(dob).toLocaleDateString("en-GB");
+      //  Output: DD/MM/YYYY
+    },
+  },
   {
     header: "Email",
     accessorKey: "email",
