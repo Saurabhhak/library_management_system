@@ -109,11 +109,22 @@ function NavbarSection() {
         <div
           className={`${styles.subMenu} ${adminMenuOpen ? styles.subMenuActive : ""}`}
         >
-          <Link to="/createadmin" onClick={closeAll}>
+          <Link to="/createadmin" onClick={closeAll} 
+            title="Create New Admin"
+          >
             <i className="fa-solid fa-user-plus"></i> Create Admin
           </Link>
-          <Link to="/admininventory" onClick={closeAll}>
-            <i className="fa-solid fa-users"></i> All Admins
+          <Link to="/admininventory" onClick={closeAll}
+            title="Admin Data table"
+          >
+            <i className="fa-solid fa-table"></i> Admin Inventory
+          </Link>
+          <Link
+            to="/adminpage"
+            onClick={closeAll}
+            title="View Analytics Dashboard"
+          >
+            <i className="fa-solid fa-chart-line"></i> Admin Charts
           </Link>
         </div>
       </nav>
@@ -232,13 +243,15 @@ function NavbarSection() {
                 <i class="fa-solid fa-clock-rotate-left"></i> All
               </Link>
               <Link
-              //  to="/history/issue" 
-              onClick={handleAlert}>
+                //  to="/history/issue"
+                onClick={handleAlert}
+              >
                 <i class="fa-solid fa-book-bookmark"></i> Issued
               </Link>
-              <Link 
-              // to="/history/return" 
-              onClick={handleAlert}>
+              <Link
+                // to="/history/return"
+                onClick={handleAlert}
+              >
                 <i class="fa-solid fa-rotate-left"></i> Returned
               </Link>
             </div>
