@@ -6,7 +6,7 @@ function MemberRowActions({ member, onDelete }) {
 
   return (
     <div className={styles.acitonsbtn}>
-      {/* EDIT */}
+      {/* ___ EDIT ___ */}
       <button
         className={styles.editBtn}
         onClick={() => navigate(`/updatemember/${member.id}`)}
@@ -15,7 +15,7 @@ function MemberRowActions({ member, onDelete }) {
         <i className="fa-solid fa-user-pen"></i>
       </button>
 
-      {/* DELETE */}
+      {/* ___ DELETE ___ */}
       <button
         className={styles.deleteBtn}
         onClick={() => onDelete(member)}
