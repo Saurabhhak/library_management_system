@@ -4,8 +4,10 @@ import {
   getCategories,
   deleteCategory,
 } from "../../services/books/category.service";
-import { useNavigate, Link } from "react-router-dom";
+// import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import { getCategoriesColumns } from "../../components/tables/categories/categoriesColumns";
 import {
   useReactTable,
   getCoreRowModel,
@@ -26,10 +28,15 @@ function CategoryInventory() {
 
   const [pageSizeOpen, setPageSizeOpen] = useState(false);
   const [dropdownStyle, setDropdownStyle] = useState({});
-
   const dropdownRef = useRef(null);
 
-  const navigate = useNavigate();
+  /* Column Ordering (drag & drop) Column Resizing */
+  const [columnOrder, setColumnOrder] = useState([]);
+  const [columnSizing, setColumnSizing] = useState({});
+  const [columnSizingInfo, setColumnSizingInfo] = useState({});
+  /* Row Selection  */
+  const [rowSelection, setRowSelection] = useState({});
+  // const navigate = useNavigate();
 
   /* ---------------- FETCH CATEGORIES ---------------- */
   useEffect(() => {
@@ -59,7 +66,7 @@ function CategoryInventory() {
   }, []);
 
   /* ---------------- DELETE CATEGORY ---------------- */
-  const handleDelete = async (category) => {
+  const handleCategoriesDelete = async (category) => {
     const result = await Swal.fire({
       title: "Delete Category?",
       html: `
@@ -67,6 +74,8 @@ function CategoryInventory() {
         <b>Name:</b> ${category.name}
       `,
       icon: "warning",
+      background: "#0f172a", // dark bg (tailwind slate-900)
+      color: "#e5e7eb", // text color
       showCancelButton: true,
       confirmButtonText: "Delete",
       cancelButtonText: "Cancel",
@@ -95,59 +104,131 @@ function CategoryInventory() {
       );
     }
   };
+  /* _______________________ BULK DELETE FUNCTION _______________________*/
+  const handleBulkDelete = async () => {
+    const selectedRows = table.getSelectedRowModel().rows;
 
-  /* ---------------- TABLE COLUMNS ---------------- */
+    if (selectedRows.length === 0) {
+      return Swal.fire({
+        icon: "info",
+        title: "No Selection",
+        text: "Please select at least one row",
+        background: "#0f172a",
+        color: "#e5e7eb",
+        confirmButtonColor: "#3b82f6",
+      });
+    }
+
+    const ids = selectedRows.map((row) => row.original.id);
+
+    const result = await Swal.fire({
+      title: `Delete ${ids.length} Members?`,
+      text: "This action cannot be undone!",
+      icon: "warning",
+
+      /* COLORS CONTROL */
+      background: "#0f172a", // dark bg (tailwind slate-900)
+      color: "#e5e7eb", // text color
+
+      showCancelButton: true,
+      confirmButtonText: "Delete All",
+      cancelButtonText: "Cancel",
+
+      confirmButtonColor: "#ef4444", // red-500
+      cancelButtonColor: "#64748b", // slate-500
+
+      reverseButtons: true,
+
+      /* Animation UX */
+      showClass: {
+        popup: "animate__animated animate__fadeInDown",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp",
+      },
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      /* FAST PARALLEL DELETE */
+      await Promise.all(ids.map((id) => deleteCategory(id)));
+      /* UPDATE UI */
+      setData((prev) => prev.filter((m) => !ids.includes(m.id)));
+      /* CLEAR SELECTION */
+      setRowSelection({});
+      Swal.fire({
+        icon: "success",
+        title: "Deleted!",
+        text: `${ids.length} members removed`,
+        timer: 1500,
+        showConfirmButton: false,
+        background: "#0f172a",
+        color: "#e5e7eb",
+      });
+    } catch (err) {
+      console.error(err);
+
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Bulk delete failed",
+        background: "#0f172a",
+        color: "#e5e7eb",
+        confirmButtonColor: "#ef4444",
+      });
+    }
+  };
+  /* __________________ TABLE __________________ */
+  const baseColumns = getCategoriesColumns(handleCategoriesDelete);
+
   const columns = [
     {
-      accessorKey: "id",
-      header: "ID",
-      size: 60,
-    },
-    {
-      accessorKey: "name",
-      header: "Category Name",
-      enableColumnFilter: true,
-    },
-    {
-      accessorKey: "description",
-      header: "Description",
-      enableColumnFilter: true,
-      cell: ({ row }) => row.original.description || "—",
-    },
-    {
-      id: "actions",
-      header: "Actions",
+      id: "select",
+      size: 0,
+      header: ({ table }) => (
+        <input
+          type="checkbox"
+          title="Select All Row"
+          checked={table.getIsAllPageRowsSelected()}
+          onChange={table.getToggleAllPageRowsSelectedHandler()}
+        />
+      ),
       cell: ({ row }) => (
-        <div className={styles.acitonsbtn}>
-          <button
-            onClick={() => navigate(`/updatecategory/${row.original.id}`)}
-            className={styles.editBtn}
-            title="Edit Category"
-          >
-            <i className="fa-solid fa-file-pen" />
-          </button>
-          <button
-            onClick={() => handleDelete(row.original)}
-            className={styles.deleteBtn}
-            title="Delete Category"
-          >
-            <i className="fa-solid fa-trash" />
-          </button>
-        </div>
+        <input
+          type="checkbox"
+          checked={row.getIsSelected()}
+          onChange={row.getToggleSelectedHandler()}
+          onClick={(e) => e.stopPropagation()}
+        />
       ),
     },
+    ...baseColumns,
   ];
-
   /* ---------------- TANSTACK TABLE ---------------- */
   const table = useReactTable({
     data,
     columns,
-    state: { globalFilter, columnFilters, columnVisibility },
-
+    state: {
+      globalFilter,
+      columnFilters,
+      columnVisibility,
+      columnOrder,
+      columnSizing,
+      columnSizingInfo,
+      rowSelection,
+    },
     initialState: {
       pagination: { pageSize: 10, pageIndex: 0 },
       sorting: [{ id: "id", desc: false }],
     },
+    onRowSelectionChange: setRowSelection,
+    enableRowSelection: true,
+
+    onColumnOrderChange: setColumnOrder,
+    onColumnSizingChange: setColumnSizing,
+    onColumnSizingInfoChange: setColumnSizingInfo,
+    columnResizeMode: "onChange",
 
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
@@ -161,7 +242,7 @@ function CategoryInventory() {
   /* _________________ SMART DROPDOWN _________________ */
   const handleToggleDropdown = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const dropdownHeight = 130;
+    const dropdownHeight = 125;
     const spaceBelow = window.innerHeight - rect.bottom;
     const openUp = spaceBelow < dropdownHeight;
     setDropdownStyle({
@@ -176,12 +257,15 @@ function CategoryInventory() {
     <>
       {/* -------- HEADER SECTION -------- */}
       <div className={styles.headerBar}>
+        <h1 className={styles.title} title="Book Categories Table Page">
+          <i class="fa-solid fa-layer-group"></i> Categories
+        </h1>
         <Link
           to="/addcategory"
           className={styles.chartBtn}
-          title="Create Member"
+          title="Add Categories"
         >
-          + Add Category
+          <i className="fa-solid fa-folder-plus"></i> Category
         </Link>
         {/* -------- CHART NAV BUTTON -------- */}
         <Link
@@ -189,19 +273,42 @@ function CategoryInventory() {
           className={styles.chartBtn}
           title="View Analytics Dashboard"
         >
-          View Charts
+          <i className="fa-solid fa-chart-line"></i> Charts
         </Link>
-        <h1 className={styles.title}>Category Inventory</h1>
 
         <div className={styles.searchContainer}>
           <input
             className={styles.SearchBox}
-            placeholder="Search all columns..."
+            title="Globle Seacrh Category ID, Categories Name and Titles "
+            placeholder="Search"
             value={globalFilter ?? ""}
             onChange={(e) => setGlobalFilter(e.target.value)}
           />
         </div>
-
+        {/* ___________Row Selection */}
+        <div className={styles.RowSelections} title="Selected Row Count">
+          <p className={styles.RowSelectionTitle}>Selected Row</p>
+          <span
+            className={`${styles.selectedRow} ${
+              Object.keys(rowSelection).length === 0
+                ? styles.CountSelectRow
+                : ""
+            }`}
+          >
+            {Object.keys(rowSelection).length}
+          </span>
+        </div>
+        <button
+          onClick={handleBulkDelete}
+          title="Selected Row Delete"
+          disabled={Object.keys(rowSelection).length === 0}
+          className={`${styles.bulkDeleteBtn} ${
+            Object.keys(rowSelection).length === 0 ? styles.disabledBtn : ""
+          }`}
+        >
+          <i className="fa-solid fa-trash"></i>
+          Bulk Delete
+        </button>
         {/* COLUMN VISIBILITY TOGGLE */}
         <div className={styles.columnToggle} title="Hide Columns feature">
           <details>
@@ -233,37 +340,85 @@ function CategoryInventory() {
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id}>
+                  <th
+                    key={header.id}
+                    style={{ width: header.getSize(), position: "relative" }}
+                    draggable
+                    onDragStart={(e) =>
+                      e.dataTransfer.setData("colId", header.column.id)
+                    }
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                      const draggedCol = e.dataTransfer.getData("colId");
+                      const targetCol = header.column.id;
+                      const newOrder = table
+                        .getAllLeafColumns()
+                        .map((c) => c.id);
+                      const fromIndex = newOrder.indexOf(draggedCol);
+                      const toIndex = newOrder.indexOf(targetCol);
+                      newOrder.splice(fromIndex, 1);
+                      newOrder.splice(toIndex, 0, draggedCol);
+                      setColumnOrder(newOrder);
+                    }}
+                  >
+                    {/* ── HEADER: title + sort icon ── */}
                     <div
-                      className={styles.headerContent}
-                      onClick={header.column.getToggleSortingHandler()}
+                      className={styles.headerTop}
+                      onClick={
+                        header.column.getCanSort()
+                          ? header.column.getToggleSortingHandler()
+                          : undefined
+                      }
+                      style={{
+                        cursor: header.column.getCanSort()
+                          ? "pointer"
+                          : "default",
+                      }}
                     >
-                      <span>
+                      <span className={styles.headerTitle}>
                         {flexRender(
                           header.column.columnDef.header,
                           header.getContext(),
                         )}
                       </span>
 
-                      <span className={styles.sortIcon}>
-                        {{
-                          asc: <i className="fa-solid fa-arrow-up"></i>,
-                          desc: <i className="fa-solid fa-arrow-down"></i>,
-                        }[header.column.getIsSorted()] ?? ""}
-                      </span>
+                      {/* ✅ Only show on sortable columns, no default icon */}
+                      {header.column.getCanSort() && (
+                        <span
+                          className={`${styles.sortIcon} ${header.column.getIsSorted() ? styles.sortActive : ""}`}
+                        >
+                          {header.column.getIsSorted() === "asc" && (
+                            <i className="fa-solid fa-arrow-up" />
+                          )}
+                          {header.column.getIsSorted() === "desc" && (
+                            <i className="fa-solid fa-arrow-down" />
+                          )}
+                          {!header.column.getIsSorted() && (
+                            <i className="fa-solid fa-sort" />
+                          )}
+                        </span>
+                      )}
                     </div>
 
-                    {/* per‑column filter */}
+                    {/* ── FILTER: only on filterable columns ── */}
                     {header.column.getCanFilter() && (
                       <input
                         className={styles.columnFilter}
-                        placeholder="Filter..."
+                        placeholder="Search..."
                         value={header.column.getFilterValue() ?? ""}
                         onChange={(e) =>
                           header.column.setFilterValue(e.target.value)
                         }
+                        onClick={(e) => e.stopPropagation()}
                       />
                     )}
+
+                    {/* ── RESIZER ── */}
+                    <div
+                      onMouseDown={header.getResizeHandler()}
+                      onTouchStart={header.getResizeHandler()}
+                      className={styles.resizer}
+                    />
                   </th>
                 ))}
               </tr>

@@ -27,7 +27,14 @@ function MemberInventory() {
   const [dropdownStyle, setDropdownStyle] = useState({});
   const dropdownRef = useRef(null);
 
-  /* ---------------- FETCH MEMBERS ---------------- */
+  /* Column Ordering (drag & drop) Column Resizing */
+  const [columnOrder, setColumnOrder] = useState([]);
+  const [columnSizing, setColumnSizing] = useState({});
+  const [columnSizingInfo, setColumnSizingInfo] = useState({});
+
+  /* Row Selection  */
+  const [rowSelection, setRowSelection] = useState({});
+  /* __________________ FETCH MEMBERS __________________ */
   useEffect(() => {
     const fetchMembers = async () => {
       try {
@@ -53,15 +60,17 @@ function MemberInventory() {
     document.addEventListener("mousedown", close);
     return () => document.removeEventListener("mousedown", close);
   }, []);
-  /* ---------------- DELETE MEMBER ---------------- */
+  /* __________________ DELETE MEMBER __________________ */
   const handleDelete = async (member) => {
     const result = await Swal.fire({
       title: "Delete Member?",
       html: `
-        <b>ID:</b> ${member.id} <br/>
-        <b>Name:</b> ${member.first_name} ${member.last_name}
-      `,
+          <b>ID:</b> ${member.id} <br/>
+          <b>Name:</b> ${member.first_name} ${member.last_name}
+        `,
       icon: "warning",
+      background: "#0f172a", // dark bg (tailwind slate-900)
+      color: "#e5e7eb", // text color
       showCancelButton: true,
       confirmButtonText: "Delete",
       confirmButtonColor: "#d33",
@@ -85,19 +94,132 @@ function MemberInventory() {
       Swal.fire("Error", "Failed to delete member", "error");
     }
   };
+  /* _______________________ BULK DELETE FUNCTION _______________________*/
+  const handleBulkDelete = async () => {
+    const selectedRows = table.getSelectedRowModel().rows;
 
-  /* ---------------- TABLE ---------------- */
-  const columns = getColumns(handleDelete);
+    if (selectedRows.length === 0) {
+      return Swal.fire({
+        icon: "info",
+        title: "No Selection",
+        text: "Please select at least one row",
+        background: "#0f172a",
+        color: "#e5e7eb",
+        confirmButtonColor: "#3b82f6",
+      });
+    }
+
+    const ids = selectedRows.map((row) => row.original.id);
+
+    const result = await Swal.fire({
+      title: `Delete ${ids.length} Members?`,
+      text: "This action cannot be undone!",
+      icon: "warning",
+
+      /* COLORS CONTROL */
+      background: "#0f172a", // dark bg (tailwind slate-900)
+      color: "#e5e7eb", // text color
+
+      showCancelButton: true,
+      confirmButtonText: "Delete All",
+      cancelButtonText: "Cancel",
+
+      confirmButtonColor: "#ef4444", // red-500
+      cancelButtonColor: "#64748b", // slate-500
+
+      reverseButtons: true,
+
+      /* Animation UX */
+      showClass: {
+        popup: "animate__animated animate__fadeInDown",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp",
+      },
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      /* FAST PARALLEL DELETE */
+      await Promise.all(ids.map((id) => deleteMember(id)));
+      /* UPDATE UI */
+      setData((prev) => prev.filter((m) => !ids.includes(m.id)));
+      /* CLEAR SELECTION */
+      setRowSelection({});
+      Swal.fire({
+        icon: "success",
+        title: "Deleted!",
+        text: `${ids.length} members removed`,
+        timer: 1500,
+        showConfirmButton: false,
+        background: "#0f172a",
+        color: "#e5e7eb",
+      });
+    } catch (err) {
+      console.error(err);
+
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Bulk delete failed",
+        background: "#0f172a",
+        color: "#e5e7eb",
+        confirmButtonColor: "#ef4444",
+      });
+    }
+  };
+  /* __________________ TABLE __________________ */
+  const baseColumns = getColumns(handleDelete);
+
+  const columns = [
+    {
+      id: "select",
+      size: 10,
+      header: ({ table }) => (
+        <input
+          type="checkbox"
+          title="Select All Row"
+          checked={table.getIsAllPageRowsSelected()}
+          onChange={table.getToggleAllPageRowsSelectedHandler()}
+        />
+      ),
+      cell: ({ row }) => (
+        <input
+          type="checkbox"
+          checked={row.getIsSelected()}
+          onChange={row.getToggleSelectedHandler()}
+          onClick={(e) => e.stopPropagation()}
+        />
+      ),
+    },
+    ...baseColumns,
+  ];
 
   const table = useReactTable({
     data,
     columns,
-    state: { globalFilter, columnFilters, columnVisibility },
+    state: {
+      globalFilter,
+      columnFilters,
+      columnVisibility,
+      columnOrder,
+      columnSizing,
+      columnSizingInfo,
+      rowSelection,
+    },
 
     initialState: {
       pagination: { pageSize: 10 },
       sorting: [{ id: "id", desc: false }],
     },
+    onRowSelectionChange: setRowSelection,
+    enableRowSelection: true,
+
+    onColumnOrderChange: setColumnOrder,
+    onColumnSizingChange: setColumnSizing,
+    onColumnSizingInfoChange: setColumnSizingInfo,
+    columnResizeMode: "onChange",
 
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
@@ -111,7 +233,7 @@ function MemberInventory() {
   /* _________________ SMART DROPDOWN _________________ */
   const handleToggleDropdown = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const dropdownHeight = 130;
+    const dropdownHeight = 125;
     const spaceBelow = window.innerHeight - rect.bottom;
     const openUp = spaceBelow < dropdownHeight;
     setDropdownStyle({
@@ -125,12 +247,15 @@ function MemberInventory() {
     <>
       {/* HEADER */}
       <div className={styles.headerBar}>
+        <h1 className={styles.title} title="Members Page">
+          <i className="fa-solid fa-users"></i>Members
+        </h1>
         <Link
           to="/createmember"
-          className={styles.chartBtn}
-          title="Create Member"
+          className={styles.addBtn}
+          title="Add New Member"
         >
-          + Add Member
+          <i class="fa-solid fa-user-plus"></i> Member
         </Link>
         {/* -------- CHART NAV BUTTON -------- */}
         <Link
@@ -138,20 +263,45 @@ function MemberInventory() {
           className={styles.chartBtn}
           title="View Analytics Dashboard"
         >
-          View Charts
+          <i className="fa-solid fa-chart-line"></i> Charts
         </Link>
-        <h1 className={styles.title}>Member Records</h1>
-        <div className={styles.searchContainer}>
+        <div
+          className={styles.searchContainer}
+          title="Globle Seacrh Member ID, Name, Email, State, City "
+        >
           <input
             className={styles.SearchBox}
-            placeholder="Search all columns..."
+            placeholder="Search"
             value={globalFilter ?? ""}
             onChange={(e) => setGlobalFilter(e.target.value)}
           />
         </div>
-
-        {/* COLUMN TOGGLE */}
-        <div className={styles.columnToggle} title="Hide Columns feature">
+        {/* ___________Row Selection */}
+        <div className={styles.RowSelections} title="Selected Row Count">
+          <p className={styles.RowSelectionTitle}>Selected Row</p>
+          <span
+            className={`${styles.selectedRow} ${
+              Object.keys(rowSelection).length === 0
+                ? styles.CountSelectRow
+                : ""
+            }`}
+          >
+            {Object.keys(rowSelection).length}
+          </span>
+        </div>
+        <button
+          onClick={handleBulkDelete}
+          title="Selected Row Delete"
+          disabled={Object.keys(rowSelection).length === 0}
+          className={`${styles.bulkDeleteBtn} ${
+            Object.keys(rowSelection).length === 0 ? styles.disabledBtn : ""
+          }`}
+        >
+          <i className="fa-solid fa-trash"></i>
+          Bulk Delete
+        </button>
+        {/*_________ COLUMN TOGGLE */}
+        <div className={styles.columnToggle} title="Hide Columns">
           <details>
             <summary>
               <i className="fa fa-ellipsis-v"></i>
@@ -177,37 +327,88 @@ function MemberInventory() {
       <div className={styles.tableWrapper}>
         <table className={styles.table}>
           <thead className={styles.thead}>
-            {table.getHeaderGroups().map((hg) => (
-              <tr key={hg.id}>
-                {hg.headers.map((header) => (
-                  <th key={header.id}>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    style={{ width: header.getSize(), position: "relative" }}
+                    draggable
+                    onDragStart={(e) =>
+                      e.dataTransfer.setData("colId", header.column.id)
+                    }
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                      const draggedCol = e.dataTransfer.getData("colId");
+                      const targetCol = header.column.id;
+                      const newOrder = table
+                        .getAllLeafColumns()
+                        .map((c) => c.id);
+                      const fromIndex = newOrder.indexOf(draggedCol);
+                      const toIndex = newOrder.indexOf(targetCol);
+                      newOrder.splice(fromIndex, 1);
+                      newOrder.splice(toIndex, 0, draggedCol);
+                      setColumnOrder(newOrder);
+                    }}
+                  >
+                    {/* ── HEADER: title + sort icon ── */}
                     <div
-                      className={styles.headerContent}
-                      onClick={header.column.getToggleSortingHandler()}
+                      className={styles.headerTop}
+                      onClick={
+                        header.column.getCanSort()
+                          ? header.column.getToggleSortingHandler()
+                          : undefined
+                      }
+                      style={{
+                        cursor: header.column.getCanSort()
+                          ? "pointer"
+                          : "default",
+                      }}
                     >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-
-                      <span className={styles.sortIcon} title="Sorting">
-                        {{
-                          asc: <i className="fa-solid fa-arrow-up"></i>,
-                          desc: <i className="fa-solid fa-arrow-down"></i>,
-                        }[header.column.getIsSorted()] ?? ""}
+                      <span className={styles.headerTitle}>
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                       </span>
+
+                      {/* ✅ Only show on sortable columns, no default icon */}
+                      {header.column.getCanSort() && (
+                        <span
+                          className={`${styles.sortIcon} ${header.column.getIsSorted() ? styles.sortActive : ""}`}
+                        >
+                          {header.column.getIsSorted() === "asc" && (
+                            <i className="fa-solid fa-arrow-up" />
+                          )}
+                          {header.column.getIsSorted() === "desc" && (
+                            <i className="fa-solid fa-arrow-down" />
+                          )}
+                          {!header.column.getIsSorted() && (
+                            <i className="fa-solid fa-sort" />
+                          )}
+                        </span>
+                      )}
                     </div>
 
+                    {/* ── FILTER: only on filterable columns ── */}
                     {header.column.getCanFilter() && (
                       <input
                         className={styles.columnFilter}
-                        placeholder="Filter..."
+                        placeholder="Search..."
                         value={header.column.getFilterValue() ?? ""}
                         onChange={(e) =>
                           header.column.setFilterValue(e.target.value)
                         }
+                        onClick={(e) => e.stopPropagation()}
                       />
                     )}
+
+                    {/* ── RESIZER ── */}
+                    <div
+                      onMouseDown={header.getResizeHandler()}
+                      onTouchStart={header.getResizeHandler()}
+                      className={styles.resizer}
+                    />
                   </th>
                 ))}
               </tr>

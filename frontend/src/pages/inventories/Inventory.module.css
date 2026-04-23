@@ -10,9 +10,9 @@ body {
 .headerBar {
   margin-top: 4rem;
   animation: fadeInUp 0.5s ease;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
   /* border: 1px solid rgb(255, 183, 0);` */
-  background: #1d222dad;
+  background: none;
   width: 100%;
   height: 60px;
   z-index: 1000;
@@ -24,17 +24,40 @@ body {
 
 .title {
   animation: fadeInUp 0.5s ease;
-  color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(237, 230, 222, 0.144);
-  background: #0e141d;
-  box-shadow: inset 0 0 0.4rem #ffffff3c;
+  /* border: 1px solid rgba(237, 230, 222, 0.144); */
+  /* box-shadow: 0 0.1rem 0.2rem rgba(125, 148, 172, 0.564); */
   display: flex;
   justify-content: center;
-  font-size: 1.25rem;
+  gap: 0.5rem;
+  font-size: 1.1rem;
   width: fit-content;
-  padding: 0.4rem;
-  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem;
+  background: #0e141d;
+  border-bottom: 2px solid #4e4e4e6c;
+  border-left: 2px solid #4e4e4e6c;
   border-radius: 0.3rem;
+  /* font-weight: bold; */
+}
+/* CHART BUTTON */
+.chartBtn,
+.addBtn {
+  padding: 6px 12px;
+  font-size: 1rem;
+  background: #1d2128;
+  /* font-weight: bold; */
+  border-radius: 0.3rem;
+  text-decoration: none;
+  color: #adadad;
+  box-shadow: 0.1rem 0.1rem rgba(27, 137, 255, 0.496);
+  transition: 0.3s;
+}
+.chartBtn:hover,
+.addBtn:hover {
+  transform: translateY(-1px);
+  background: #3478ffa2;
+  color: #ffffff;
+  box-shadow: 0 0.1rem 0.2rem rgba(29, 34, 40, 0.564);
 }
 
 /* _____________ SEARCH _____________ */
@@ -47,14 +70,15 @@ body {
 .SearchBox {
   width: 25rem;
   padding: 0.5rem;
-  border-radius: 4px;
-  background: #0e141d;
-  border: 1px solid #d5d5d565;
+  border-radius: 1rem;
+  background: #101215;
+  border: 1px solid #fafdff24;
   color: #d5d5d5;
   font-size: 0.9rem;
   cursor: text;
   transition: 0.2s;
-  text-align: center;
+  padding-left: 2rem;
+  text-align: start;
 }
 
 .SearchBox:focus {
@@ -63,7 +87,69 @@ body {
   box-shadow: 0 0 0 2px #2563eb;
 }
 
-/* _____________ CHECKBOX ROW _____________ */
+/*_________________________ Row Selection Title _________*/
+/* Selected Row */
+
+.RowSelections {
+  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  background: #0e141d;
+  padding: 0.4rem;
+  border-radius: 0.3rem;
+  /* box-shadow: .2rem 0 #007bff; */
+  border-bottom: 2px solid #4e4e4e6c;
+  border-left: 2px solid #4e4e4e6c;
+}
+.RowSelectionTitle {
+  color: #bebebe;
+}
+.selectedRow {
+  text-align: center;
+  color: hsl(207, 100%, 70%);
+  /* background: #000000; */
+  border: none;
+  padding-right: 0.2rem;
+  padding-left: 0.5rem;
+  /* border-radius: 0.1rem; */
+  border-left: 1px solid #ffffff7b;
+  /* border-right: 1px solid #ffffff; */
+}
+.CountSelectRow {
+  color: #ffffff;
+}
+/* BULK DELETE BUTTON */
+.bulkDeleteBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border-radius: 0.35rem;
+  border: 1px solid #ef444457;
+  background: #1f1f1f;
+  color: #f87171;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* HOVER */
+.bulkDeleteBtn:hover:not(.disabledBtn) {
+  background: #ef4444;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+}
+
+/* DISABLED */
+.disabledBtn {
+  opacity: 0.4;
+  cursor: no-drop;
+  /* cursor: not-allowed; */
+}
+
+/* ________________________ Hide Columns CHECKBOX ROW _____________ */
 /* Container must be relative so the menu positions itself correctly */
 .columnToggle {
   display: flex;
@@ -100,16 +186,15 @@ body {
   border-radius: 0.4rem;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5);
   z-index: 999;
-  min-width: 10rem;
+  width: 9.7rem;
 }
 
 /* Item Styling */
 .dropdownItem {
   display: flex;
-  flex-direction: row-reverse; /* Checkbox on right, text on left */
-  justify-content: flex-end; /* Push everything to the end */
-  align-items: center;
-  gap: 10px;
+  flex-direction: row; 
+  justify-content: start;
+  gap: .65rem;
   padding: 0.4rem;
   text-transform: capitalize;
   font-size: 0.85rem;
@@ -154,55 +239,110 @@ body {
   width: 100%;
   border-collapse: collapse;
   min-width: 900px;
-
 }
 
 /* _____________ HEAD _____________ */
 .thead th {
   background: #12161d;
-  color: rgb(255, 255, 255);
-  font-size: 0.9rem;
-  padding: 0.7rem;
+  font-size: 0.85rem;
+  color: #fff;
+  padding: 0.5rem 0.5rem 0.6rem;
+  text-transform: capitalize;
   border-right: 1px solid #2d2d2d6a;
   border-bottom: 1px solid #2e2e2e95;
+  vertical-align: top; /* IMPORTANT */
 }
 
 .thead th:last-child {
   border-right: none;
 }
 
-/* _____________ HEADER FLEX _____________ */
-.headerContent {
+/* HEADER STRUCTURE */
+/* ── HEADER TOP ── */
+.headerTop {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  cursor: pointer;
+  justify-content: space-between;
+  gap: 4px;
+  min-height: 20px;
+  user-select: none;
 }
 
+.headerTitle {
+  flex: 1;
+  text-align: left;
+  font-weight: 500;
+  font-size: 0.78rem;
+  color: #e6e6e6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── SORT ICON ──
+   Visible at low opacity always on hoverable columns,
+   full opacity when active — standard SaaS pattern      */
 .sortIcon {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
+  color: #d1e2ffa1;
+  display: flex;
+  align-items: center;
+  opacity: 0; /* hidden by default */
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
 }
 
-/* _____________ FILTER _____________ */
+th:hover .sortIcon {
+  opacity: 0.5; /* visible on hover */
+}
+
+.sortActive {
+  /* active sort — always fully visible */
+  opacity: 1 !important;
+  color: #60a5fa;
+}
+
+/* ── COLUMN FILTER INPUT ── */
 .columnFilter {
-  margin-top: 0.4rem;
+  margin-top: 0.3rem;
   width: 100%;
-  padding: 0.3rem;
-  font-size: 0.75rem;
-  max-width: 5rem;
-  cursor: text;
-  background: #0a0e15;
-  border: 1px solid #d5d5d565;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.68rem;
+  border-radius: 6px;
+  background: #0b0c0f;
+  border: 1px solid #ffffff12;
   color: #d5d5d5;
-  transition: 0.2s;
-  text-align: center;
-  border-radius: 0.2rem;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .columnFilter:focus {
   outline: none;
   border-color: #2563eb;
-  box-shadow: 0 0 0 2px #2563eb;
+  box-shadow: 0 0 0 1px #2563eb55;
+}
+
+.columnFilter::placeholder {
+  color: #4a4a4a;
+  font-size: 0.65rem;
+}
+
+/* ── RESIZER ── */
+.resizer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  cursor: col-resize;
+  background: transparent;
+  transition: background 0.2s;
+  user-select: none;
+}
+
+th:hover .resizer {
+  background: #3b82f655;
 }
 
 /* _____________ BODY _____________ */
@@ -213,7 +353,7 @@ body {
   transform: scale(1.002);
 }
 .tbody td {
-  padding: 0.6rem;
+  padding: 0.4rem;
   font-size: 0.8rem;
   text-align: center;
   border-right: 1px solid #2d2d2d6a;
@@ -243,7 +383,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: .75rem;
+  margin-top: 0.75rem;
   gap: 1rem;
   flex-wrap: wrap;
   position: relative;
@@ -258,12 +398,12 @@ body {
 /* BUTTON */
 .pageSizeButton {
   padding: 0.35rem 0.3rem;
-  color: #898989;
-  background: #181c24;
+  color: #888888;
+  background: #232834;
   border-radius: 0.3rem;
   font-size: 0.85rem;
   cursor: pointer;
-  border: 1px solid #44444450;
+  /* border: 1px solid #44444450; */
   display: flex;
   align-items: center;
   gap: 6px;
@@ -279,13 +419,13 @@ body {
   position: fixed; /* IMPORTANT */
   background: #20252e;
   border-radius: 6px;
-  padding: 0.3rem;
+  padding: 0.2rem;
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  min-width: 5rem;
+  min-width: 4.5rem;
   z-index: 9999;
-  border: 1px solid #44444445;
+  /* border: 1px solid #44444445; */
   animation: fadeIn 0.2s ease;
 }
 
@@ -306,9 +446,10 @@ body {
 
 /* ACTIVE */
 .activeItem {
-  background: #111827;
-  color: #60a5fa;
-  border: 1px solid #3b82f6;
+  background: #000000 !important;
+  color: #ffffff;
+  box-shadow: inset 1rem #ffffff;
+  /* border: 1px solid #dddddd91; */
 }
 
 /* _____________ PAGINATION BUTTONS _____________ */
@@ -320,10 +461,11 @@ body {
 }
 
 .paginationControls button {
-  padding: .3rem;
-  background: #161b22;
-  border: 1px solid #444;
-  color: #e5e5e5;
+  padding: 0.3rem;
+  background: #1e2632;
+  /* border: 1px solid #4444446b; */
+  border: none;
+  color: #c2c2c2b8;
   border-radius: 0.3rem;
   cursor: pointer;
   font-size: 0.8rem;
@@ -331,8 +473,9 @@ body {
 }
 
 .paginationControls button:hover:not(:disabled) {
-  background: #212530;
+  background: #08090b;
   color: white;
+  /* border: 1px solid #adadad91; */
 }
 
 .paginationControls button:disabled {
@@ -344,7 +487,15 @@ body {
   font-size: 0.85rem;
   color: #ccc;
 }
-
+.activeBtn {
+  background: #050506 !important;
+  color: #fff;
+}
+.paginationControls button:focus {
+  outline: none;
+  background: #000000 !important;
+  color: #fff;
+}
 /* _____________ SKELETON ROW _____________ */
 .skeletonRow {
   height: 2.5rem;
@@ -423,23 +574,6 @@ body {
   }
 }
 
-/* CHART BUTTON */
-.chartBtn {
-  padding: 6px 12px;
-  font-size: 1rem;
-  background: #171a20;
-  font-weight: bold;
-  border-radius: 0.3rem;
-  text-decoration: none;
-  color: #adadad;
-  transition: 0.3s;
-}
-.chartBtn:hover {
-  transform: translateY(-1px);
-  background: #262a36;
-  color: #ffffff;
-  box-shadow: 0 0.1rem 0.2rem rgba(125, 148, 172, 0.564);
-}
 /* RESPONSIVE BREAKPOINTS */
 /* _____________ TABLET _____________ */
 @media (max-width: 1024px) {

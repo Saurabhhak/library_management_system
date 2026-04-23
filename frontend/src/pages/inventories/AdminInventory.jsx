@@ -17,15 +17,20 @@ function DisplayAdmin() {
   /* ---------------- STATE ---------------- */
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
+  /* Column Ordering (drag & drop) Column Resizing */
+  const [columnOrder, setColumnOrder] = useState([]);
+  const [columnSizing, setColumnSizing] = useState({});
+  const [columnSizingInfo, setColumnSizingInfo] = useState({});
 
   const [pageSizeOpen, setPageSizeOpen] = useState(false);
   const [dropdownStyle, setDropdownStyle] = useState({});
+  /* Row Selection  */
+  const [rowSelection, setRowSelection] = useState({});
   const dropdownRef = useRef(null);
-
+  const [activePageBtn, setActivePageBtn] = useState("");
   /* ---------------- FETCH ADMINS ---------------- */
   useEffect(() => {
     const fetchAdmins = async () => {
@@ -58,6 +63,8 @@ function DisplayAdmin() {
         icon: "error",
         title: "Action Not Allowed",
         text: "SuperAdmin cannot be deleted!",
+        background: "#0f172a", // dark bg (tailwind slate-900)
+        color: "#e5e7eb", // text color
       });
     }
     const result = await Swal.fire({
@@ -68,6 +75,8 @@ function DisplayAdmin() {
       <b>Name:</b> ${admin.first_name} ${admin.last_name}
     `,
       icon: "warning",
+      background: "#0f172a", // dark bg (tailwind slate-900)
+      color: "#e5e7eb", // text color
       showCancelButton: true,
       confirmButtonText: "Delete",
       cancelButtonText: "Cancel",
@@ -95,23 +104,137 @@ function DisplayAdmin() {
       });
     }
   };
+  /* _______________________ BULK DELETE FUNCTION _______________________*/
+  const handleBulkDelete = async () => {
+    const selectedRows = table.getSelectedRowModel().rows;
 
+    if (selectedRows.length === 0) {
+      return Swal.fire({
+        icon: "info",
+        title: "No Selection",
+        text: "Please select at least one row",
+        background: "#0f172a",
+        color: "#e5e7eb",
+        confirmButtonColor: "#3b82f6",
+      });
+    }
+
+    const ids = selectedRows.map((row) => row.original.id);
+
+    const result = await Swal.fire({
+      title: `Delete ${ids.length} Members?`,
+      text: "This action cannot be undone!",
+      icon: "warning",
+
+      /* COLORS CONTROL */
+      background: "#0f172a",
+      color: "#e5e7eb",
+
+      showCancelButton: true,
+      confirmButtonText: "Delete All",
+      cancelButtonText: "Cancel",
+
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#64748b",
+
+      reverseButtons: true,
+
+      /* Animation UX */
+      showClass: {
+        popup: "animate__animated animate__fadeInDown",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp",
+      },
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      /* FAST PARALLEL DELETE */
+      await Promise.all(ids.map((id) => deleteAdmin(id)));
+      /* UPDATE UI */
+      setData((prev) => prev.filter((m) => !ids.includes(m.id)));
+      /* CLEAR SELECTION */
+      setRowSelection({});
+      Swal.fire({
+        icon: "success",
+        title: "Deleted!",
+        text: `${ids.length} members removed`,
+        timer: 1500,
+        showConfirmButton: false,
+        background: "#0f172a",
+        color: "#e5e7eb",
+      });
+    } catch (err) {
+      console.error(err);
+
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Bulk delete failed",
+        background: "#0f172a",
+        color: "#e5e7eb",
+        confirmButtonColor: "#ef4444",
+      });
+    }
+  };
   /* ---------------- TABLE COLUMNS ---------------- */
 
   // columns generate with delete function
-  const columns = getColumns(handleDelete);
+  /* __________________ TABLE __________________ */
+  const baseColumns = getColumns(handleDelete);
 
-  /* ---------------- TANSTACK TABLE ---------------- */
+  const columns = [
+    {
+      id: "select",
+      size: 10,
+      header: ({ table }) => (
+        <input
+          type="checkbox"
+          title="Select All Row"
+          checked={table.getIsAllPageRowsSelected()}
+          onChange={table.getToggleAllPageRowsSelectedHandler()}
+        />
+      ),
+      cell: ({ row }) => (
+        <input
+          type="checkbox"
+          checked={row.getIsSelected()}
+          onChange={row.getToggleSelectedHandler()}
+          onClick={(e) => e.stopPropagation()}
+        />
+      ),
+    },
+    ...baseColumns,
+  ];
 
+  /* --------------- TANSTACK TABLE ---------------- */
   const table = useReactTable({
     data,
     columns,
-    state: { globalFilter, columnFilters, columnVisibility },
+    state: {
+      globalFilter,
+      columnFilters,
+      columnVisibility,
+      columnOrder,
+      columnSizing,
+      columnSizingInfo,
+      rowSelection,
+    },
 
     initialState: {
       pagination: { pageSize: 10, pageIndex: 0 },
       sorting: [{ id: "id", desc: false }],
     },
+
+    onRowSelectionChange: setRowSelection,
+    enableRowSelection: true,
+
+    onColumnOrderChange: setColumnOrder,
+    onColumnSizingChange: setColumnSizing,
+    onColumnSizingInfoChange: setColumnSizingInfo,
+    columnResizeMode: "onChange",
 
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
@@ -126,7 +249,7 @@ function DisplayAdmin() {
   /* _________________ SMART DROPDOWN _________________ */
   const handleToggleDropdown = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const dropdownHeight = 130;
+    const dropdownHeight = 125;
     const spaceBelow = window.innerHeight - rect.bottom;
     const openUp = spaceBelow < dropdownHeight;
     setDropdownStyle({
@@ -140,8 +263,16 @@ function DisplayAdmin() {
     <>
       {/* -------- HEADER SECTION -------- */}
       <div className={styles.headerBar}>
-        <Link to="/createadmin" className={styles.chartBtn}>
-          + Add Admin
+        <h1 className={styles.title} title="Admin Table Page">
+          <i className="fa-solid fa-user-shield" />
+          Admins
+        </h1>
+        <Link
+          to="/createadmin"
+          className={styles.chartBtn}
+          title="Create New Admin"
+        >
+          <i className="fa-solid fa-user-plus"></i> Admin
         </Link>
         {/* -------- CHART NAV BUTTON -------- */}
         <Link
@@ -149,21 +280,44 @@ function DisplayAdmin() {
           className={styles.chartBtn}
           title="View Analytics Dashboard"
         >
-          View Charts
+          <i className="fa-solid fa-chart-line"></i> Charts
         </Link>
-        <h1 className={styles.title}>Admin Records</h1>
-
         <div className={styles.searchContainer}>
           <input
             className={styles.SearchBox}
-            placeholder="Search all columns..."
+            title="Globle Seacrh Adimn ID, Name, Email, State, City and Role "
+            placeholder="Search"
             value={globalFilter ?? ""}
             onChange={(e) => setGlobalFilter(e.target.value)}
           />
         </div>
+        {/* ___________Row Selection */}
+        <div className={styles.RowSelections} title="Selected Row Count">
+          <p className={styles.RowSelectionTitle}>Selected Row</p>
+          <span
+            className={`${styles.selectedRow} ${
+              Object.keys(rowSelection).length === 0
+                ? styles.CountSelectRow
+                : ""
+            }`}
+          >
+            {Object.keys(rowSelection).length}
+          </span>
+        </div>
+        <button
+          onClick={handleBulkDelete}
+          title="Selected Row Delete"
+          disabled={Object.keys(rowSelection).length === 0}
+          className={`${styles.bulkDeleteBtn} ${
+            Object.keys(rowSelection).length === 0 ? styles.disabledBtn : ""
+          }`}
+        >
+          <i className="fa-solid fa-trash"></i>
+          Bulk Delete
+        </button>
 
-        {/* COLUMN VISIBILITY */}
-        <div className={styles.columnToggle} title="Hide Columns feature">
+        {/* ___________________COLUMN VISIBILITY */}
+        <div className={styles.columnToggle} title="Hide Columns">
           <details>
             <summary>
               <i className="fa fa-ellipsis-v"></i>
@@ -184,57 +338,98 @@ function DisplayAdmin() {
         </div>
       </div>
       {/* -------- TABLE -------- */}
-
       <div className={styles.tableWrapper}>
         <table className={styles.table}>
           {/* -------- TABLE HEADER -------- */}
-
           <thead className={styles.thead}>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id}>
-                    {/* column title + sorting */}
-
+                  <th
+                    key={header.id}
+                    style={{ width: header.getSize(), position: "relative" }}
+                    draggable
+                    onDragStart={(e) =>
+                      e.dataTransfer.setData("colId", header.column.id)
+                    }
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                      const draggedCol = e.dataTransfer.getData("colId");
+                      const targetCol = header.column.id;
+                      const newOrder = table
+                        .getAllLeafColumns()
+                        .map((c) => c.id);
+                      const fromIndex = newOrder.indexOf(draggedCol);
+                      const toIndex = newOrder.indexOf(targetCol);
+                      newOrder.splice(fromIndex, 1);
+                      newOrder.splice(toIndex, 0, draggedCol);
+                      setColumnOrder(newOrder);
+                    }}
+                  >
+                    {/* ── HEADER: title + sort icon ── */}
                     <div
-                      className={styles.headerContent}
-                      onClick={header.column.getToggleSortingHandler()}
+                      className={styles.headerTop}
+                      onClick={
+                        header.column.getCanSort()
+                          ? header.column.getToggleSortingHandler()
+                          : undefined
+                      }
+                      style={{
+                        cursor: header.column.getCanSort()
+                          ? "pointer"
+                          : "default",
+                      }}
                     >
-                      <span>
+                      <span className={styles.headerTitle}>
                         {flexRender(
                           header.column.columnDef.header,
                           header.getContext(),
                         )}
                       </span>
 
-                      <span className={styles.sortIcon}>
-                        {{
-                          asc: <i className="fa-solid fa-arrow-up"></i>,
-                          desc: <i className="fa-solid fa-arrow-down"></i>,
-                        }[header.column.getIsSorted()] ?? ""}
-                      </span>
+                      {/* ✅ Only show on sortable columns, no default icon */}
+                      {header.column.getCanSort() && (
+                        <span
+                          className={`${styles.sortIcon} ${header.column.getIsSorted() ? styles.sortActive : ""}`}
+                        >
+                          {header.column.getIsSorted() === "asc" && (
+                            <i className="fa-solid fa-arrow-up" />
+                          )}
+                          {header.column.getIsSorted() === "desc" && (
+                            <i className="fa-solid fa-arrow-down" />
+                          )}
+                          {!header.column.getIsSorted() && (
+                            <i className="fa-solid fa-sort" />
+                          )}
+                        </span>
+                      )}
                     </div>
 
-                    {/* column filter */}
-
+                    {/* ── FILTER: only on filterable columns ── */}
                     {header.column.getCanFilter() && (
                       <input
                         className={styles.columnFilter}
-                        placeholder="Filter..."
+                        placeholder="Search..."
                         value={header.column.getFilterValue() ?? ""}
                         onChange={(e) =>
                           header.column.setFilterValue(e.target.value)
                         }
+                        onClick={(e) => e.stopPropagation()}
                       />
                     )}
+
+                    {/* ── RESIZER ── */}
+                    <div
+                      onMouseDown={header.getResizeHandler()}
+                      onTouchStart={header.getResizeHandler()}
+                      className={styles.resizer}
+                    />
                   </th>
                 ))}
               </tr>
             ))}
           </thead>
-
           {/* -------- TABLE BODY -------- */}
-
           <tbody className={styles.tbody}>
             {loading ? (
               [...Array(6)].map((_, i) => (
@@ -275,7 +470,6 @@ function DisplayAdmin() {
               Show {table.getState().pagination.pageSize}{" "}
               <i className="fa-solid fa-chevron-down"></i>
             </div>
-
             {pageSizeOpen && (
               <div className={styles.pageSizeMenu} style={dropdownStyle}>
                 {[5, 10, 20, 50].map((size) => (
@@ -297,18 +491,25 @@ function DisplayAdmin() {
               </div>
             )}
           </div>
-
           {/* -------- BUTTONS -------- */}
           <div className={styles.paginationControls}>
             <button
-              onClick={() => table.setPageIndex(0)}
+              onClick={() => {
+                table.setPageIndex(0);
+                setActivePageBtn("first"); // ADD
+              }}
+              className={activePageBtn === "first" ? styles.activeBtn : ""}
               disabled={!table.getCanPreviousPage()}
             >
               <i className="fa-solid fa-angles-left"></i> First
             </button>
 
             <button
-              onClick={() => table.previousPage()}
+              onClick={() => {
+                table.previousPage();
+                setActivePageBtn("prev"); // ADD
+              }}
+              className={activePageBtn === "prev" ? styles.activeBtn : ""}
               disabled={!table.getCanPreviousPage()}
             >
               <i className="fa-solid fa-chevron-left"></i> Prev
@@ -320,14 +521,22 @@ function DisplayAdmin() {
             </span>
 
             <button
-              onClick={() => table.nextPage()}
+              onClick={() => {
+                table.nextPage();
+                setActivePageBtn("next"); // ADD
+              }}
+              className={activePageBtn === "next" ? styles.activeBtn : ""}
               disabled={!table.getCanNextPage()}
             >
               Next <i className="fa-solid fa-chevron-right"></i>
             </button>
 
             <button
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              onClick={() => {
+                table.setPageIndex(table.getPageCount() - 1);
+                setActivePageBtn("last"); // ADD
+              }}
+              className={activePageBtn === "last" ? styles.activeBtn : ""}
               disabled={!table.getCanNextPage()}
             >
               Last <i className="fa-solid fa-angles-right"></i>
