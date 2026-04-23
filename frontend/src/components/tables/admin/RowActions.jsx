@@ -16,7 +16,7 @@ function RowActions({ admin, onDelete }) {
       <button
         className={styles.deleteBtn}
         onClick={() => onDelete(admin)}
-        // Button Disabled Option
+        /* Button Disabled Option */
         // disabled={admin.role === "superadmin"}
         // className={`${styles.ActionsDel} ${admin.role} === "superadmin" ? ${styles.disabledBtn} : ""`}
       >
