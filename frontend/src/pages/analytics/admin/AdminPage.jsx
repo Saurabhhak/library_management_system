@@ -2,12 +2,16 @@ import { useEffect, useState } from "react";
 import AdminChart from "../../../components/charts/admin/AdminChart";
 import styles from "./AdminPage.module.css";
 import { getAdmins } from "../../../services/admin/admin.service";
+import { Link } from "react-router-dom";
 
 function AdminPage() {
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedRole, setSelectedRole] = useState("");
+
+  /* FETCH */
   useEffect(() => {
-    const fetchAdmins = async () => {
+    (async () => {
       try {
         const res = await getAdmins();
         setAdmins(res?.data?.data || []);
@@ -16,67 +20,102 @@ function AdminPage() {
       } finally {
         setLoading(false);
       }
-    };
-    fetchAdmins();
+    })();
   }, []);
 
-  // Calculate Admin
-  const totalAdmins = admins.length;
-  const superAdmins = admins.filter((a) => a.role === "superadmin").length;
-  const normalAdmins = admins.filter((a) => a.role === "admin").length;
+  /* NORMALIZE */
+  const normalized = admins.map((a) => ({
+    ...a,
+    role: (a.role || "admin").toLowerCase(),
+  }));
 
-  if (loading) {
-    return (
-      <div className={styles.message}>
-        <i className="fa-solid fa-spinner fa-spin-pulse"></i> Loading admin
-        analytics...
-      </div>
-    );
-  }
+  /* FILTER */
+  const filtered = normalized.filter((a) => {
+    if (selectedRole && a.role !== selectedRole) return false;
+    return true;
+  });
+
+  /* STATS */
+  const total = filtered.length;
+  const superAdmins = filtered.filter((a) => a.role === "superadmin").length;
+  const adminsCount = filtered.filter((a) => a.role === "admin").length;
+
+  /* CHART DATA */
+  const chartData = {
+    labels: ["Super Admin", "Admin"],
+    values: [superAdmins, adminsCount],
+  };
+
+  if (loading) return <p className={styles.loading}>Loading...</p>;
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Admin Analytics</h1>
+      {/* HEADER */}
+      <div className={styles.header}>
+        <h1>
+          Admin Analytics <i className="fa-solid fa-chart-line"></i>
+        </h1>
 
-      {/* STATS CARDS */}
-      <div className={styles.statsGrid}>
-        <div className={styles.statCard}>
-          <p>Total Admins</p>
-          <h2>{totalAdmins}</h2>
-        </div>
+        <div className={styles.headerActions}>
+          <Link to="/admininventory" className={styles.inventoryBtn}>
+            <i className="fa-solid fa-table"></i> Admin Inventory
+          </Link>
 
-        <div className={styles.statCard}>
-          <p>Super Admins</p>
-          <h2>{superAdmins}</h2>
-        </div>
+          {/* FILTER */}
+          <select
+            value={selectedRole}
+            className={styles.selectItem}
+            onChange={(e) => setSelectedRole(e.target.value)}
+          >
+            <option value="">All</option>
+            <option value="superadmin">Super Admin</option>
+            <option value="admin">Admin</option>
+          </select>
 
-        <div className={styles.statCard}>
-          <p>Admins</p>
-          <h2>{normalAdmins}</h2>
+          {/* CLEAR */}
+          {selectedRole && (
+            <button
+              className={styles.clearBtn}
+              onClick={() => setSelectedRole("")}
+            >
+              Clear
+            </button>
+          )}
         </div>
       </div>
 
-      {/* CHART GRID */}
-      <div className={styles.grid}>
-        <div className={styles.card}>
-          <AdminChart admins={admins} type="donut" title="Admin Distribution" />
+      {/* STATS */}
+      <div className={styles.stats}>
+        <div className={styles.card}>Total: {total}</div>
+
+        <div className={`${styles.card} ${styles.super}`}>
+          Super Admin: {superAdmins}
         </div>
 
-        <div className={styles.card}>
-          <AdminChart admins={admins} type="bar" title="Admin Comparison" />
+        <div className={`${styles.card} ${styles.admin}`}>
+          Admin: {adminsCount}
         </div>
+      </div>
 
-        <div className={styles.card}>
-          <AdminChart admins={admins} type="line" title="Admin Trend" />
-        </div>
-        <div className={styles.card}>
+      {/* EMPTY */}
+      {total === 0 && <p>No admins found</p>}
+
+      {/* CHARTS */}
+      {total > 0 && (
+        <div className={styles.grid}>
           <AdminChart
-            admins={admins}
-            type="polararea"
-            title="Admin Role Distribution"
+            chartData={chartData}
+            type="doughnut"
+            title="Admin Distribution"
+          />
+
+          <AdminChart
+            chartData={chartData}
+            type="bar"
+            title="Admin Comparison"
           />
         </div>
-      </div>
+      )}
     </div>
   );
 }

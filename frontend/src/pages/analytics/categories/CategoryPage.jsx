@@ -1,14 +1,15 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { getCategories } from "../../../services/books/category.service";
 import CategoryCharts from "../../../components/charts/categories/CategoryCharts";
 import styles from "./CategoryPage.module.css";
+import { Link } from "react-router-dom";
 
 function CategoryPage() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hasDescription, setHasDescription] = useState("");
 
-  // ─── fetch ─────────────────────────────────────
+  /* FETCH */
   useEffect(() => {
     (async () => {
       try {
@@ -22,43 +23,42 @@ function CategoryPage() {
     })();
   }, []);
 
-  // ─── filter ────────────────────────────────────
-  const filtered = useMemo(() => {
-    return categories.filter((c) => {
-      if (hasDescription === "yes" && !c.description) return false;
-      if (hasDescription === "no" && c.description) return false;
-      return true;
-    });
-  }, [categories, hasDescription]);
+  /* FILTER */
+  const filtered = categories.filter((c) => {
+    if (hasDescription === "yes" && !c.description) return false;
+    if (hasDescription === "no" && c.description) return false;
+    return true;
+  });
 
-  // ─── charts ────────────────────────────────────
-  const charts = useMemo(() => {
-    const withDesc = filtered.filter((c) => c.description).length;
-    const withoutDesc = filtered.length - withDesc;
-
-    return {
-      descriptionChart: {
-        labels: ["With Description", "Without Description"],
-        values: [withDesc, withoutDesc],
-      },
-      nameLengthChart: {
-        labels: ["<10", "10–20", "20+"],
-        values: [
-          filtered.filter((c) => c.name?.length < 10).length,
-          filtered.filter((c) => c.name?.length >= 10 && c.name?.length <= 20)
-            .length,
-          filtered.filter((c) => c.name?.length > 20).length,
-        ],
-      },
-    };
-  }, [filtered]);
-
-  // ─── stats ─────────────────────────────────────
+  /* STATS */
   const total = filtered.length;
-  const withDesc = charts.descriptionChart.values[0] || 0;
-  const withoutDesc = charts.descriptionChart.values[1] || 0;
+  const withDesc = filtered.filter((c) => c.description).length;
+  const withoutDesc = filtered.filter((c) => !c.description).length;
 
-  // ─── loading ───────────────────────────────────
+  /* NAME LENGTH STATS */
+  const short = filtered.filter((c) => c.name?.length < 10).length;
+  const medium = filtered.filter(
+    (c) => c.name?.length >= 10 && c.name?.length <= 20,
+  ).length;
+  const long = filtered.filter((c) => c.name?.length > 20).length;
+
+  /* CHART DATA */
+  const descriptionChart = {
+    labels: ["With Description", "Without Description"],
+    values: [withDesc, withoutDesc],
+  };
+
+  const nameLengthChart = {
+    labels: ["<10", "10–20", "20+"],
+    values: [short, medium, long],
+  };
+
+  /* CLEAR */
+  function handleClear() {
+    setHasDescription("");
+  }
+
+  /* LOADING */
   if (loading) {
     return (
       <div className={styles.loaderPage}>
@@ -72,17 +72,33 @@ function CategoryPage() {
     <div className={styles.container}>
       {/* HEADER */}
       <div className={styles.header}>
-        <h1>Category Analytics</h1>
+        <h1>
+          Category Analytics <i className="fa-solid fa-chart-line"></i>
+        </h1>
 
-        <select
-          value={hasDescription}
-          className={styles.selectItem}
-          onChange={(e) => setHasDescription(e.target.value)}
-        >
-          <option className={styles.options} value="">All</option>
-          <option className={styles.options} value="yes">With Description</option>
-          <option className={styles.options} value="no">Without Description</option>
-        </select>
+        <div className={styles.headerActions}>
+          <Link to="/categoryinventory" className={styles.inventoryBtn}>
+            <i className="fa-solid fa-table"></i> Category Inventory
+          </Link>
+
+          {/* FILTER */}
+          <select
+            value={hasDescription}
+            className={styles.selectItem}
+            onChange={(e) => setHasDescription(e.target.value)}
+          >
+            <option value="">All</option>
+            <option value="yes">With Desc</option>
+            <option value="no">Without Desc</option>
+          </select>
+
+          {/* CLEAR */}
+          {hasDescription && (
+            <button className={styles.clearBtn} onClick={handleClear}>
+              Clear
+            </button>
+          )}
+        </div>
       </div>
 
       {/* STATS */}
@@ -92,20 +108,25 @@ function CategoryPage() {
         <div className={styles.card}>Without Desc: {withoutDesc}</div>
       </div>
 
-      {/* CHARTS */}
-      <div className={styles.grid}>
-        <CategoryCharts
-          chartData={charts.descriptionChart}
-          type="doughnut"
-          title="Description Distribution"
-        />
+      {/* EMPTY */}
+      {total === 0 && <p>No categories found</p>}
 
-        <CategoryCharts
-          chartData={charts.nameLengthChart}
-          type="bar"
-          title="Category Name Length"
-        />
-      </div>
+      {/* CHARTS */}
+      {total > 0 && (
+        <div className={styles.grid}>
+          <CategoryCharts
+            chartData={descriptionChart}
+            type="doughnut"
+            title="Description Distribution"
+          />
+
+          <CategoryCharts
+            chartData={nameLengthChart}
+            type="bar"
+            title="Category Name Length"
+          />
+        </div>
+      )}
     </div>
   );
 }

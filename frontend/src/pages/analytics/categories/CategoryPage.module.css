@@ -2,7 +2,7 @@
 body {
   margin: 0;
   font-family: "Inter", sans-serif;
-  background: #161b22;
+  background: #1c1e24;
   color: #c9d1d9;
 }
 
@@ -12,36 +12,101 @@ body {
   min-height: 100vh;
   margin-top: 3rem;
 }
-
 /* ---------- HEADER ---------- */
 .header {
   display: flex;
   justify-content: space-between;
+  align-items: center; /* FIX alignment */
   margin-bottom: 20px;
 }
 
-.header h1 {
-  font-size: 1.5rem;
-  font-weight: 500;
-}
-
-.filters {
+/* RIGHT SIDE GROUP */
+.headerActions {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 0.6rem;
 }
 
-.selectItem {
-  width: auto;
+/* TITLE */
+.header h1 {
+  font-size: 1.15rem;
+  width: fit-content;
+  color: rgba(255, 255, 255, 0.9);
   padding: 0.5rem;
-  background: #12161b;
-  color: #c9c9c9;
-  border-radius: 0.4rem;
+  background: #0e141d;
+  border-bottom: 2px solid #4e4e4e6c;
+  border-left: 2px solid #4e4e4e6c;
+  border-radius: 0.3rem;
 }
+
+/* INVENTORY BUTTON */
+.inventoryBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  background: #111317;
+  color: #adadad;
+  border-radius: 0.4rem;
+  text-decoration: none;
+  border: none;
+  font-size: 1rem;
+  transition: 0.2s ease;
+  box-shadow: 0.1rem 0.1rem rgba(27, 137, 255, 0.496);
+}
+.inventoryBtn:hover {
+  transform: translateY(-1px);
+  background: #3478ffa2;
+  color: #ffffff;
+  border: none;
+  box-shadow: none;
+}
+
+/* SELECT */
+.selectItem {
+  padding: 0.4rem 0.5rem;
+  background: #262b32;
+  border: 1px solid #3a3a3a50;
+  color: #cfcfcf;
+  border-radius: 0.4rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.selectItem:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #2563eb;
+}
+
+/* OPTIONS */
 .options {
-  color: rgb(130, 190, 255);
-  font-family: "Inter", sans-serif;
-  background: rgb(10, 13, 18);
-  border: 1px solid #06b6d4;
+  color: #bfbfbf;
+  background: #0a0d12;
+}
+.options:hover {
+  color: #ffffff;
+  background: #191c21;
+}
+.options::focus {
+  border-color: #4f46e5;
+  background: #1f2937;
+}
+
+.clearBtn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #30363d;
+  background: #161b22;
+  color: #ef4444;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clearBtn:hover {
+  background: #2a1a1a;
+  border-color: #ef4444;
 }
 
 /* ---------- STATS ---------- */
@@ -52,10 +117,11 @@ body {
 }
 
 .card {
-  background: #171a20;
   padding: 0.5rem;
   border-radius: 0.4rem;
-  border: 1px solid #e2e8f032;
+  background: #262b32;
+  border: none;
+  color: #b6b6b6d1;
 }
 
 /* ---------- GRID ---------- */
@@ -84,7 +150,7 @@ body {
   width: 40px;
   height: 40px;
   border: 4px solid #e2e8f0;
-  border-top: 4px solid #06b6d4;
+  border-top: 4px solid #0685d4;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
