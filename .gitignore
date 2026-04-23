@@ -10,15 +10,20 @@ frontend/node_modules/
 # Environment Files (Secrets)
 # ==============================
 # Sensitive credentials (DB, JWT, Email, API keys)
+
+alter.sql
+schema.sql
+seed.sql
+hash.sql
+
 .env
 .env.*
-backend/.env
-backend/.env.*
 frontend/.env.production
 frontend/.env.development
+
 backend/.env.production
 backend/.env.development
-frontend/.env.*
+NOTE.txt
 
 
 # ==============================
