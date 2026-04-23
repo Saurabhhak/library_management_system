@@ -10,10 +10,8 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-
 import { Bar, Doughnut, PolarArea, Line } from "react-chartjs-2";
 import styles from "./CategoryCharts.module.css";
-
 /* _____ register _____ */
 ChartJS.register(
   CategoryScale,
@@ -84,7 +82,6 @@ function buildDatasets(labels, values, type) {
       },
     ];
   }
-
   // bar & line → split datasets (checkbox behavior)
   return labels.map((label, i) => {
     const color = resolveColors([label])[0];
