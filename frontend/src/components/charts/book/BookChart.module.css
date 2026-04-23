@@ -1,0 +1,38 @@
+/* ── Card wrapper ── */
+.card {
+  border: 1px solid #1d2839dd;
+  border-radius: 0.5rem;
+  padding: 16px;
+  height: 30rem;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+}
+
+/* ── Chart title ── */
+.title {
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.04rem;
+  color: #bebebe;
+  background: #131519;
+  text-align: center;
+  width: fit-content;
+  padding: 5px 12px;
+  border-radius: 0.35rem;
+  margin: 0 auto 1.5rem auto;
+}
+
+/* ── Chart area fills remaining card space ── */
+.chartWrapper {
+  flex: 1;
+  position: relative;
+}
+
+/* ── Shown when labels/values are empty ── */
+.empty {
+  font-size: 13px;
+  color: #8b949e;
+  text-align: center;
+  margin: auto;
+}
