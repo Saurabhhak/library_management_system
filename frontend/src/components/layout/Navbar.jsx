@@ -43,6 +43,18 @@ function NavbarSection() {
     setHistoryOpen(false);
   };
   const role = localStorage.getItem("role");
+  // Sweet Alert for Incomplete Components
+  function handleAlert() {
+    closeAll();
+    Swal.fire({
+      icon: "info",
+      title: "Action Not Allowed",
+      text: "Issued & Returned pages update coming soon!",
+      confirmButtonColor: "#3085d6",
+      background: "#0f172a",
+      color: "#e5e7eb",
+    });
+  }
   return (
     <div className={styles.navbarHeader}>
       {/* ------ ADMIN ICON ------ */}
@@ -55,6 +67,8 @@ function NavbarSection() {
               icon: "error",
               title: "Access Denied!",
               text: "Only Super Admin allowed",
+              background: "#0f172a",
+              color: "#e5e7eb",
             });
           }}
         >
@@ -111,7 +125,15 @@ function NavbarSection() {
         <Link to="/" className={styles.navlink} title="Home" onClick={closeAll}>
           <i class="fa-solid fa-gauge"></i> Dashboard
         </Link>
-
+        {/* ______________ Library ____________ */}
+        <Link
+          to="/bookslib"
+          className={styles.navlink}
+          title="Online Library Store"
+          onClick={closeAll}
+        >
+          <i class="fa-solid fa-book-open"></i> Library
+        </Link>
         {/* ------- BOOKS ------- */}
         <div
           className={styles.dropdown}
@@ -138,17 +160,14 @@ function NavbarSection() {
               <Link to="/createbook" onClick={closeAll}>
                 <i class="fa-solid fa-book-medical"></i> Add Books
               </Link>
-              <Link to="/bookslib" onClick={closeAll}>
-                <i class="fa-solid fa-book-open"></i> Library
-              </Link>
               {/* <Link to="/issuebook" onClick={closeAll}>
                 <i class="fa-solid fa-book-open"></i> Issue Books
               </Link> */}
               <Link to="/categoryinventory" onClick={closeAll}>
-                <i class="fa-solid fa-layer-group"></i> Categories Inventory
+                <i className="fa-solid fa-table "></i> Category Inventory
               </Link>
               <Link to="/addcategory" onClick={closeAll}>
-                <i class="fa-solid fa-layer-group"></i> Add Categories
+                <i className="fa-solid fa-folder-plus"></i> Add Categories
               </Link>
               {/* <Link to="/categorypage" onClick={closeAll}>
                 <i class="fa-solid fa-layer-group"></i> Categories Chart
@@ -212,10 +231,14 @@ function NavbarSection() {
               <Link to="/history" onClick={closeAll}>
                 <i class="fa-solid fa-clock-rotate-left"></i> All
               </Link>
-              <Link to="/history/issue" onClick={closeAll}>
+              <Link
+              //  to="/history/issue" 
+              onClick={handleAlert}>
                 <i class="fa-solid fa-book-bookmark"></i> Issued
               </Link>
-              <Link to="/history/return" onClick={closeAll}>
+              <Link 
+              // to="/history/return" 
+              onClick={handleAlert}>
                 <i class="fa-solid fa-rotate-left"></i> Returned
               </Link>
             </div>
