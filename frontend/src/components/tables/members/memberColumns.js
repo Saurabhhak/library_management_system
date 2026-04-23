@@ -3,7 +3,7 @@ import MemberRowActions from "./MembersRowActions";
 const bold = (info) => <b>{info.getValue()}</b>;
 
 export const getColumns = (handleDelete) => [
-  { header: "ID", accessorKey: "id", cell: bold },
+  { header: "ID", accessorKey: "id", size: 70, cell: bold },
 
   {
     header: "First Name",
@@ -49,7 +49,8 @@ export const getColumns = (handleDelete) => [
     id: "actions",
     header: "Actions",
     enableSorting: false,
-
+    enableColumnFilter: false,
+    size: 90,
     cell: ({ row }) => (
       <MemberRowActions member={row.original} onDelete={handleDelete} />
     ),
