@@ -12,12 +12,12 @@ const loginAdmin = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    /* User Check By Email */
+    /*__ User Check By Email */
     const { rows } = await pool.query(
       "SELECT * FROM admin WHERE email = $1 AND is_deleted = false",
       [email],
     );
-    /* Check Email Or Password */
+    /*__ Check Email Or Password */
     if (
       !rows.length ||
       !(await bcrypt.compare(password, rows[0].password_hash))
@@ -28,7 +28,7 @@ const loginAdmin = async (req, res) => {
       });
     }
 
-    /* Check user is Not Active Config */
+    /*__ Check user is Not Active Config */
     const user = rows[0];
     if (!user.is_active)
       return res.status(403).json({
@@ -41,7 +41,7 @@ const loginAdmin = async (req, res) => {
         .status(500)
         .json({ success: false, message: "Server misconfigured" });
 
-    /* Stamp last_seen on login */
+    /*__ Stamp last_seen on login */
     await stampSeen(user.id);
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
@@ -59,7 +59,7 @@ const loginAdmin = async (req, res) => {
   }
 };
 
-/* ___________ LOGOUT ________*/
+/*__ ___________ LOGOUT ________*/
 const logoutAdmin = async (req, res) => {
   try {
     // Stamp last_seen so the "last seen" time is accurate after logout
