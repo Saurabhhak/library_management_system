@@ -1,0 +1,383 @@
+/* ═══════════════════════════════════════
+   FOOTER MODULE CSS — Library Management System
+   Created by Saurabh · February 2026
+═══════════════════════════════════════ */
+
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap");
+
+/* ── Variables ── */
+:root {
+  --bg-primary:   #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary:  #21262d;
+  --border:       #30363d;
+  --text-primary: #f0f6fc;
+  --text-muted:   #8b949e;
+  --accent-green: #2ea043;
+  --accent-hover: #3fb950;
+  --accent-teal:  #10b981;
+  --accent-indigo:#6366f1;
+}
+
+/* ── Base ── */
+.footer {
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  font-family: "Sora", sans-serif;
+  border-top: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative glow at the very top */
+.topGlow {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-teal), var(--accent-indigo), transparent);
+}
+
+/* ════════════════════════════════════
+   CTA STRIP
+════════════════════════════════════ */
+.ctaStrip {
+  background: linear-gradient(135deg, rgba(16,185,129,0.06) 0%, rgba(99,102,241,0.06) 100%);
+  border-bottom: 1px solid var(--border);
+}
+
+.ctaStripInner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 2.4rem 4vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.ctaStripInner h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.ctaStripInner p {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.ctaStripBtns {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.ctaGreenBtn {
+  padding: 0.7rem 1.6rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: "Sora", sans-serif;
+  background: var(--accent-green);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.ctaGreenBtn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(46,160,67,0.4);
+}
+
+.ctaOutlineBtn {
+  padding: 0.7rem 1.6rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: "Sora", sans-serif;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ctaOutlineBtn:hover {
+  border-color: var(--text-muted);
+  background: rgba(255,255,255,0.04);
+  transform: translateY(-2px);
+}
+
+/* ════════════════════════════════════
+   MAIN FOOTER
+════════════════════════════════════ */
+.footerMain {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 4rem 4vw 3rem;
+  display: grid;
+  grid-template-columns: 1.6fr repeat(4, 1fr);
+  gap: 2.5rem;
+}
+
+@media (max-width: 1100px) {
+  .footerMain {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .brandCol {
+    grid-column: span 3;
+  }
+}
+
+@media (max-width: 640px) {
+  .footerMain {
+    grid-template-columns: 1fr 1fr;
+  }
+  .brandCol {
+    grid-column: span 2;
+  }
+}
+
+/* ── Brand Column ── */
+.brandCol {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.brandLogo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.brandLogo i {
+  color: var(--accent-teal);
+  font-size: 1.5rem;
+}
+
+.brandDesc {
+  font-size: 0.86rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  max-width: 300px;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.78rem;
+  font-family: "JetBrains Mono", monospace;
+  color: var(--accent-teal);
+  background: rgba(16,185,129,0.1);
+  border: 1px solid rgba(16,185,129,0.25);
+  padding: 5px 12px;
+  border-radius: 20px;
+  width: fit-content;
+}
+
+.statusDot {
+  width: 7px;
+  height: 7px;
+  background: var(--accent-teal);
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: statusPulse 2s ease infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); }
+  50%       { box-shadow: 0 0 0 5px rgba(16,185,129,0); }
+}
+
+.socialRow {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.socialIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.socialIcon:hover {
+  background: var(--accent-teal);
+  border-color: var(--accent-teal);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(16,185,129,0.35);
+}
+
+/* ── Link Columns ── */
+.linkCol {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.colHeading {
+  font-size: 0.78rem;
+  font-family: "JetBrains Mono", monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.linkList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.footerLink {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.footerLink::before {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 1px;
+  background: var(--accent-teal);
+  transition: width 0.25s ease;
+  vertical-align: middle;
+  margin-top: 1px;
+}
+
+.footerLink:hover {
+  color: var(--text-primary);
+  gap: 8px;
+}
+
+.footerLink:hover::before {
+  width: 10px;
+}
+
+/* ════════════════════════════════════
+   BOTTOM BAR
+════════════════════════════════════ */
+.footerBottom {
+  border-top: 1px solid var(--border);
+  background: var(--bg-primary);
+}
+
+.footerBottomInner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 1.2rem 4vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.bottomLeft,
+.bottomRight {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+}
+
+.bottomLeft strong {
+  color: var(--text-primary);
+}
+
+.bottomDot {
+  color: var(--border);
+}
+
+.authorLink {
+  color: var(--accent-teal);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.authorLink:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+.versionTag {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  color: var(--accent-indigo);
+  background: rgba(99,102,241,0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(99,102,241,0.2);
+}
+
+.legalLink {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.legalLink:hover {
+  color: var(--text-primary);
+}
+
+/* ════════════════════════════════════
+   RESPONSIVE TWEAKS
+════════════════════════════════════ */
+@media (max-width: 640px) {
+  .ctaStripInner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .footerBottomInner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .bottomRight {
+    border-top: 1px solid var(--border);
+    padding-top: 0.5rem;
+    width: 100%;
+  }
+}
