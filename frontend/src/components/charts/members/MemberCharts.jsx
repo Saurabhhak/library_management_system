@@ -27,11 +27,11 @@ ChartJS.register(
 
 /*__________________ COLOR SYSTEM (LIKE CATEGORY CHARTS) */
 const STATUS_COLORS = {
-  active: "#22c55e",
-  inactive: "#ef4444",
+  active: "#2a79c2",
+  inactive: "#d9b319",
 };
 
-const DEFAULT_PALETTE = ["#6366f1", "#06b6d4"];
+const DEFAULT_PALETTE = ["#d99307", "#06b6d4"];
 
 /* resolve color */
 const getColor = (label, i) =>
