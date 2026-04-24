@@ -109,12 +109,12 @@ function NavbarSection() {
         <div
           className={`${styles.subMenu} ${adminMenuOpen ? styles.subMenuActive : ""}`}
         >
-          <Link to="/createadmin" onClick={closeAll} 
-            title="Create New Admin"
-          >
+          <Link to="/createadmin" onClick={closeAll} title="Create New Admin">
             <i className="fa-solid fa-user-plus"></i> Create Admin
           </Link>
-          <Link to="/admininventory" onClick={closeAll}
+          <Link
+            to="/admininventory"
+            onClick={closeAll}
             title="Admin Data table"
           >
             <i className="fa-solid fa-table"></i> Admin Inventory
@@ -209,11 +209,8 @@ function NavbarSection() {
               <Link to="/memberinventory" onClick={closeAll}>
                 <i class="fa-solid fa-users"></i> All Members
               </Link>
-              <Link to="/createmember" onClick={closeAll}>
-                <i class="fa-solid fa-user-plus"></i> Add Member
-              </Link>
               <Link to="/memberpage" onClick={closeAll}>
-                <i class="fa-solid fa-graph"></i> Member Chart
+                <i className="fa-solid fa-chart-line"></i> Member Chart
               </Link>
             </div>
           )}
