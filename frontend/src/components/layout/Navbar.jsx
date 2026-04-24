@@ -49,7 +49,7 @@ function NavbarSection() {
     Swal.fire({
       icon: "info",
       title: "Action Not Allowed",
-      text: "Issued & Returned pages update coming soon!",
+      text: "All, Issued & Returned pages update coming soon!",
       confirmButtonColor: "#3085d6",
       background: "#0f172a",
       color: "#e5e7eb",
@@ -109,9 +109,9 @@ function NavbarSection() {
         <div
           className={`${styles.subMenu} ${adminMenuOpen ? styles.subMenuActive : ""}`}
         >
-          <Link to="/createadmin" onClick={closeAll} title="Create New Admin">
+          {/* <Link to="/createadmin" onClick={closeAll} title="Create New Admin">
             <i className="fa-solid fa-user-plus"></i> Create Admin
-          </Link>
+          </Link> */}
           <Link
             to="/admininventory"
             onClick={closeAll}
@@ -143,7 +143,7 @@ function NavbarSection() {
           title="Online Library Store"
           onClick={closeAll}
         >
-          <i class="fa-solid fa-book-open"></i> Library
+          <i class="fa fa-book"></i> Library
         </Link>
         {/* ------- BOOKS ------- */}
         <div
@@ -155,7 +155,7 @@ function NavbarSection() {
             className={styles.navlink}
             onClick={() => menuOpen && setBookOpen(!bookOpen)}
           >
-            <i className="fa-solid fa-book-bookmark"></i>
+            <i className="fa-solid fa-book-open"></i>
             Books
             {menuOpen && (
               <i
@@ -166,19 +166,20 @@ function NavbarSection() {
           {bookOpen && (
             <div className={styles.dropdownMenu}>
               <Link to="/bookinventory" onClick={closeAll}>
-                <i class="fa-solid fa-solid fa-book"></i> Book Inventory
+                <i className="fa-solid fa-table "></i> Books Inventory
               </Link>
-              <Link to="/createbook" onClick={closeAll}>
-                <i class="fa-solid fa-book-medical"></i> Add Books
+
+              <Link to="/bookchartpage" onClick={closeAll}>
+                <i className="fa-solid fa-chart-line"></i> Books Chart
               </Link>
               {/* <Link to="/issuebook" onClick={closeAll}>
                 <i class="fa-solid fa-book-open"></i> Issue Books
               </Link> */}
               <Link to="/categoryinventory" onClick={closeAll}>
-                <i className="fa-solid fa-table "></i> Category Inventory
+                <i className="fa-solid fa-table "></i> Categories Inventory
               </Link>
-              <Link to="/addcategory" onClick={closeAll}>
-                <i className="fa-solid fa-folder-plus"></i> Add Categories
+              <Link to="/categorypage" onClick={closeAll}>
+                <i className="fa-solid fa-chart-line"></i> Categories Chart
               </Link>
               {/* <Link to="/categorypage" onClick={closeAll}>
                 <i class="fa-solid fa-layer-group"></i> Categories Chart
@@ -207,7 +208,8 @@ function NavbarSection() {
           {memberOpen && (
             <div className={styles.dropdownMenu}>
               <Link to="/memberinventory" onClick={closeAll}>
-                <i class="fa-solid fa-users"></i> All Members
+                {/* <i class="fa-solid fa-users"></i> Members Inventory */}
+                <i class="fa fa-table"></i> Member Inventory
               </Link>
               <Link to="/memberpage" onClick={closeAll}>
                 <i className="fa-solid fa-chart-line"></i> Member Chart
@@ -236,7 +238,7 @@ function NavbarSection() {
 
           {historyOpen && (
             <div className={styles.dropdownMenu}>
-              <Link to="/history" onClick={closeAll}>
+              <Link  onClick={handleAlert}>
                 <i class="fa-solid fa-clock-rotate-left"></i> All
               </Link>
               <Link
@@ -268,7 +270,6 @@ function NavbarSection() {
         >
           <i className={`fa-solid ${menuOpen ? "fa-xmark" : "fa-bars"}`} />
         </button>
-
         <button
           className={`${styles.iconBtn} ${profileOpen ? styles.active : ""}`}
           title="Profile Panel"
@@ -292,5 +293,4 @@ function NavbarSection() {
     </div>
   );
 }
-
 export default NavbarSection;
