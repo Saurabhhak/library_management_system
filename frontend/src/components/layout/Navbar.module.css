@@ -5,7 +5,7 @@
   --bg-hover: #21262d;
   --border-color: #30363d;
   --text-light: #a8a8a8;
-  --text-muted: #8b949e;
+  --text-muted: #80848a;
   --text-white: #ffffff;
   --transition-speed: 0.3s;
   --border-radius: 8px;
@@ -130,7 +130,7 @@ a:hover {
   top: 100%;
   left: 0;
   min-width: 12rem;
-  margin-top: .5rem;
+  margin-top: .55rem;
   padding: 0.3rem;
   display: flex;
   flex-direction: column;
@@ -217,7 +217,7 @@ a:hover {
   /* border: 1px solid red; */
   display: flex;
   font-size: 1rem;
-  font-weight: 100  ;
+  font-weight: 100;
   gap: 0.5rem;
   transition: all var(--transition-speed);
 }
