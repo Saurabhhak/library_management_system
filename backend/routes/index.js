@@ -1,9 +1,12 @@
+"use strict";
 const router = require("express").Router();
 
 router.use("/auth", require("./admin/auth.routes"));
 router.use("/password", require("./validations/password.routes"));
 router.use("/admin", require("./admin/admin.routes"));
 router.use("/members", require("./member/member.routes"));
+router.use("/member-auth", require("./member/member.auth.routes"));
+router.use("/feedback", require("./resources/feedback.routes"));
 router.use("/books", require("./books/book.routes"));
 router.use("/categories", require("./books/category.routes"));
 router.use("/issue", require("./books/issue.routes"));

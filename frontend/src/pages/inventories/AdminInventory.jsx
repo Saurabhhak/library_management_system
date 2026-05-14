@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import styles from "./Inventory.module.css";
 import { getAdmins, deleteAdmin } from "../../services/admin/admin.service";
 import { getColumns } from "../../components/tables/admin/columns";
 import Swal from "sweetalert2";
-import { Link } from "react-router-dom";
 import {
   useReactTable,
   getCoreRowModel,
@@ -13,27 +13,27 @@ import {
   getPaginationRowModel,
 } from "@tanstack/react-table";
 
+const swalDark = { background: "#0d1117", color: "#d9edff" };
+
 function DisplayAdmin() {
-  /* ---------------- STATE ---------------- */
+  /* ── State ── */
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
-  /* Column Ordering (drag & drop) Column Resizing */
   const [columnOrder, setColumnOrder] = useState([]);
   const [columnSizing, setColumnSizing] = useState({});
   const [columnSizingInfo, setColumnSizingInfo] = useState({});
-
+  const [rowSelection, setRowSelection] = useState({});
   const [pageSizeOpen, setPageSizeOpen] = useState(false);
   const [dropdownStyle, setDropdownStyle] = useState({});
-  /* Row Selection  */
-  const [rowSelection, setRowSelection] = useState({});
-  const dropdownRef = useRef(null);
   const [activePageBtn, setActivePageBtn] = useState("");
-  /* ---------------- FETCH ADMINS ---------------- */
+  const dropdownRef = useRef(null);
+
+  /* ── Fetch ── */
   useEffect(() => {
-    const fetchAdmins = async () => {
+    (async () => {
       try {
         const res = await getAdmins();
         setData(res?.data?.data || []);
@@ -42,157 +42,121 @@ function DisplayAdmin() {
       } finally {
         setLoading(false);
       }
-    };
-    fetchAdmins();
+    })();
   }, []);
-  /* _________________ CLOSE DROPDOWN _________________ */
+
+  /* ── Close page-size dropdown on outside click ── */
   useEffect(() => {
     const close = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target))
         setPageSizeOpen(false);
-      }
     };
     document.addEventListener("mousedown", close);
     return () => document.removeEventListener("mousedown", close);
   }, []);
-  /* ---------------- DELETE ADMIN ---------------- */
+
+  /* ── Delete single ── */
   const handleDelete = async (admin) => {
-    // Prevent SuperAdmin deletion
     if (admin.role === "superadmin") {
       return Swal.fire({
+        ...swalDark,
         icon: "error",
-        title: "Action Not Allowed",
-        text: "SuperAdmin cannot be deleted!",
-        background: "#0f172a", // dark bg (tailwind slate-900)
-        color: "#e5e7eb", // text color
+        title: "Not Allowed",
+        text: "SuperAdmin cannot be deleted.",
+        confirmButtonColor: "#ef4444",
       });
     }
     const result = await Swal.fire({
+      ...swalDark,
       title: "Delete Admin?",
-      html: `
-      <b>ID:</b> ${admin.id} <br/>
-      <b>Role:</b> ${admin.role} <br/>
-      <b>Name:</b> ${admin.first_name} ${admin.last_name}
-    `,
+      html: `<b>#${admin.id}</b> — ${admin.first_name} ${admin.last_name}`,
       icon: "warning",
-      background: "#0f172a", // dark bg (tailwind slate-900)
-      color: "#e5e7eb", // text color
       showCancelButton: true,
       confirmButtonText: "Delete",
       cancelButtonText: "Cancel",
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#334155",
     });
     if (!result.isConfirmed) return;
     try {
       await deleteAdmin(admin.id);
       setData((prev) => prev.filter((a) => a.id !== admin.id));
       Swal.fire({
+        ...swalDark,
         icon: "success",
         title: "Deleted!",
-        text: "Admin removed successfully",
         timer: 1500,
         showConfirmButton: false,
       });
-    } catch (err) {
-      console.error(err);
-
+    } catch {
       Swal.fire({
-        icon: "error",
-        title: "Error!",
-        text: "Failed to delete admin",
-      });
-    }
-  };
-  /* _______________________ BULK DELETE FUNCTION _______________________*/
-  const handleBulkDelete = async () => {
-    const selectedRows = table.getSelectedRowModel().rows;
-
-    if (selectedRows.length === 0) {
-      return Swal.fire({
-        icon: "info",
-        title: "No Selection",
-        text: "Please select at least one row",
-        background: "#0f172a",
-        color: "#e5e7eb",
-        confirmButtonColor: "#3b82f6",
-      });
-    }
-
-    const ids = selectedRows.map((row) => row.original.id);
-
-    const result = await Swal.fire({
-      title: `Delete ${ids.length} Members?`,
-      text: "This action cannot be undone!",
-      icon: "warning",
-
-      /* COLORS CONTROL */
-      background: "#0f172a",
-      color: "#e5e7eb",
-
-      showCancelButton: true,
-      confirmButtonText: "Delete All",
-      cancelButtonText: "Cancel",
-
-      confirmButtonColor: "#ef4444",
-      cancelButtonColor: "#64748b",
-
-      reverseButtons: true,
-
-      /* Animation UX */
-      showClass: {
-        popup: "animate__animated animate__fadeInDown",
-      },
-      hideClass: {
-        popup: "animate__animated animate__fadeOutUp",
-      },
-    });
-
-    if (!result.isConfirmed) return;
-
-    try {
-      /* FAST PARALLEL DELETE */
-      await Promise.all(ids.map((id) => deleteAdmin(id)));
-      /* UPDATE UI */
-      setData((prev) => prev.filter((m) => !ids.includes(m.id)));
-      /* CLEAR SELECTION */
-      setRowSelection({});
-      Swal.fire({
-        icon: "success",
-        title: "Deleted!",
-        text: `${ids.length} members removed`,
-        timer: 1500,
-        showConfirmButton: false,
-        background: "#0f172a",
-        color: "#e5e7eb",
-      });
-    } catch (err) {
-      console.error(err);
-
-      Swal.fire({
+        ...swalDark,
         icon: "error",
         title: "Error",
-        text: "Bulk delete failed",
-        background: "#0f172a",
-        color: "#e5e7eb",
+        text: "Failed to delete admin.",
         confirmButtonColor: "#ef4444",
       });
     }
   };
-  /* ---------------- TABLE COLUMNS ---------------- */
 
-  // columns generate with delete function
-  /* __________________ TABLE __________________ */
-  const baseColumns = getColumns(handleDelete);
+  /* ── Bulk delete ── */
+  const handleBulkDelete = async () => {
+    const selected = table.getSelectedRowModel().rows;
+    if (!selected.length) {
+      return Swal.fire({
+        ...swalDark,
+        icon: "info",
+        title: "No Selection",
+        text: "Select at least one row.",
+        confirmButtonColor: "#3b82f6",
+      });
+    }
+    const ids = selected.map((r) => r.original.id);
+    const result = await Swal.fire({
+      ...swalDark,
+      title: `Delete ${ids.length} Admin${ids.length > 1 ? "s" : ""}?`,
+      text: "This cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Delete All",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#334155",
+      reverseButtons: true,
+    });
+    if (!result.isConfirmed) return;
+    try {
+      await Promise.all(ids.map(deleteAdmin));
+      setData((prev) => prev.filter((a) => !ids.includes(a.id)));
+      setRowSelection({});
+      Swal.fire({
+        ...swalDark,
+        icon: "success",
+        title: "Deleted!",
+        text: `${ids.length} removed.`,
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch {
+      Swal.fire({
+        ...swalDark,
+        icon: "error",
+        title: "Error",
+        text: "Bulk delete failed.",
+        confirmButtonColor: "#ef4444",
+      });
+    }
+  };
 
+  /* ── Columns ── */
   const columns = [
     {
       id: "select",
-      size: 10,
+      size: 40,
       header: ({ table }) => (
         <input
           type="checkbox"
-          title="Select All Row"
+          title="Select All"
           checked={table.getIsAllPageRowsSelected()}
           onChange={table.getToggleAllPageRowsSelectedHandler()}
         />
@@ -206,10 +170,10 @@ function DisplayAdmin() {
         />
       ),
     },
-    ...baseColumns,
+    ...getColumns(handleDelete),
   ];
 
-  /* --------------- TANSTACK TABLE ---------------- */
+  /* ── Table ── */
   const table = useReactTable({
     data,
     columns,
@@ -222,129 +186,156 @@ function DisplayAdmin() {
       columnSizingInfo,
       rowSelection,
     },
-
     initialState: {
       pagination: { pageSize: 10, pageIndex: 0 },
       sorting: [{ id: "id", desc: false }],
     },
-
     onRowSelectionChange: setRowSelection,
     enableRowSelection: true,
-
     onColumnOrderChange: setColumnOrder,
     onColumnSizingChange: setColumnSizing,
     onColumnSizingInfoChange: setColumnSizingInfo,
     columnResizeMode: "onChange",
-
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
-
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  /* _________________ SMART DROPDOWN _________________ */
+  /* ── Smart dropdown position ── */
   const handleToggleDropdown = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const dropdownHeight = 125;
-    const spaceBelow = window.innerHeight - rect.bottom;
-    const openUp = spaceBelow < dropdownHeight;
+    const openUp = window.innerHeight - rect.bottom < 140;
     setDropdownStyle({
       left: rect.left,
-      top: openUp ? rect.top - dropdownHeight - 5 : rect.bottom + 5,
+      top: openUp ? rect.top - 140 : rect.bottom + 5,
     });
-    setPageSizeOpen((prev) => !prev);
+    setPageSizeOpen((p) => !p);
   };
+
+  /* ── Pagination buttons config ── */
+  const paginationBtns = [
+    {
+      key: "first",
+      label: "First",
+      icon: "fa-angles-left",
+      action: () => table.setPageIndex(0),
+      disabled: !table.getCanPreviousPage(),
+      iconLeft: true,
+    },
+    {
+      key: "prev",
+      label: "Prev",
+      icon: "fa-chevron-left",
+      action: () => table.previousPage(),
+      disabled: !table.getCanPreviousPage(),
+      iconLeft: true,
+    },
+    {
+      key: "next",
+      label: "Next",
+      icon: "fa-chevron-right",
+      action: () => table.nextPage(),
+      disabled: !table.getCanNextPage(),
+      iconLeft: false,
+    },
+    {
+      key: "last",
+      label: "Last",
+      icon: "fa-angles-right",
+      action: () => table.setPageIndex(table.getPageCount() - 1),
+      disabled: !table.getCanNextPage(),
+      iconLeft: false,
+    },
+  ];
+
+  const selCount = Object.keys(rowSelection).length;
 
   return (
     <>
-      {/* -------- HEADER SECTION -------- */}
+      {/* ── HEADER BAR ── */}
       <div className={styles.headerBar}>
-        <h1 className={styles.title} title="Admin Table Page">
-          <i className="fa-solid fa-user-shield" />
-          Admins
+        <h1 className={styles.title} title="Admin Table">
+          <i className="fa-solid fa-user-shield" /> Admins
         </h1>
+
         <Link
           to="/createadmin"
-          className={styles.chartBtn}
+          className={styles.addBtn}
           title="Create New Admin"
         >
-          <i className="fa-solid fa-user-plus"></i> Admin
+          <i className="fa-solid fa-user-plus" /> Admin
         </Link>
-        {/* -------- CHART NAV BUTTON -------- */}
+
         <Link
           to="/adminpage"
           className={styles.chartBtn}
-          title="View Analytics Dashboard"
+          title="Analytics Dashboard"
         >
-          <i className="fa-solid fa-chart-line"></i> Charts
+          <i className="fa-solid fa-chart-line" /> Charts
         </Link>
+
         <div className={styles.searchContainer}>
+          <i className={`fa-solid fa-magnifying-glass ${styles.searchIcon}`} />
           <input
             className={styles.SearchBox}
-            title="Globle Seacrh Adimn ID, Name, Email, State, City and Role "
-            placeholder="Search"
+            placeholder="Search ID, name, email, role…"
             value={globalFilter ?? ""}
             onChange={(e) => setGlobalFilter(e.target.value)}
+            title="Search admin ID, name, email, state, city, role"
           />
         </div>
-        {/* ___________Row Selection */}
-        <div className={styles.RowSelections} title="Selected Row Count">
-          <p className={styles.RowSelectionTitle}>Selected Row</p>
+
+        <div className={styles.RowSelections} title="Selected row count">
+          <span className={styles.RowSelectionTitle}>Selected</span>
           <span
-            className={`${styles.selectedRow} ${
-              Object.keys(rowSelection).length === 0
-                ? styles.CountSelectRow
-                : ""
-            }`}
+            className={`${styles.selectedRow} ${selCount === 0 ? styles.CountSelectRow : ""}`}
           >
-            {Object.keys(rowSelection).length}
+            {selCount}
           </span>
         </div>
+
         <button
           onClick={handleBulkDelete}
-          title="Selected Row Delete"
-          disabled={Object.keys(rowSelection).length === 0}
-          className={`${styles.bulkDeleteBtn} ${
-            Object.keys(rowSelection).length === 0 ? styles.disabledBtn : ""
-          }`}
+          disabled={selCount === 0}
+          className={`${styles.bulkDeleteBtn} ${selCount === 0 ? styles.disabledBtn : ""}`}
+          title="Delete selected rows"
         >
-          <i className="fa-solid fa-trash"></i>
-          Bulk Delete
+          <i className="fa-solid fa-trash" /> Bulk Delete
         </button>
 
-        {/* ___________________COLUMN VISIBILITY */}
-        <div className={styles.columnToggle} title="Hide Columns">
+        {/* Column visibility */}
+        <div className={styles.columnToggle} title="Toggle columns">
           <details>
             <summary>
-              <i className="fa fa-ellipsis-v"></i>
+              <i className="fa-solid fa-sliders" />
             </summary>
             <div className={styles.dropdownMenu}>
-              {table.getAllLeafColumns().map((column) => (
-                <label key={column.id} className={styles.dropdownItem}>
+              {table.getAllLeafColumns().map((col) => (
+                <label key={col.id} className={styles.dropdownItem}>
                   <input
                     type="checkbox"
-                    checked={column.getIsVisible()}
-                    onChange={column.getToggleVisibilityHandler()}
+                    checked={col.getIsVisible()}
+                    onChange={col.getToggleVisibilityHandler()}
                   />
-                  {column.columnDef.header}
+                  {col.columnDef.header}
                 </label>
               ))}
             </div>
           </details>
         </div>
       </div>
-      {/* -------- TABLE -------- */}
+
+      {/* ── TABLE ── */}
       <div className={styles.tableWrapper}>
         <table className={styles.table}>
-          {/* -------- TABLE HEADER -------- */}
           <thead className={styles.thead}>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
+            {table.getHeaderGroups().map((hg) => (
+              <tr key={hg.id}>
+                {hg.headers.map((header) => (
                   <th
                     key={header.id}
                     style={{ width: header.getSize(), position: "relative" }}
@@ -354,19 +345,16 @@ function DisplayAdmin() {
                     }
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={(e) => {
-                      const draggedCol = e.dataTransfer.getData("colId");
-                      const targetCol = header.column.id;
-                      const newOrder = table
-                        .getAllLeafColumns()
-                        .map((c) => c.id);
-                      const fromIndex = newOrder.indexOf(draggedCol);
-                      const toIndex = newOrder.indexOf(targetCol);
-                      newOrder.splice(fromIndex, 1);
-                      newOrder.splice(toIndex, 0, draggedCol);
-                      setColumnOrder(newOrder);
+                      const from = e.dataTransfer.getData("colId");
+                      const to = header.column.id;
+                      const order = table.getAllLeafColumns().map((c) => c.id);
+                      const fi = order.indexOf(from),
+                        ti = order.indexOf(to);
+                      order.splice(fi, 1);
+                      order.splice(ti, 0, from);
+                      setColumnOrder(order);
                     }}
                   >
-                    {/* ── HEADER: title + sort icon ── */}
                     <div
                       className={styles.headerTop}
                       onClick={
@@ -386,8 +374,6 @@ function DisplayAdmin() {
                           header.getContext(),
                         )}
                       </span>
-
-                      {/* ✅ Only show on sortable columns, no default icon */}
                       {header.column.getCanSort() && (
                         <span
                           className={`${styles.sortIcon} ${header.column.getIsSorted() ? styles.sortActive : ""}`}
@@ -404,12 +390,10 @@ function DisplayAdmin() {
                         </span>
                       )}
                     </div>
-
-                    {/* ── FILTER: only on filterable columns ── */}
                     {header.column.getCanFilter() && (
                       <input
                         className={styles.columnFilter}
-                        placeholder="Search..."
+                        placeholder="Filter…"
                         value={header.column.getFilterValue() ?? ""}
                         onChange={(e) =>
                           header.column.setFilterValue(e.target.value)
@@ -417,31 +401,35 @@ function DisplayAdmin() {
                         onClick={(e) => e.stopPropagation()}
                       />
                     )}
-
-                    {/* ── RESIZER ── */}
                     <div
+                      className={styles.resizer}
                       onMouseDown={header.getResizeHandler()}
                       onTouchStart={header.getResizeHandler()}
-                      className={styles.resizer}
                     />
                   </th>
                 ))}
               </tr>
             ))}
           </thead>
-          {/* -------- TABLE BODY -------- */}
+
           <tbody className={styles.tbody}>
             {loading ? (
-              [...Array(6)].map((_, i) => (
+              [...Array(8)].map((_, i) => (
                 <tr key={i}>
-                  <td colSpan={table.getAllColumns().length}>
-                    <div className={styles.skeletonRow}></div>
+                  <td colSpan={columns.length}>
+                    <div
+                      className={styles.skeletonRow}
+                      style={{ animationDelay: `${i * 0.07}s` }}
+                    />
                   </td>
                 </tr>
               ))
             ) : table.getRowModel().rows.length === 0 ? (
               <tr>
-                <td colSpan={table.getAllColumns().length}>No records found</td>
+                <td colSpan={columns.length} className={styles.emptyCell}>
+                  <i className="fa-solid fa-user-shield" />
+                  <p>No admins found</p>
+                </td>
               </tr>
             ) : (
               table.getRowModel().rows.map((row) => (
@@ -459,27 +447,23 @@ function DisplayAdmin() {
             )}
           </tbody>
         </table>
-        {/* ____________ PAGINATION ____________ */}
+
+        {/* ── PAGINATION ── */}
         <div className={styles.paginationSection}>
-          {/* PAGE SIZE */}
           <div ref={dropdownRef}>
             <div
               className={styles.pageSizeButton}
               onClick={handleToggleDropdown}
             >
-              Show {table.getState().pagination.pageSize}{" "}
-              <i className="fa-solid fa-chevron-down"></i>
+              Show {table.getState().pagination.pageSize}
+              <i className="fa-solid fa-chevron-down" />
             </div>
             {pageSizeOpen && (
               <div className={styles.pageSizeMenu} style={dropdownStyle}>
                 {[5, 10, 20, 50].map((size) => (
                   <div
                     key={size}
-                    className={`${styles.pageSizeItem} ${
-                      table.getState().pagination.pageSize === size
-                        ? styles.activeItem
-                        : ""
-                    }`}
+                    className={`${styles.pageSizeItem} ${table.getState().pagination.pageSize === size ? styles.activeItem : ""}`}
                     onClick={() => {
                       table.setPageSize(size);
                       setPageSizeOpen(false);
@@ -491,57 +475,37 @@ function DisplayAdmin() {
               </div>
             )}
           </div>
-          {/* -------- BUTTONS -------- */}
+
           <div className={styles.paginationControls}>
-            <button
-              onClick={() => {
-                table.setPageIndex(0);
-                setActivePageBtn("first"); // ADD
-              }}
-              className={activePageBtn === "first" ? styles.activeBtn : ""}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <i className="fa-solid fa-angles-left"></i> First
-            </button>
-
-            <button
-              onClick={() => {
-                table.previousPage();
-                setActivePageBtn("prev"); // ADD
-              }}
-              className={activePageBtn === "prev" ? styles.activeBtn : ""}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <i className="fa-solid fa-chevron-left"></i> Prev
-            </button>
-
-            <span className={styles.pageInfo}>
-              <b>{table.getState().pagination.pageIndex + 1}</b> /{" "}
-              <b>{table.getPageCount()}</b>
-            </span>
-
-            <button
-              onClick={() => {
-                table.nextPage();
-                setActivePageBtn("next"); // ADD
-              }}
-              className={activePageBtn === "next" ? styles.activeBtn : ""}
-              disabled={!table.getCanNextPage()}
-            >
-              Next <i className="fa-solid fa-chevron-right"></i>
-            </button>
-
-            <button
-              onClick={() => {
-                table.setPageIndex(table.getPageCount() - 1);
-                setActivePageBtn("last"); // ADD
-              }}
-              className={activePageBtn === "last" ? styles.activeBtn : ""}
-              disabled={!table.getCanNextPage()}
-            >
-              Last <i className="fa-solid fa-angles-right"></i>
-            </button>
+            {paginationBtns.map(
+              ({ key, label, icon, action, disabled, iconLeft }) => (
+                <button
+                  key={key}
+                  disabled={disabled}
+                  className={activePageBtn === key ? styles.activeBtn : ""}
+                  onClick={() => {
+                    action();
+                    setActivePageBtn(key);
+                  }}
+                >
+                  {iconLeft ? (
+                    <>
+                      <i className={`fa-solid ${icon}`} /> {label}
+                    </>
+                  ) : (
+                    <>
+                      {label} <i className={`fa-solid ${icon}`} />
+                    </>
+                  )}
+                </button>
+              ),
+            )}
           </div>
+
+          <span className={styles.pageInfo}>
+            Page <b>{table.getState().pagination.pageIndex + 1}</b> /{" "}
+            <b>{table.getPageCount()}</b>
+          </span>
         </div>
       </div>
     </>

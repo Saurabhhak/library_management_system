@@ -1,29 +1,35 @@
-const express = require("express");
-const router = express.Router();
+"use strict";
+const router = require("express").Router();
+const auth = require("../../middleware/auth.middleware");
+const adminMw = require("../../middleware/admin.middleware");
+const memberMw = require("../../middleware/member.middleware");
 
 const {
   createMember,
   getMembers,
-  getMemberById,
+  // getMemberById,
   updateMember,
   deleteMember,
 } = require("../../controllers/member/member.controller");
 
-// const authMiddleware = require("../middleware/auth.middleware");
+// const {
+//   getMemberProfile,
+//   updateMemberProfile,
+//   changeMemberPassword,
+// } = require("../../controllers/member/member.profile.controller");
 
-// Create
+/* ── Public — member self-registration (no auth required) ── */
 router.post("/", createMember);
 
-// Get all
-router.get("/", getMembers);
+/* ── Admin-only — full member CRUD ── */
+router.get("/", auth, adminMw, getMembers);
+// router.get("/:id", auth, adminMw, getMemberById);
+router.put("/:id", auth, adminMw, updateMember);
+router.delete("/:id", auth, adminMw, deleteMember);
 
-// Get by ID
-router.get("/:id", getMemberById);
-
-// Update
-router.put("/:id", updateMember);
-
-// Delete
-router.delete("/:id", deleteMember);
+/* ── Member self-service (member can only manage own data) ── */
+// router.get("/profile", auth, memberMw, getMemberProfile);
+// router.put("/profile", auth, memberMw, updateMemberProfile);
+// router.put("/change-password", auth, memberMw, changeMemberPassword);
 
 module.exports = router;

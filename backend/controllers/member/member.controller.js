@@ -80,7 +80,7 @@ const getMembers = async (req, res) => {
         c.name AS city,
         m.membership_start,
         m.membership_end
-      FROM members m
+      FROM  members m
       LEFT JOIN states s ON m.state_id = s.id
       LEFT JOIN cities c ON m.city_id = c.id
       WHERE m.is_deleted=false

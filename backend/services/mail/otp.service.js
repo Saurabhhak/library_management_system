@@ -11,8 +11,8 @@
 // //   --------- Verify OTP --------------
 // const verifyOtp = async (email, otp) => {
 //   const result = await db.query(
-//     `SELECT * FROM otp_verifications 
-//      WHERE email=$1 AND otp=$2 
+//     `SELECT * FROM otp_verifications
+//      WHERE email=$1 AND otp=$2
 //      ORDER BY id DESC LIMIT 1`,
 //     [email, otp],
 //   );
@@ -54,10 +54,11 @@ const OTP_TTL_MS = 2 * 60 * 1000; // 2 minutes
  * @param {string|number} otp
  */
 const saveOtp = async (email, otp) => {
-  if (!email || !otp) throw new Error("[OtpService] email and otp are required.");
+  if (!email || !otp)
+    throw new Error("[OtpService] email and otp are required.");
 
   otpStore.set(email.trim().toLowerCase(), {
-    otp:       String(otp),
+    otp: String(otp),
     expiresAt: Date.now() + OTP_TTL_MS,
   });
 
@@ -75,7 +76,7 @@ const saveOtp = async (email, otp) => {
 const verifyOtp = async (email, otp) => {
   if (!email || !otp) return false;
 
-  const key    = email.trim().toLowerCase();
+  const key = email.trim().toLowerCase();
   const record = otpStore.get(key);
 
   if (!record) {

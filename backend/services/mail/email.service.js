@@ -176,25 +176,29 @@ const sendEmail = async (toEmail, otp) => {
   }
 
   const msg = {
-    to:   toEmail.trim().toLowerCase(),
+    to: toEmail.trim().toLowerCase(),
     from: {
       email: process.env.SENDGRID_SENDER_EMAIL,
-      name:  "APV Library",
+      name: "APV Library",
     },
     subject: "Your Password Reset OTP",
-    html:    getOtpTemplate(String(otp)),
-    text:    `APV Library - Password Reset\n\nYour OTP is: ${otp}\n\nExpires in 2 minutes.\nIgnore this if you did not request a reset.`,
+    html: getOtpTemplate(String(otp)),
+    text: `APV Library - Password Reset\n\nYour OTP is: ${otp}\n\nExpires in 2 minutes.\nIgnore this if you did not request a reset.`,
   };
 
   try {
     const [response] = await sgMail.send(msg);
-    console.log(`[EmailService] OTP sent to ${toEmail} | HTTP ${response.statusCode}`);
+    console.log(
+      `[EmailService] OTP sent to ${toEmail} | HTTP ${response.statusCode}`,
+    );
     return true;
   } catch (error) {
     const sgErrors = error.response?.body?.errors;
     if (sgErrors?.length) {
       sgErrors.forEach((e) =>
-        console.error(`[EmailService] SendGrid error - ${e.field || "general"}: ${e.message}`)
+        console.error(
+          `[EmailService] SendGrid error - ${e.field || "general"}: ${e.message}`,
+        ),
       );
       throw new Error(`Email sending failed: ${sgErrors[0].message}`);
     }
@@ -206,12 +210,19 @@ const sendEmail = async (toEmail, otp) => {
 // ── Self-Test  →  node email.service.js ──────────────────────────────────────
 if (require.main === module) {
   (async () => {
-    try { require("dotenv").config(); } catch { /* env already loaded */ }
+    try {
+      require("dotenv").config();
+    } catch {
+      /* env already loaded */
+    }
 
-    const testEmail = process.env.TEST_EMAIL || process.env.SENDGRID_SENDER_EMAIL;
-    const testOtp   = Math.floor(100000 + Math.random() * 900000);
+    const testEmail =
+      process.env.TEST_EMAIL || process.env.SENDGRID_SENDER_EMAIL;
+    const testOtp = Math.floor(100000 + Math.random() * 900000);
 
-    console.log(`\n[EmailService] Self-test → sending OTP ${testOtp} to ${testEmail}\n`);
+    console.log(
+      `\n[EmailService] Self-test → sending OTP ${testOtp} to ${testEmail}\n`,
+    );
     try {
       await sendEmail(testEmail, testOtp);
       console.log("[EmailService] Test passed — check your inbox!");

@@ -1,0 +1,496 @@
+/* ── Page shell ────────────────────────────────────────────────────────────── */
+.page {
+  padding: 1.5rem 2rem 3rem;
+  max-width: 960px;
+  margin: 0 auto;
+  margin-top: 3rem;
+}
+
+.pageHeader {
+  margin-bottom: 2rem;
+}
+
+.pageTitle {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.pageTitle i {
+  color: #2ee6a6;
+}
+
+.pageSubtitle {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+/* ── Two-column layout ─────────────────────────────────────────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 640px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+  }
+  .tabBtn i:last-child {
+    display: none;
+  }
+  .page {
+    padding: 1rem 1rem 2rem;
+  }
+}
+
+/* ── Sidebar tab navigation ────────────────────────────────────────────────── */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 0.6rem;
+}
+
+.tabBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background 0.15s,
+    color 0.15s;
+  width: 100%;
+}
+
+.tabBtn i:last-child {
+  margin-left: auto;
+  font-size: 0.7rem;
+  opacity: 0.6;
+}
+
+.tabBtn:hover {
+  background: #1e293b;
+  color: #e2e8f0;
+}
+
+.tabActive {
+  background: #1e293b;
+  color: #2ee6a6 !important;
+}
+
+.tabActive i {
+  color: #2ee6a6;
+}
+
+/* ── Main content card ─────────────────────────────────────────────────────── */
+.main {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tabContent {
+  padding: 2rem;
+}
+
+/* ── Section header ────────────────────────────────────────────────────────── */
+.sectionHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #1e293b;
+}
+
+.sectionHeader > i {
+  font-size: 1.2rem;
+  color: #2ee6a6;
+  margin-top: 2px;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin: 0 0 0.2rem;
+}
+
+.sectionDesc {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* ── Avatar row ────────────────────────────────────────────────────────────── */
+.avatarRow {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #1e293b;
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1e3a5f, #0f4c3a);
+  border: 2px solid #2ee6a6;
+  color: #2ee6a6;
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.avatarInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.avatarEmail {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* ── Role badges ───────────────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.badge--superadmin {
+  background: rgba(168, 85, 247, 0.15);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.badge--admin {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.badge--member {
+  background: rgba(46, 230, 166, 0.12);
+  color: #2ee6a6;
+  border: 1px solid rgba(46, 230, 166, 0.3);
+}
+
+/* ── Form ──────────────────────────────────────────────────────────────────── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #94a3b8;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.input {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 0.65rem 0.9rem;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: #2ee6a6;
+}
+
+.inputReadonly {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.inputError {
+  border-color: #ef4444 !important;
+}
+
+.hint {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.hintError {
+  font-size: 0.78rem;
+  color: #f87171;
+  margin: 0;
+}
+
+/* ── Password field with eye toggle ────────────────────────────────────────── */
+.pwWrap {
+  position: relative;
+}
+
+.pwWrap .input {
+  padding-right: 2.75rem;
+}
+
+.eyeBtn {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.eyeBtn:hover {
+  color: #94a3b8;
+}
+
+/* ── Strength meter ────────────────────────────────────────────────────────── */
+.strengthWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.35rem;
+}
+
+.strengthBar {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.strengthSegment {
+  height: 4px;
+  flex: 1;
+  border-radius: 2px;
+  background: #334155;
+  transition: background 0.2s;
+}
+
+.strengthLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 44px;
+  text-align: right;
+}
+
+.weak .strengthSegment,
+.weak {
+  color: #ef4444;
+}
+.weak .strengthSegment {
+  background: #ef4444;
+}
+
+.fair {
+  color: #f97316;
+}
+.fair .strengthSegment {
+  background: #f97316;
+}
+
+.good {
+  color: #eab308;
+}
+.good .strengthSegment {
+  background: #eab308;
+}
+
+.strong {
+  color: #2ee6a6;
+}
+.strong .strengthSegment {
+  background: #2ee6a6;
+}
+
+/* ── Save button ───────────────────────────────────────────────────────────── */
+.saveBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.5rem;
+  background: #2ee6a6;
+  color: #0a0f1e;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    opacity 0.15s,
+    transform 0.1s;
+  align-self: flex-start;
+  margin-top: 0.25rem;
+}
+
+.saveBtn:hover:not(:disabled) {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.saveBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ── Info card ─────────────────────────────────────────────────────────────── */
+.infoCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: rgba(46, 230, 166, 0.06);
+  border: 1px solid rgba(46, 230, 166, 0.2);
+  border-radius: 8px;
+  padding: 0.9rem 1rem;
+  margin-top: 1.75rem;
+  font-size: 0.82rem;
+  color: #94a3b8;
+}
+
+.infoCard > i {
+  color: #2ee6a6;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.infoCard p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Preferences list ──────────────────────────────────────────────────────── */
+.prefList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.prefItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #1e293b;
+}
+
+.prefItem:last-child {
+  border-bottom: none;
+}
+
+.prefIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2ee6a6;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.prefText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1;
+}
+
+.prefLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+.prefDesc {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+/* ── Toggle switch ─────────────────────────────────────────────────────────── */
+.toggle {
+  width: 44px;
+  height: 24px;
+  border-radius: 999px;
+  background: #334155;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.toggleOn {
+  background: #2ee6a6;
+}
+
+.toggleThumb {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.2s;
+  display: block;
+}
+
+.toggleOn .toggleThumb {
+  transform: translateX(20px);
+}

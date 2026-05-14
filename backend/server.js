@@ -10,6 +10,7 @@ dotenv.config({
 
 /* ___________________________ IMPORTS ___________________________*/
 const express = require("express");
+
 const cors = require("cors");
 
 const app = express();
@@ -82,11 +83,10 @@ app.listen(PORT, () => {
   console.log(`Frontend: ${FRONTEND_URL}`);
 });
 
-console.log("__________________________________________________")
+console.log("__________________________________________________");
 console.log("ENV FILE:", ENV);
 console.log("FRONTEND:", process.env.FRONTEND_URL);
 /* ___________________________ ENV DEBUG ___________________________*/
 console.log("------ ENV CHECK ------");
-console.log("BREVO:", process.env.BREVO_API_KEY ? "OK" : "Missing");
 console.log("SENDGRID:", process.env.SENDGRID_API_KEY ? "OK" : "Missing");
 console.log("SMTP:", process.env.SMTP_USER ? "OK" : "Missing");

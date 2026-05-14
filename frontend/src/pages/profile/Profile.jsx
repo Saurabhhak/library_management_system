@@ -13,15 +13,17 @@ function Profile({ closeAll }) {
 
   /* ---------------- SETTINGS ALERTS ---------------- */
   const handleSetting = () => {
-    closeAll(); // Close dropdown before showing alert
-    Swal.fire({
-      icon: "info",
-      title: "Action Not Allowed",
-      text: "Profile page update coming soon!",
-      confirmButtonColor: "#3085d6",
-      background: "#0f172a",
-      color: "#e5e7eb",
-    });
+    // Close dropdown before showing alert
+    closeAll();
+    navigate("/settings");
+    // Swal.fire({
+    //   icon: "info",
+    //   title: "Action Not Allowed",
+    //   text: "Profile page update coming soon!",
+    //   confirmButtonColor: "#3085d6",
+    //   background: "#0f172a",
+    //   color: "#e5e7eb",
+    // });
   };
 
   /* ---------------- FETCH PROFILE ---------------- */
@@ -201,7 +203,7 @@ function Profile({ closeAll }) {
       {/* -------- ACTION BUTTONS -------- */}
       <div className={styles.actionBtns}>
         <button className={styles.logoutBtn} onClick={handleLogout}>
-          <i class="fa-solid fa-right-from-bracket"></i> Logout
+          <i className="fa-solid fa-right-from-bracket"></i> Logout
         </button>
         <button className={styles.deleteBtn} onClick={handleDeleteAccount}>
           <i className="fa-solid fa-trash"></i> Delete

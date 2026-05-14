@@ -94,9 +94,11 @@
 
 .profileCard .role {
   position: relative;
-  color: #2e8fff;
-  font-weight: 600;
-  text-transform: capitalize;
+  color: #00a778;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .11rem;
+  line-clamp: calc(.5rem);
 }
 
 .profileCard .role::after {
@@ -106,14 +108,18 @@
   bottom: -5px;
   width: 100%;
   height: 1px;
-  background: #e8f2ff;
-  box-shadow: 0 0 8px rgba(88, 166, 255, 0.6);
+  /* background: #005acf; */
+  background: linear-gradient(190deg, #10b981, #6366f1);
+  /* box-shadow: 0 0 8px rgba(88, 166, 255, 0.6); */
   transform: translateX(-50%) scaleX(0);
   transform-origin: center;
 
   animation: underlineExpand 3s ease-in-out infinite;
 }
+.Roles{
+  background: linear-gradient(190deg, #10b981, #6366f1);
 
+}
 /* Keyframes */
 @keyframes underlineExpand {
   0% {

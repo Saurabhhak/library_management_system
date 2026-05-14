@@ -89,10 +89,10 @@
 // controllers/validations/password.controller.js
 "use strict";
 
-const pool        = require("../../config/db");
-const sendEmail   = require("../../services/mail/email.service");
+const pool = require("../../config/db");
+const sendEmail = require("../../services/mail/email.service");
 const generateOtp = require("../../utils/generateOtp"); // default import ✓
-const bcrypt      = require("bcrypt");
+const bcrypt = require("bcrypt");
 
 // POST /password/forgot-password
 exports.forgotPassword = async (req, res) => {
@@ -100,7 +100,9 @@ exports.forgotPassword = async (req, res) => {
     const email = req.body.email?.trim().toLowerCase();
 
     if (!email) {
-      return res.status(400).json({ success: false, message: "Email required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Email required" });
     }
 
     const { rows } = await pool.query(
@@ -116,7 +118,7 @@ exports.forgotPassword = async (req, res) => {
       });
     }
 
-    const otp    = generateOtp();
+    const otp = generateOtp();
     const expiry = new Date(Date.now() + 2 * 60 * 1000); // 2 minutes from now
 
     await pool.query(
@@ -139,7 +141,9 @@ exports.resetPassword = async (req, res) => {
     const { email, otp, password } = req.body;
 
     if (!email || !otp || !password) {
-      return res.status(400).json({ success: false, message: "All fields required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields required" });
     }
 
     const { rows } = await pool.query(
@@ -152,7 +156,9 @@ exports.resetPassword = async (req, res) => {
     );
 
     if (!rows.length) {
-      return res.status(400).json({ success: false, message: "Invalid or expired OTP" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid or expired OTP" });
     }
 
     const hash = await bcrypt.hash(password, 10);

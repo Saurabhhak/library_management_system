@@ -1,0 +1,26 @@
+.errorPage {
+  text-align: center;
+  margin-top: 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  font-family: sans-serif;
+}
+.homebtn {
+  font-size: 1rem;
+  padding: 0.5rem;
+  margin: 2rem auto;
+  background-color: #ffffff;
+  border: none;
+  border-radius: .3rem;
+  transition: all ease .5s;
+  font-family: sans-serif;
+}
+.homebtn:hover{
+  background-color: #208cff;
+  border: none;
+  transform: rotateX('angle');
+  color: #ffffff;
+
+}

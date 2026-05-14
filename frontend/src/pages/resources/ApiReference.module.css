@@ -1,0 +1,130 @@
+.page {
+  min-height: 100vh;
+  background: #0f1117;
+  color: #e2e8f0;
+}
+.hero {
+  background: linear-gradient(135deg, #1a1f2e, #0f1117);
+  border-bottom: 1px solid #1e293b;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+.badge {
+  display: inline-block;
+  background: rgba(139, 92, 246, 0.15);
+  color: #a78bfa;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.hero h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #f1f5f9;
+  margin: 0.5rem 0;
+}
+.hero p {
+  color: #94a3b8;
+  margin-bottom: 1.5rem;
+}
+.hero code {
+  background: #1e293b;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #60a5fa;
+}
+.baseUrl {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #161b2e;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+}
+.baseLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+}
+.baseUrl code {
+  background: none;
+  color: #10b981;
+  font-size: 0.9rem;
+  padding: 0;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+.group {
+  margin-bottom: 2rem;
+}
+.groupHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-left: 3px solid;
+  padding-left: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.groupHeader h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #f1f5f9;
+}
+.routeCount {
+  font-size: 0.75rem;
+  color: #475569;
+  background: #1e293b;
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+.routeList {
+  background: #161b2e;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.route {
+  display: grid;
+  grid-template-columns: 70px 280px 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #1e293b;
+}
+.route:last-child {
+  border-bottom: none;
+}
+.method {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-align: center;
+}
+.path {
+  font-size: 0.85rem;
+  color: #cbd5e1;
+}
+.desc {
+  font-size: 0.82rem;
+  color: #64748b;
+}
+@media (max-width: 640px) {
+  .route {
+    grid-template-columns: 70px 1fr;
+  }
+  .desc {
+    grid-column: 1 / -1;
+  }
+}

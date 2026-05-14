@@ -11,7 +11,7 @@ function RowActions({ admin, onDelete }) {
         className={styles.editBtn}
         onClick={() => navigate(`/updateadmin/${id}`)}
       >
-        <i class="fa-solid fa-user-pen"></i>
+        <i className="fa-solid fa-user-pen"></i>
       </button>
       <button
         className={styles.deleteBtn}

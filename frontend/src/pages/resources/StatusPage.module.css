@@ -1,0 +1,127 @@
+.page {
+  min-height: 100vh;
+  background: #0f1117;
+  color: #e2e8f0;
+}
+.hero {
+  background: linear-gradient(135deg, #1a1f2e, #0f1117);
+  border-bottom: 1px solid #1e293b;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+.badge {
+  display: inline-block;
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.overallBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+.hero p {
+  color: #475569;
+  font-size: 0.85rem;
+  margin: 0;
+}
+.container {
+  max-width: 750px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+.section {
+  margin-bottom: 2.5rem;
+}
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 0.75rem;
+}
+.serviceList {
+  background: #161b2e;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.serviceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid #1e293b;
+}
+.serviceRow:last-child {
+  border-bottom: none;
+}
+.serviceName {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  color: #e2e8f0;
+}
+.serviceRight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.latency {
+  font-size: 0.78rem;
+  color: #475569;
+  font-family: monospace;
+}
+.statusPill {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.incident {
+  background: #161b2e;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+.incidentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.3rem;
+}
+.incidentTitle {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #f1f5f9;
+}
+.incidentResolved {
+  font-size: 0.78rem;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.incidentDate {
+  font-size: 0.78rem;
+  color: #475569;
+  margin: 0 0 0.5rem;
+}
+.incidentDesc {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.6;
+}

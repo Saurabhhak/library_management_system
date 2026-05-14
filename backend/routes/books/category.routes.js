@@ -1,5 +1,7 @@
-const express = require("express");
-const router = express.Router();
+"use strict";
+const router = require("express").Router();
+const auth = require("../../middleware/auth.middleware");
+const adminMw = require("../../middleware/admin.middleware");
 
 const {
   createCategory,
@@ -8,9 +10,12 @@ const {
   deleteCategory,
 } = require("../../controllers/books/category.controller");
 
-router.post("/", createCategory);
-router.get("/", getCategories);
-router.put("/:id", updateCategory);
-router.delete("/:id", deleteCategory);
+/* Any authenticated user can read categories */
+router.get("/", auth, getCategories);
+
+/* Only admin/superadmin can manage categories */
+router.post("/", auth, adminMw, createCategory);
+router.put("/:id", auth, adminMw, updateCategory);
+router.delete("/:id", auth, adminMw, deleteCategory);
 
 module.exports = router;

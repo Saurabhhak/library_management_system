@@ -1,8 +1,12 @@
-const express = require("express");
-const router = express.Router();
+"use strict";
+const router  = require("express").Router();
+const auth    = require("../../middleware/auth.middleware");
+const adminMw = require("../../middleware/admin.middleware");
 const { returnBook } = require("../../controllers/books/returnBook.controller");
-const authMiddleware = require("../../middleware/auth.middleware");
-
-router.post("/", authMiddleware, returnBook);
-
+ 
+/* Admin/superadmin only */
+router.post("/", auth, adminMw, returnBook);
+ 
 module.exports = router;
+ 
+ 

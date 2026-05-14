@@ -11,7 +11,7 @@ import {
 import AdminForm from "./AdminForm";
 
 /* ── Swal helpers ───────────────────────────────────────────────────── */
-const Toast = Swal.mixin({
+const Toast = Swal.mixin({  
   toast: true,
   position: "top-end",
   showConfirmButton: false,

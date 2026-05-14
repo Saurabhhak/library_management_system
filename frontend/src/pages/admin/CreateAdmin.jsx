@@ -10,7 +10,7 @@ import {
   sendOtpAPI,
   verifyOtpAPI,
 } from "../../services/validations/otp.service";
-import { checkEmailAPI } from "../../services/admin/auth.service";
+import { checkEmailAPI   } from "../../services/admin/auth.service";
 import AdminForm from "./AdminForm";
 
 /* ── Swal helpers ───────────────────────────────────────────────────── */

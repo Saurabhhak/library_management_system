@@ -90,16 +90,16 @@ function AdminLoginForm() {
     setGoogleLoading(false);
   };
 
-  /* ---------------- MEMBER (COMING SOON) ---------------- */
-  const handleMember = (e) => {
-    e.preventDefault();
-    Swal.fire({
-      icon: "info",
-      title: "Coming Soon ",
-      text: "Member login system will be available soon",
-      confirmButtonColor: "#2563eb",
-    });
-  };
+  // /* ---------------- MEMBER (COMING SOON) ---------------- */
+  // const handleMember = (e) => {
+  //   e.preventDefault();
+  //   Swal.fire({
+  //     icon: "info",
+  //     title: "Coming Soon ",
+  //     text: "Member login system will be available soon",
+  //     confirmButtonColor: "#2563eb",
+  //   });
+  // };
 
   /* ---------------- UI ---------------- */
   return (
@@ -172,7 +172,7 @@ function AdminLoginForm() {
               >
                 <i
                   className={`fa-solid ${
-                    showPassword ? "fa-eye-slash" : "fa-eye"
+                    showPassword ? "fa-eye" : "fa-eye-slash"
                   }`}
                 />
               </span>
@@ -214,7 +214,11 @@ function AdminLoginForm() {
 
           {/* MEMBER */}
           <p className={styles.memberLink}>
-            <Link onClick={handleMember} to="/" className={styles.linkStyle}>
+            <Link
+              // onClick={handleMember}
+              to="/memberlogin"
+              className={styles.linkStyle}
+            >
               Member Login
             </Link>
           </p>

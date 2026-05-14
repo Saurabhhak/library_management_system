@@ -3,24 +3,24 @@ import { Link } from "react-router-dom";
 import Profile from "../../pages/profile/Profile";
 import styles from "./Navbar.module.css";
 import Swal from "sweetalert2";
+
 function NavbarSection() {
-  // -------- STATE --------
+  // ── STATE ──────────────────────────────────────────────────
   const [menuOpen, setMenuOpen] = useState(false);
   const [adminBarOpen, setAdminBarOpen] = useState(false);
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
-  // -------- DROPDOWN STATES --------
   const [bookOpen, setBookOpen] = useState(false);
   const [memberOpen, setMemberOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
 
-  // -------- TIMEOUT REFS (FOR SMOOTH HOVER) --------
+  // ── TIMEOUT REFS (smooth hover debounce) ──────────────────
   const bookTimeout = useRef(null);
   const memberTimeout = useRef(null);
   const historyTimeout = useRef(null);
 
-  // -------- HOVER HANDLERS (DESKTOP ONLY) --------
+  // ── HOVER HANDLERS (desktop only) ─────────────────────────
   const handleEnter = (setter, ref) => {
     if (window.innerWidth <= 768) return;
     clearTimeout(ref.current);
@@ -32,7 +32,7 @@ function NavbarSection() {
     ref.current = setTimeout(() => setter(false), 150);
   };
 
-  // -------- CLOSE ALL --------
+  // ── CLOSE ALL ─────────────────────────────────────────────
   const closeAll = () => {
     setMenuOpen(false);
     setAdminBarOpen(false);
@@ -42,53 +42,50 @@ function NavbarSection() {
     setMemberOpen(false);
     setHistoryOpen(false);
   };
+
   const role = localStorage.getItem("role");
-  // Sweet Alert for Incomplete Components
+
+  // WIP alert for unbuilt pages
   function handleAlert() {
     closeAll();
     Swal.fire({
       icon: "info",
-      title: "Action Not Allowed",
-      text: "All, Issued & Returned pages update coming soon!",
-      confirmButtonColor: "#3085d6",
-      background: "#0f172a",
-      color: "#e5e7eb",
+      title: "Coming Soon",
+      text: "All, Issued & Returned pages are under development.",
+      confirmButtonColor: "#2ee6a6",
+      background: "#0d1117",
+      color: "#c9d1d9",
     });
   }
+
   return (
     <div className={styles.navbarHeader}>
-      {/* ------ ADMIN ICON ------ */}
-      {role !== "superadmin" ? (
-        // NOT SUPERADMIN → BLOCK
-        <button
-          className={styles.iconBtn}
-          onClick={() => {
+      {/* ── ADMIN ICON ────────────────────────────────────── */}
+      <button
+        className={`${styles.iconBtn} ${adminBarOpen ? styles.active : ""}`}
+        title="Admin Panel"
+        onClick={() => {
+          if (role !== "superadmin") {
             Swal.fire({
               icon: "error",
-              title: "Access Denied!",
-              text: "Only Super Admin allowed",
-              background: "#0f172a",
-              color: "#e5e7eb",
+              title: "Access Denied",
+              text: "Only Super Admin is allowed.",
+              background: "#0d1117",
+              color: "#c9d1d9",
             });
-          }}
-        >
-          <i className="fa-solid fa-user-gear"></i>
-        </button>
-      ) : (
-        //  SUPERADMIN → ALLOW
-        <button
-          className={`${styles.iconBtn} ${adminBarOpen ? styles.active : ""}`}
-          onClick={() => {
-            setAdminBarOpen(!adminBarOpen);
-            setMenuOpen(false);
-            setProfileOpen(false);
-          }}
-        >
-          <i className="fa-solid fa-user-gear"></i>
-        </button>
-      )}
+            return;
+          }
+          setAdminBarOpen(!adminBarOpen);
+          setMenuOpen(false);
+          setProfileOpen(false);
+        }}
+      >
+        <span className={styles.iconColor}>
+          <i className="fa-solid fa-user-gear" />
+        </span>
+      </button>
 
-      {/* ----- ADMIN SIDEBAR ----- */}
+      {/* ── ADMIN SIDEBAR ─────────────────────────────────── */}
       <nav
         className={`${styles.adminSidebar} ${adminBarOpen ? styles.activeAdmin : ""}`}
       >
@@ -97,55 +94,73 @@ function NavbarSection() {
           onClick={() => setAdminMenuOpen(!adminMenuOpen)}
         >
           <span className={styles.leftContent}>
-            <i className="fa-solid fa-user-gear"></i>
-            <span>Admin Management</span>
+            <span className={styles.iconColor}>
+              <i className="fa-solid fa-user-gear" />
+            </span>
+            Admin Management
           </span>
-          <i
-            className={`fa-solid ${
-              adminMenuOpen ? "fa-chevron-up" : "fa-chevron-down"
-            }`}
-          />
+          <span className={styles.iconColor}>
+            <i
+              className={`fa-solid ${adminMenuOpen ? "fa-chevron-up" : "fa-chevron-down"}`}
+            />
+          </span>
         </button>
+
         <div
           className={`${styles.subMenu} ${adminMenuOpen ? styles.subMenuActive : ""}`}
         >
-          {/* <Link to="/createadmin" onClick={closeAll} title="Create New Admin">
-            <i className="fa-solid fa-user-plus"></i> Create Admin
-          </Link> */}
           <Link
             to="/admininventory"
             onClick={closeAll}
-            title="Admin Data table"
+            className={styles.hoverDropDown}
           >
-            <i className="fa-solid fa-table"></i> Admin Inventory
+            <span className={styles.iconColor}>
+              <i className="fa-solid fa-table" />
+            </span>
+            Admin Inventory
           </Link>
           <Link
             to="/adminpage"
             onClick={closeAll}
-            title="View Analytics Dashboard"
+            className={styles.hoverDropDown}
           >
-            <i className="fa-solid fa-chart-line"></i> Admin Charts
+            <span className={styles.iconColor}>
+              <i className="fa-solid fa-chart-line" />
+            </span>
+            Admin Charts
+          </Link>
+          <Link
+            to="/feedbackinventory"
+            onClick={closeAll}
+            className={styles.hoverDropDown}
+          >
+            <span className={styles.iconColor}>
+              <i className="fa-solid fa-inbox" />
+            </span>
+            Feedback
           </Link>
         </div>
       </nav>
 
-      {/* ------ MAIN NAV ------ */}
+      {/* ── MAIN NAV ──────────────────────────────────────── */}
       <nav
         className={`${styles.leftIcons} ${menuOpen ? styles.activeMenu : ""}`}
       >
-        <Link to="/" className={styles.navlink} title="Home" onClick={closeAll}>
-          <i class="fa-solid fa-gauge"></i> Dashboard
+        <Link to="/" className={styles.navlink} onClick={closeAll}>
+          <span className={styles.iconColor}>
+            <i className="fa-solid fa-gauge" />
+          </span>
+          Dashboard
         </Link>
-        {/* ______________ Library ____________ */}
-        <Link
-          to="/bookslib"
-          className={styles.navlink}
-          title="Online Library Store"
-          onClick={closeAll}
-        >
-          <i class="fa fa-book"></i> Library
+
+        <Link to="/bookslib" className={styles.navlink} onClick={closeAll}>
+          <span className={styles.iconColor}>
+            <i className="fa-solid fa-book" />
+          </span>
+          Library
         </Link>
-        {/* ------- BOOKS ------- */}
+
+        {/* ── BOOKS ───────────────────────────────────────── */}
         <div
           className={styles.dropdown}
           onMouseEnter={() => handleEnter(setBookOpen, bookTimeout)}
@@ -155,40 +170,64 @@ function NavbarSection() {
             className={styles.navlink}
             onClick={() => menuOpen && setBookOpen(!bookOpen)}
           >
-            <i className="fa-solid fa-book-open"></i>
+            <span className={styles.iconColor}>
+              <i className="fa-solid fa-book-open" />
+            </span>
             Books
-            {menuOpen && (
+            <span className={styles.iconColor}>
               <i
-                className={`fa-solid ${styles.mobileArrow} ${bookOpen ? "fa-chevron-up" : "fa-chevron-down"}`}
+                className={`fa-solid ${bookOpen && menuOpen ? "fa-chevron-up" : "fa-chevron-down"}`}
               />
-            )}
+            </span>
           </button>
+
           {bookOpen && (
             <div className={styles.dropdownMenu}>
-              <Link to="/bookinventory" onClick={closeAll}>
-                <i className="fa-solid fa-table "></i> Books Inventory
+              <Link
+                to="/bookinventory"
+                onClick={closeAll}
+                className={styles.hoverDropDown}
+              >
+                <span className={styles.DropdowniconColor}>
+                  <i className="fa-solid fa-table" />
+                </span>
+                Books Inventory
               </Link>
-
-              <Link to="/bookchartpage" onClick={closeAll}>
-                <i className="fa-solid fa-chart-line"></i> Books Chart
+              <Link
+                to="/bookchartpage"
+                onClick={closeAll}
+                className={styles.hoverDropDown}
+              >
+                <span className={styles.DropdowniconColor}>
+                  <i className="fa-solid fa-chart-line" />
+                </span>
+                Books Chart
               </Link>
-              {/* <Link to="/issuebook" onClick={closeAll}>
-                <i class="fa-solid fa-book-open"></i> Issue Books
-              </Link> */}
-              <Link to="/categoryinventory" onClick={closeAll}>
-                <i className="fa-solid fa-table "></i> Categories Inventory
+              <Link
+                to="/categoryinventory"
+                onClick={closeAll}
+                className={styles.hoverDropDown}
+              >
+                <span className={styles.DropdowniconColor}>
+                  <i className="fa-solid fa-table" />
+                </span>
+                Categories Inventory
               </Link>
-              <Link to="/categorypage" onClick={closeAll}>
-                <i className="fa-solid fa-chart-line"></i> Categories Chart
+              <Link
+                to="/categorypage"
+                onClick={closeAll}
+                className={styles.hoverDropDown}
+              >
+                <span className={styles.DropdowniconColor}>
+                  <i className="fa-solid fa-chart-line" />
+                </span>
+                Categories Chart
               </Link>
-              {/* <Link to="/categorypage" onClick={closeAll}>
-                <i class="fa-solid fa-layer-group"></i> Categories Chart
-              </Link> */}
             </div>
           )}
         </div>
 
-        {/* ------- MEMBERS ------- */}
+        {/* ── MEMBERS ─────────────────────────────────────── */}
         <div
           className={styles.dropdown}
           onMouseEnter={() => handleEnter(setMemberOpen, memberTimeout)}
@@ -198,27 +237,44 @@ function NavbarSection() {
             className={styles.navlink}
             onClick={() => menuOpen && setMemberOpen(!memberOpen)}
           >
-            <i className="fa-solid fa-users-gear"></i> Members
-            {menuOpen && (
+            <span className={styles.iconColor}>
+              <i className="fa-solid fa-users-gear" />
+            </span>
+            Members
+            <span className={styles.iconColor}>
               <i
-                className={`fa-solid ${styles.mobileArrow} ${memberOpen ? "fa-chevron-up" : "fa-chevron-down"}`}
+                className={`fa-solid ${memberOpen && menuOpen ? "fa-chevron-up" : "fa-chevron-down"}`}
               />
-            )}
+            </span>
           </button>
+
           {memberOpen && (
             <div className={styles.dropdownMenu}>
-              <Link to="/memberinventory" onClick={closeAll}>
-                {/* <i class="fa-solid fa-users"></i> Members Inventory */}
-                <i class="fa fa-table"></i> Member Inventory
+              <Link
+                to="/memberinventory"
+                onClick={closeAll}
+                className={styles.hoverDropDown}
+              >
+                <span className={styles.DropdowniconColor}>
+                  <i className="fa-solid fa-table" />
+                </span>
+                Member Inventory
               </Link>
-              <Link to="/memberpage" onClick={closeAll}>
-                <i className="fa-solid fa-chart-line"></i> Member Chart
+              <Link
+                to="/memberpage"
+                onClick={closeAll}
+                className={styles.hoverDropDown}
+              >
+                <span className={styles.DropdowniconColor}>
+                  <i className="fa-solid fa-chart-line" />
+                </span>
+                Member Chart
               </Link>
             </div>
           )}
         </div>
 
-        {/* ------- HISTORY ------- */}
+        {/* ── HISTORY ─────────────────────────────────────── */}
         <div
           className={styles.dropdown}
           onMouseEnter={() => handleEnter(setHistoryOpen, historyTimeout)}
@@ -226,42 +282,50 @@ function NavbarSection() {
         >
           <button
             className={styles.navlink}
-            onClick={() => menuOpen && setHistoryOpen(!historyOpen) && closeAll}
+            onClick={() => menuOpen && setHistoryOpen(!historyOpen)}
           >
-            <i className="fa-solid fa-clock-rotate-left"></i> History
-            {menuOpen && (
+            <span className={styles.iconColor}>
+              <i className="fa-solid fa-clock-rotate-left" />
+            </span>
+            History
+            <span className={styles.iconColor}>
               <i
-                className={`fa-solid ${styles.mobileArrow}  ${historyOpen ? "fa-chevron-up" : "fa-chevron-down"}`}
+                className={`fa-solid ${historyOpen && menuOpen ? "fa-chevron-up" : "fa-chevron-down"}`}
               />
-            )}
+            </span>
           </button>
 
           {historyOpen && (
             <div className={styles.dropdownMenu}>
-              <Link  onClick={handleAlert}>
-                <i class="fa-solid fa-clock-rotate-left"></i> All
+              <Link onClick={handleAlert} className={styles.hoverDropDown}>
+                <span className={styles.DropdowniconColor}>
+                  <i className="fa-solid fa-clock-rotate-left" />
+                </span>
+                All
               </Link>
-              <Link
-                //  to="/history/issue"
-                onClick={handleAlert}
-              >
-                <i class="fa-solid fa-book-bookmark"></i> Issued
+              <Link onClick={handleAlert} className={styles.hoverDropDown}>
+                <span className={styles.DropdowniconColor}>
+                  <i className="fa-solid fa-book-bookmark" />
+                </span>
+                Issued
               </Link>
-              <Link
-                // to="/history/return"
-                onClick={handleAlert}
-              >
-                <i class="fa-solid fa-rotate-left"></i> Returned
+              <Link onClick={handleAlert} className={styles.hoverDropDown}>
+                <span className={styles.DropdowniconColor}>
+                  <i className="fa-solid fa-rotate-left" />
+                </span>
+                Returned
               </Link>
             </div>
           )}
         </div>
       </nav>
-      {/* ------ RIGHT ICONS Menu Button ------ */}
+
+      {/* ── RIGHT ICONS ───────────────────────────────────── */}
       <nav className={styles.rightIcons}>
+        {/* Mobile hamburger */}
         <button
           className={`${styles.iconBtn} ${styles.menuBtn} ${menuOpen ? styles.active : ""}`}
-          title="Menu Button"
+          title={menuOpen ? "Close menu" : "Open menu"}
           onClick={() => {
             setMenuOpen(!menuOpen);
             setAdminBarOpen(false);
@@ -270,19 +334,24 @@ function NavbarSection() {
         >
           <i className={`fa-solid ${menuOpen ? "fa-xmark" : "fa-bars"}`} />
         </button>
+
+        {/* Profile */}
         <button
           className={`${styles.iconBtn} ${profileOpen ? styles.active : ""}`}
-          title="Profile Panel"
+          title="Profile"
           onClick={() => {
             setProfileOpen(!profileOpen);
             setMenuOpen(false);
             setAdminBarOpen(false);
           }}
         >
-          <i className="fa-solid fa-user-shield" />
+          <span className={styles.iconColor}>
+            <i className="fa-solid fa-user-shield" />
+          </span>
         </button>
       </nav>
-      {/* ------ PROFILE PANEL ------ */}
+
+      {/* ── PROFILE PANEL ─────────────────────────────────── */}
       <div
         className={`${styles.profilePanel} ${profileOpen ? styles.profileActive : ""}`}
       >
@@ -293,4 +362,5 @@ function NavbarSection() {
     </div>
   );
 }
+
 export default NavbarSection;

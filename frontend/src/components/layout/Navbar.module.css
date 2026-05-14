@@ -1,174 +1,148 @@
-/* _____ VARIABLES ______ */
+/* ── TOKENS ──────────────────────────────────────────────── */
 :root {
-  --bg-dark: #0d1117;
-  --bg-darker: #161b22;
+  --bg: #0d1117;
+  --bg-card: #161b22;
   --bg-hover: #21262d;
-  --border-color: #30363d;
-  --text-light: #a8a8a8;
-  --text-muted: #80848a;
-  --text-white: #ffffff;
-  --transition-speed: 0.3s;
-  --border-radius: 8px;
-  --gap-sm: 0.4rem;
-  --gap-md: 0.6rem;
-  --font-family: 'Materials', sans-serif;
+  --border: #30363d;
+  --txt: #c9d1d9;
+  --txt-muted: #8b949e;
+  --txt-white: #ffffff;
+  --accent: #2ee6a6;
+  --accent-dim: #7ee787;
+  --glow: rgba(46, 230, 166, 0.28);
+  --speed: 200ms ease;
+  --speed-slow: 300ms ease;
+  --r: 6px;
+  --nav-h: 50px;
 }
 
-/* _____ RESET ______ */
-* {
+/* ── RESET ───────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: var(--font-family);
 }
-
 a {
-  color: var(--text-light);
   text-decoration: none;
-  transition: color var(--transition-speed);
+}
+button {
+  font: inherit;
+  cursor: pointer;
 }
 
-a:hover {
-  color: var(--text-white);
-}
-
-/* _____ NAVBAR CONTAINER ______ */
+/* ── NAVBAR SHELL ────────────────────────────────────────── */
 .navbarHeader {
   position: fixed;
-  top: 0;
-  left: 0;
-  height: 50px;
-  width: 100%;
+  inset: 0 0 auto 0;
+  height: var(--nav-h);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 1rem;
-  background: var(--bg-dark);
-  border-bottom: 1px solid #30363d56;
+  background: var(--bg);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
   z-index: 1000;
-  /* box-shadow: 0 2px 8px rgba(42, 57, 79, 0.314); */
 }
 
-/* _____ NAV GROUPS ______ */
+/* ── GROUPS ──────────────────────────────────────────────── */
 .leftIcons,
 .rightIcons {
   display: flex;
   align-items: center;
-  gap: var(--gap-md);
+  gap: 0.35rem;
 }
 
-/* _____ NAV LINKS (TEXT BUTTONS) ______ */
+/* ── ICON ACCENT WRAPPER ─────────────────────────────────── */
+/*
+  .iconColor wraps only the <i> tag.
+  Parent (.navlink / .hoverDropDown / .adminMainBtn) on :hover
+  triggers color change on BOTH the label text AND .iconColor child.
+*/
+.iconColor {
+  display: inline-flex;
+  align-items: center;
+  color: var(--accent-dim);
+  line-height: 1;
+  transition:
+    color var(--speed),
+    text-shadow var(--speed),
+    transform var(--speed);
+  will-change: color, transform;
+}
+
+/* ── NAV LINK ────────────────────────────────────────────── */
 .navlink {
   display: flex;
   align-items: center;
-  gap: var(--gap-sm);
-  height: 33px;
-  min-width: 100px;
-  padding: 0.4rem 0.9rem;
-  border-radius: .4rem;
-  /* border: 1px solid transparent; */
+  gap: 0.45rem;
+  height: 34px;
+  padding: 0 0.85rem;
+  border-radius: var(--r);
   border: none;
   background: transparent;
-  color: var(--text-light);
-  cursor: pointer;
-  transition: all var(--transition-speed);
-  font-size: .90rem;
+  color: var(--txt);
+  font-size: 0.875rem;
+  white-space: nowrap;
+  transition:
+    background var(--speed),
+    color var(--speed);
 }
 
 .navlink:hover {
   background: var(--bg-hover);
-  border: none;
-  color: var(--text-white);
-  /* box-shadow: 0 0 10px var(--bg-hover); */
+  color: var(--accent);
+}
+.navlink:hover .iconColor {
+  color: var(--accent);
+  text-shadow:
+    0 0 8px var(--glow),
+    0 0 18px var(--glow);
+  transform: translateY(-1px);
 }
 
-/* _____ ICON BUTTONS (ADMIN / MENU / PROFILE) ______ */
+.navlinkActive {
+  color: var(--accent);
+}
+.navlinkActive .iconColor {
+  color: var(--accent);
+  text-shadow: 0 0 8px var(--glow);
+}
+
+/* ── ROUND ICON BUTTON ───────────────────────────────────── */
 .iconBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-
-  width: 2.5rem;
-  height: 38px;
-
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 1px solid transparent;
   background: transparent;
-
-  color: var(--text-light);
-  cursor: pointer;
-
-  transition: all var(--transition-speed);
+  color: var(--txt-muted);
+  transition:
+    background var(--speed),
+    border-color var(--speed),
+    color var(--speed);
 }
-
 .iconBtn:hover {
   background: var(--bg-hover);
-  border-color: var(--border-color);
-  color: var(--text-white);
-  box-shadow: 0 0 10px var(--bg-hover);
+  border-color: var(--border);
+  color: var(--txt-white);
 }
-
 .active {
   background: var(--bg-hover);
-  color: var(--text-white);
+  color: var(--txt-white);
+  border-color: var(--border);
 }
 
-/* ----------- Default: hide on desktop -------------*/
-.menuBtn {
-  display: none;
-}
-
-/*
-   DROPDOWN */
+/* ── DROPDOWN ────────────────────────────────────────────── */
 .dropdown {
   position: relative;
 }
 
-/* Dropdown menu */
-.dropdownMenu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  min-width: 12rem;
-  margin-top: .55rem;
-  padding: 0.3rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  background: var(--bg-darker);
-  border: 1px solid #292e3469;
-  border-radius: .3rem;
-  /* box-shadow: inset 0 0 .2rem rgba(255, 255, 255, 0.6); */
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-8px);
-  transition: all var(--transition-speed);
-  z-index: 999;
-}
-
-/* Show dropdown */
-.dropdown:hover > .dropdownMenu,
-.dropdown:focus-within > .dropdownMenu {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
-}
-
-/* Dropdown links */
-.dropdownMenu a {
-  padding: 0.6rem 1rem;
-  font-size: 0.85rem;
-  border-radius: 6px;
-  color: var(--text-light);
-  transition: all var(--transition-speed);
-}
-
-.dropdownMenu a:hover {
-  background: var(--bg-hover);
-  color: var(--text-white);
-}
-
-/* Hover bridge (prevents flicker) */
+/* hover bridge — prevents flicker between trigger and menu */
 .dropdown::after {
   content: "";
   position: absolute;
@@ -178,172 +152,249 @@ a:hover {
   height: 10px;
 }
 
-/*
-   ADMIN SIDEBAR */
-.adminSidebar {
-  position: fixed;
-  top: 3.13rem;
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 6px);
   left: 0;
-
-  width: 260px;
-  height: calc(100vh - 55px);
-
-  background: var(--bg-dark);
-  /* border-right: 1px solid var(--border-color); */
-
-  padding: 1rem;
-  transform: translateX(-100%);
-  transition: transform var(--transition-speed);
-
-  z-index: 900;
+  min-width: 200px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--bg-card);
+  border: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+  border-radius: var(--r);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition:
+    opacity var(--speed),
+    transform var(--speed);
+  z-index: 999;
 }
 
+/* CSS hover + JS-controlled class both supported */
+.dropdown:hover > .dropdownMenu,
+.dropdown:focus-within > .dropdownMenu,
+.dropdownOpen {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* ── DROPDOWN ITEM ROW ───────────────────────────────────── */
+.hoverDropDown {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: calc(var(--r) - 2px);
+  color: var(--txt-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition:
+    background var(--speed),
+    color var(--speed);
+}
+
+/* Icon + label both turn accent on row hover */
+.hoverDropDown:hover {
+  background: var(--bg-hover);
+  color: var(--accent);
+}
+.hoverDropDown:hover .iconColor,
+.hoverDropDown:hover .DropdowniconColor {
+  color: var(--accent);
+  text-shadow:
+    0 0 8px var(--glow),
+    0 0 16px var(--glow);
+  transform: translateY(-1px);
+}
+
+.DropdowniconColor {
+  display: inline-flex;
+  align-items: center;
+  color: var(--accent-dim);
+  transition:
+    color var(--speed),
+    text-shadow var(--speed),
+    transform var(--speed);
+}
+
+/* ── ADMIN SIDEBAR ───────────────────────────────────────── */
+.adminSidebar {
+  position: fixed;
+  top: var(--nav-h);
+  left: 0;
+  width: 255px;
+  height: calc(100vh - var(--nav-h));
+  padding: 0.75rem;
+  background: var(--bg);
+  border-right: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+  transform: translateX(-100%);
+  transition: transform var(--speed-slow);
+  z-index: 900;
+  overflow-y: auto;
+}
 .activeAdmin {
   transform: translateX(0);
 }
 
-/* Sidebar button */
 .adminMainBtn {
   width: 100%;
-  height: 36px;
-  padding: 0.5rem;
-  /* justify-content: center; */
-  border-radius: var(--border-radius);
-  border: none;
-  /* border: 1px solid red; */
-  background: none;
-  color: var(--text-muted);
-  cursor: pointer;
-  /* border: 1px solid red; */
   display: flex;
-  font-size: 1rem;
-  font-weight: 100;
-  gap: 0.5rem;
-  transition: all var(--transition-speed);
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.45rem 0.65rem;
+  border-radius: var(--r);
+  border: none;
+  background: transparent;
+  color: var(--txt-muted);
+  font-size: 0.9rem;
+  transition:
+    background var(--speed),
+    color var(--speed);
 }
-
 .adminMainBtn:hover {
   background: var(--bg-hover);
-  color: var(--text-white);
+  color: var(--accent);
 }
-
-.mobileArrow {
-  display: none;
-  /* border: 1px solid gold; */
+.adminMainBtn:hover .iconColor {
+  color: var(--accent);
+  text-shadow:
+    0 0 8px var(--glow),
+    0 0 16px var(--glow);
+  transform: translateY(-1px);
 }
 
 .leftContent {
-  /* border: 1px solid red; */
   display: flex;
-  font-size: .95rem;
-  gap: 1rem;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.9rem;
 }
 
-/* Sub menu */
+/* Sub-menu accordion */
 .subMenu {
-  margin-top: 0.7rem;
-  font-size: .95rem;
-  max-height: 0;
   overflow: hidden;
+  max-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 2px;
+  margin-top: 4px;
   transition: max-height 0.3s ease;
 }
-
 .subMenuActive {
   max-height: 300px;
 }
 
 .subMenu a {
-  padding: 0.5rem;
-  border-radius: .3rem;
-  /* border: 2px solid red; */
   display: flex;
-  gap: 1rem;
-  align-items: flex-start;
-  color: var(--text-muted);
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: var(--r);
+  color: var(--txt-muted);
+  font-size: 0.875rem;
+  transition:
+    background var(--speed),
+    color var(--speed);
 }
-
 .subMenu a:hover {
   background: var(--bg-hover);
-  color: var(--text-white);
+  color: var(--accent);
+}
+.subMenu a:hover .iconColor {
+  color: var(--accent);
+  text-shadow: 0 0 8px var(--glow);
+  transform: translateY(-1px);
 }
 
-/*
-   PROFILE PANEL */
+/* ── PROFILE PANEL ───────────────────────────────────────── */
 .profilePanel {
   position: fixed;
-  top: 2.67rem;
+  top: var(--nav-h);
   right: 0;
   transform: translateX(100%);
-  transition: transform 0.3s ease;
+  transition: transform var(--speed-slow);
   z-index: 999;
+  padding: 0.5rem;
 }
-
 .profileActive {
   transform: translateX(0);
 }
 
-.profileWrapper {
-  padding: 0.5rem;
+/* ── MOBILE MENU BUTTON ──────────────────────────────────── */
+.menuBtn {
+  display: none;
+}
+.mobileArrow {
+  display: none;
 }
 
-/*
-   RESPONSIVE */
+/* ── RESPONSIVE ──────────────────────────────────────────── */
 @media (max-width: 768px) {
   .leftIcons {
     position: fixed;
-    top: 50px;
+    top: var(--nav-h);
     right: -100%;
-    width: 14rem;
-    height: calc(100vh - 50px);
+    width: 220px;
+    height: calc(100vh - var(--nav-h));
     flex-direction: column;
-    align-items: flex-start;
-    padding: 1rem;
-    background: var(--bg-dark);
-    transition: right var(--transition-speed);
+    align-items: stretch;
+    padding: 0.75rem;
+    gap: 2px;
+    background: var(--bg);
+    border-left: 1px solid var(--border);
+    transition: right var(--speed-slow);
+    overflow-y: auto;
   }
-
   .activeMenu {
     right: 0;
+  }
+
+  .navlink {
+    height: auto;
+    padding: 0.55rem 0.75rem;
   }
 
   .menuBtn {
     display: flex;
   }
-
   .mobileArrow {
     display: inline-block;
   }
 
   .dropdownMenu {
     position: static;
-    width: 100%;
-
     opacity: 1 !important;
     pointer-events: auto !important;
     transform: none !important;
-
     background: transparent;
     border: none;
     box-shadow: none;
+    padding: 0 0 0 0.5rem;
   }
-  .adminMainBtn,
-  .leftContent,
-  .subMenu {
-    font-size: 0.8rem;
-  }
-}
 
-/*
-   SMALL DEVICES */
-@media (max-width: 480px) {
   .adminSidebar {
     width: 220px;
   }
-
   .profilePanel {
     width: 240px;
+  }
+}
+
+/* ── REDUCED MOTION ──────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .iconColor,
+  .navlink,
+  .hoverDropDown,
+  .adminMainBtn,
+  .subMenu a {
+    transition: none;
+  }
+  .iconColor {
+    transform: none !important;
   }
 }

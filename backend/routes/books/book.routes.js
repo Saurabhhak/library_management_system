@@ -1,5 +1,8 @@
-const express = require("express");
-const router = express.Router();
+"use strict";
+const router = require("express").Router();
+const auth = require("../../middleware/auth.middleware");
+const adminMw = require("../../middleware/admin.middleware");
+const role = require("../../middleware/role.middleware");
 
 const {
   createBook,
@@ -8,12 +11,12 @@ const {
   deleteBook,
 } = require("../../controllers/books/book.controller");
 
-// const authMiddleware = require("../../middleware/auth.middleware");
+/* Any authenticated user can browse books */
+router.get("/", auth, getBooks);
 
-// Protected Routes
-router.post("/", createBook);
-router.get("/", getBooks);
-router.put("/:id", updateBook);
-router.delete("/:id", deleteBook);
+/* Only admin/superadmin can create, update, delete */
+router.post("/", auth, adminMw, createBook);
+router.put("/:id", auth, adminMw, updateBook);
+router.delete("/:id", auth, adminMw, deleteBook);
 
 module.exports = router;

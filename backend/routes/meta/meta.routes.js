@@ -1,11 +1,10 @@
-const express = require("express");
-const router = express.Router();
+"use strict";
+const router = require("express").Router();
 const {
-  getStates,
-  getCitiesByState,
+  getStates, getCitiesByState,
 } = require("../../controllers/meta/meta.controller");
-// ---- GET ALL STATES
-router.get("/states", getStates);
-// ---- GET CITIES BY STATE
-router.get("/cities/:stateId", getCitiesByState);
+ 
+router.get("/states",           getStates);          // Public
+router.get("/cities/:stateId",  getCitiesByState);   // Public
+ 
 module.exports = router;

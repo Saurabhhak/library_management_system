@@ -7,16 +7,16 @@
 
 /* ── Variables ── */
 :root {
-  --bg-primary:   #0d1117;
+  --bg-primary: #0d1117;
   --bg-secondary: #161b22;
-  --bg-tertiary:  #21262d;
-  --border:       #30363d;
+  --bg-tertiary: #21262d;
+  --border: #30363d;
   --text-primary: #f0f6fc;
-  --text-muted:   #8b949e;
+  --text-muted: #8b949e;
   --accent-green: #2ea043;
   --accent-hover: #3fb950;
-  --accent-teal:  #10b981;
-  --accent-indigo:#6366f1;
+  --accent-teal: #10b981;
+  --accent-indigo: #6366f1;
 }
 
 /* ── Base ── */
@@ -29,7 +29,6 @@
   overflow: hidden;
 }
 
-/* Decorative glow at the very top */
 .topGlow {
   position: absolute;
   top: 0;
@@ -37,14 +36,24 @@
   transform: translateX(-50%);
   width: 70%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--accent-teal), var(--accent-indigo), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent-teal),
+    var(--accent-indigo),
+    transparent
+  );
 }
 
 /* ════════════════════════════════════
    CTA STRIP
 ════════════════════════════════════ */
 .ctaStrip {
-  background: linear-gradient(135deg, rgba(16,185,129,0.06) 0%, rgba(99,102,241,0.06) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.06) 0%,
+    rgba(99, 102, 241, 0.06) 100%
+  );
   border-bottom: 1px solid var(--border);
 }
 
@@ -97,7 +106,7 @@
 .ctaGreenBtn:hover {
   background: var(--accent-hover);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(46,160,67,0.4);
+  box-shadow: 0 6px 20px rgba(46, 160, 67, 0.4);
 }
 
 .ctaOutlineBtn {
@@ -115,12 +124,12 @@
 
 .ctaOutlineBtn:hover {
   border-color: var(--text-muted);
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
   transform: translateY(-2px);
 }
 
 /* ════════════════════════════════════
-   MAIN FOOTER
+   MAIN FOOTER GRID
 ════════════════════════════════════ */
 .footerMain {
   max-width: 1240px;
@@ -135,6 +144,7 @@
   .footerMain {
     grid-template-columns: 1fr 1fr 1fr;
   }
+
   .brandCol {
     grid-column: span 3;
   }
@@ -144,6 +154,7 @@
   .footerMain {
     grid-template-columns: 1fr 1fr;
   }
+
   .brandCol {
     grid-column: span 2;
   }
@@ -185,8 +196,8 @@
   font-size: 0.78rem;
   font-family: "JetBrains Mono", monospace;
   color: var(--accent-teal);
-  background: rgba(16,185,129,0.1);
-  border: 1px solid rgba(16,185,129,0.25);
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
   padding: 5px 12px;
   border-radius: 20px;
   width: fit-content;
@@ -202,8 +213,13 @@
 }
 
 @keyframes statusPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); }
-  50%       { box-shadow: 0 0 0 5px rgba(16,185,129,0); }
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(16, 185, 129, 0);
+  }
 }
 
 .socialRow {
@@ -232,7 +248,6 @@
   border-color: var(--accent-teal);
   color: white;
   transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(16,185,129,0.35);
 }
 
 /* ── Link Columns ── */
@@ -261,16 +276,20 @@
   gap: 0.6rem;
 }
 
+/* ── Footer Links ── */
 .footerLink {
   font-size: 0.875rem;
   color: var(--text-muted);
   text-decoration: none;
-  transition: all 0.25s ease;
+  transition:
+    color 0.2s ease,
+    gap 0.25s ease;
   display: inline-flex;
   align-items: center;
   gap: 4px;
 }
 
+/* Animated underline-dash on hover */
 .footerLink::before {
   content: "";
   display: inline-block;
@@ -289,6 +308,21 @@
 
 .footerLink:hover::before {
   width: 10px;
+}
+
+/* Active link — keeps the dash visible permanently */
+.footerLinkActive {
+  color: var(--accent-teal);
+  font-weight: 600;
+}
+
+.footerLinkActive::before {
+  width: 10px;
+  background: var(--accent-teal);
+}
+
+.footerLinkActive:hover {
+  color: #34d399;
 }
 
 /* ════════════════════════════════════
@@ -324,11 +358,13 @@
 }
 
 .bottomDot {
-  color: var(--border);
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: bold;
+  line-height: 1;
 }
 
 .authorLink {
-  color: var(--accent-teal);
+  color: #1088ff;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease;
@@ -343,10 +379,16 @@
   font-family: "JetBrains Mono", monospace;
   font-size: 0.72rem;
   color: var(--accent-indigo);
-  background: rgba(99,102,241,0.1);
+  background: rgba(99, 102, 241, 0.1);
   padding: 2px 8px;
   border-radius: 4px;
-  border: 1px solid rgba(99,102,241,0.2);
+}
+
+/* Legal links — legalItem keeps Dot + Link together */
+.legalItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .legalLink {
@@ -361,7 +403,7 @@
 }
 
 /* ════════════════════════════════════
-   RESPONSIVE TWEAKS
+   RESPONSIVE
 ════════════════════════════════════ */
 @media (max-width: 640px) {
   .ctaStripInner {
