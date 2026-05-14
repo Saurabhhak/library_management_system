@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styles from "./FeedbackForm.module.css";
 import { validateFeedbackForm } from "../../validations/validateFeedbackForm";
-import { sendFeedback } from "../../services/Resources/feedback.service"; 
+import { sendFeedback } from "../../services/Resources/feedback.service";
 import Swal from "sweetalert2";
 
 const FIELDS = [
@@ -60,7 +60,7 @@ const FeedbackForm = () => {
 
     try {
       setLoading(true);
-      await sendFeedback(form); 
+      await sendFeedback(form);
 
       Swal.fire({
         ...swalBase,

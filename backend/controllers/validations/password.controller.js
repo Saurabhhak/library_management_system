@@ -1,5 +1,5 @@
 // const pool = require("../../config/db");
-// const sendEmail = require("../../services/mail/email.service");
+// const sendMail = require("../../services/mail/email.service");
 // const generateOtp = require("../../utils/generateOtp");
 // const bcrypt = require("bcrypt");
 
@@ -34,7 +34,7 @@
 //       [otp, expiry, email],
 //     );
 
-//     await sendEmail(email, otp);
+//     await sendMail(email, otp);
 //     return res.json({ success: true, message: "OTP sent" });
 //   } catch (err) {
 //     console.error("forgotPassword error:", err.message);
@@ -90,7 +90,7 @@
 "use strict";
 
 const pool = require("../../config/db");
-const sendEmail = require("../../services/mail/email.service");
+const sendMail = require("../../services/mail/email.service");
 const generateOtp = require("../../utils/generateOtp"); // default import ✓
 const bcrypt = require("bcrypt");
 
@@ -126,7 +126,7 @@ exports.forgotPassword = async (req, res) => {
       [otp, expiry, email],
     );
 
-    await sendEmail(email, otp);
+    await sendMail(email, otp);
 
     return res.json({ success: true, message: "OTP sent" });
   } catch (err) {

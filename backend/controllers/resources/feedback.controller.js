@@ -5,10 +5,10 @@ const {
   deleteFeedbackById,
   updateFeedbackStatus,
 } = require("../../services/resources/feedback.service");
-const { sendDirect }       = require("../../services/mail/email.service");
+const { sendMail } = require("../../services/mail/email.service");
 const { feedbackTemplate } = require("../../services/mail/templates");
 
-const ADMIN_EMAIL    = process.env.ADMIN_EMAIL || "onlinelibrarylms@gmail.com";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "onlinelibrarylms@gmail.com";
 const VALID_STATUSES = ["new", "reviewed", "resolved"];
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -21,13 +21,15 @@ const validateFeedback = ({ name, email, message }) => {
   const m = message?.trim();
 
   if (!n) errors.name = "Name is required";
-  else if (!/^[A-Za-z\s]{3,50}$/.test(n)) errors.name = "Only letters, 3–50 chars";
+  else if (!/^[A-Za-z\s]{3,50}$/.test(n))
+    errors.name = "Only letters, 3–50 chars";
 
   if (!e) errors.email = "Email is required";
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) errors.email = "Invalid email format";
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e))
+    errors.email = "Invalid email format";
 
   if (!m) errors.message = "Message is required";
-  else if (m.length < 10)  errors.message = "Minimum 10 characters";
+  else if (m.length < 10) errors.message = "Minimum 10 characters";
   else if (m.length > 500) errors.message = "Max 500 characters";
 
   return errors;
@@ -47,30 +49,32 @@ const submitFeedback = async (req, res, next) => {
     }
 
     const saved = await saveFeedback({
-      name:      name.trim(),
-      email:     email.trim(),
-      message:   message.trim(),
-      ip:        req.ip,
+      name: name.trim(),
+      email: email.trim(),
+      message: message.trim(),
+      ip: req.ip,
       userAgent: req.headers["user-agent"],
     });
 
     // Non-blocking — email failure should not break the response
-    sendDirect(
-      ADMIN_EMAIL,
-      `New Feedback from ${name.trim()}`,
-      feedbackTemplate({
-        name:        name.trim(),
-        email:       email.trim(),
-        message:     message.trim(),
-        id:          saved.id,
+    sendMail({
+      to: ADMIN_EMAIL,
+      subject: `New Feedback from ${name.trim()}`,
+      html: feedbackTemplate({
+        name: name.trim(),
+        email: email.trim(),
+        message: message.trim(),
+        id: saved.id,
         submittedAt: new Date().toLocaleString("en-IN"),
-      })
-    ).catch((err) => console.error("[Feedback] Email notify failed:", err.message));
+      }),
+    }).catch((err) =>
+      console.error("[Feedback] Email notify failed:", err.message),
+    );
 
     return res.status(201).json({
       success: true,
       message: "Feedback submitted successfully",
-      data:    { id: saved.id, created_at: saved.created_at },
+      data: { id: saved.id, created_at: saved.created_at },
     });
   } catch (err) {
     next(err);
@@ -86,8 +90,8 @@ const getAllFeedback = async (req, res, next) => {
     const { status, search } = req.query;
 
     // Pagination
-    const page   = Math.max(1, parseInt(req.query.page)  || 1);
-    const limit  = Math.min(100, Math.max(1, parseInt(req.query.limit) || 50));
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 50));
     const offset = (page - 1) * limit;
 
     // Validate status query if provided
@@ -98,11 +102,16 @@ const getAllFeedback = async (req, res, next) => {
       });
     }
 
-    const { rows, total } = await getAllFeedbacks({ status, search, limit, offset });
+    const { rows, total } = await getAllFeedbacks({
+      status,
+      search,
+      limit,
+      offset,
+    });
 
     return res.status(200).json({
       success: true,
-      data:    rows,
+      data: rows,
       meta: {
         total,
         page,
@@ -123,12 +132,16 @@ const removeFeedback = async (req, res, next) => {
   try {
     const id = parseInt(req.params.id, 10);
     if (!id || isNaN(id)) {
-      return res.status(400).json({ success: false, message: "Invalid feedback ID" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid feedback ID" });
     }
 
     const deleted = await deleteFeedbackById(id);
     if (!deleted) {
-      return res.status(404).json({ success: false, message: "Feedback not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Feedback not found" });
     }
 
     return res.status(200).json({
@@ -146,15 +159,19 @@ const removeFeedback = async (req, res, next) => {
    ══════════════════════════════════════════════════════════════════════ */
 const changeStatus = async (req, res, next) => {
   try {
-    const id     = parseInt(req.params.id, 10);
+    const id = parseInt(req.params.id, 10);
     const { status } = req.body;
 
     if (!id || isNaN(id)) {
-      return res.status(400).json({ success: false, message: "Invalid feedback ID" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid feedback ID" });
     }
 
     if (!status) {
-      return res.status(400).json({ success: false, message: "Status is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Status is required" });
     }
 
     if (!VALID_STATUSES.includes(status)) {
@@ -166,17 +183,24 @@ const changeStatus = async (req, res, next) => {
 
     const updated = await updateFeedbackStatus(id, status);
     if (!updated) {
-      return res.status(404).json({ success: false, message: "Feedback not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Feedback not found" });
     }
 
     return res.status(200).json({
       success: true,
       message: `Status updated to "${status}"`,
-      data:    updated,
+      data: updated,
     });
   } catch (err) {
     next(err);
   }
 };
 
-module.exports = { submitFeedback, getAllFeedback, removeFeedback, changeStatus };
+module.exports = {
+  submitFeedback,
+  getAllFeedback,
+  removeFeedback,
+  changeStatus,
+};

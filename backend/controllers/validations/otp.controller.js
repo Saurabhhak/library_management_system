@@ -1,5 +1,5 @@
 // const otpService = require("../../services/mail/otp.service");
-// const sendEmail = require("../../services/mail/email.service");
+// const sendMail = require("../../services/mail/email.service");
 // const generateOtp = require("../../utils/generateOtp");
 
 // const sendOtp = async (req, res) => {
@@ -11,7 +11,7 @@
 //     }
 //     const otp = generateOtp();
 //     await otpService.saveOtp(email, otp);
-//     await sendEmail(email, otp);
+//     await sendMail(email, otp);
 
 //     return res.json({ success: true, message: "OTP sent" });
 //   } catch (err) {
@@ -41,7 +41,7 @@
 "use strict";
 
 const otpService  = require("../../services/mail/otp.service");
-const sendEmail   = require("../../services/mail/email.service");
+const sendMail   = require("../../services/mail/email.service");
 const { generateOtp } = require("../../utils/generateOtp"); // named import ✓
 
 // POST /auth/send-otp
@@ -55,7 +55,7 @@ const sendOtp = async (req, res) => {
 
     const otp = generateOtp();
     await otpService.saveOtp(email, otp);
-    await sendEmail(email, otp);
+    await sendMail(email, otp);
 
     return res.json({ success: true, message: "OTP sent" });
   } catch (err) {
