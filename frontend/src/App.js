@@ -74,6 +74,7 @@ import Terms from "./pages/home/Terms";
 import Cookies from "./pages/home/Cookies";
 import Footer from "./pages/home/Footer";
 import FeedbackPage from "./pages/resources/FeedbackPage";
+import ContactUs from "./pages/resources/ContactUs";
 
 /* ── 404 ── */
 import NotFound from "./pages/errors/NotFound";
@@ -174,6 +175,7 @@ function App() {
               <Route path="/changelog" element={<Changelog />} />
               <Route path="/help" element={<HelpCenter />} />
               <Route path="/status" element={<StatusPage />} />
+              <Route path="/contact-us" element={<ContactUs />} />
 
               {/* Legal */}
               <Route path="/privacy" element={<Privacy />} />

@@ -1,4 +1,6 @@
+// columns.js
 import RowActions from "./RowActions";
+import styles from "./columns.module.css";
 
 const ONLINE_THRESHOLD_SECONDS = 90;
 
@@ -16,6 +18,7 @@ const isOnline = (last_seen) => {
   return (Date.now() - new Date(last_seen)) / 1000 <= ONLINE_THRESHOLD_SECONDS;
 };
 
+/* ── Badge ────────────────────────────────────────────────────────── */
 const Badge = ({ label, color }) => (
   <span
     style={{
@@ -31,27 +34,25 @@ const Badge = ({ label, color }) => (
   </span>
 );
 
+/* ── Online Status ────────────────────────────────────────────────── */
 const OnlineStatus = ({ last_seen }) => {
   const online = isOnline(last_seen);
-  const color = online ? "#22c55e" : "#9ca3af";
+
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+    <div
+      className={`${styles.statusBadge} ${online ? styles.online : styles.offline}`}
+    >
       <span
-        style={{
-          width: 8,
-          height: 8,
-          borderRadius: "50%",
-          background: color,
-          flexShrink: 0,
-        }}
+        className={`${styles.statusDot} ${online ? styles.dotOnline : styles.dotOffline}`}
       />
-      <span style={{ fontSize: 12, color }}>
+      <span className={styles.statusLabel}>
         {online ? "Online" : timeAgo(last_seen)}
       </span>
     </div>
   );
 };
 
+/* ── Columns ──────────────────────────────────────────────────────── */
 export const getColumns = (handleDelete) => [
   { header: "ID", accessorKey: "id", size: 70 },
   {
@@ -72,11 +73,8 @@ export const getColumns = (handleDelete) => [
     size: 80,
     cell: ({ row }) => {
       const dob = row.original.dob;
-
       if (!dob) return "-";
-
       return new Date(dob).toLocaleDateString("en-GB");
-      //  Output: DD/MM/YYYY
     },
   },
   {
@@ -88,11 +86,10 @@ export const getColumns = (handleDelete) => [
   { header: "Phone", accessorKey: "phone", size: 125 },
   { header: "State", accessorKey: "state", enableColumnFilter: true },
   { header: "City", accessorKey: "city", enableColumnFilter: true },
-
   {
     header: "Role",
     accessorKey: "role",
-    size: 120,
+    size: 150,
     enableColumnFilter: true,
     cell: ({ getValue }) => {
       const role = getValue();
@@ -104,7 +101,6 @@ export const getColumns = (handleDelete) => [
       );
     },
   },
-
   {
     header: "Account",
     accessorKey: "is_active",
@@ -117,22 +113,20 @@ export const getColumns = (handleDelete) => [
       />
     ),
   },
-
   {
     header: "Online",
     accessorKey: "last_seen",
-    size: 100,
+    size: 110,
     enableSorting: true,
     enableColumnFilter: false,
     cell: ({ getValue }) => <OnlineStatus last_seen={getValue()} />,
   },
-
   {
     id: "actions",
     header: "Actions",
     size: 90,
-    enableSorting: false, //  no sort icon
-    enableColumnFilter: false, //  no filter input
+    enableSorting: false,
+    enableColumnFilter: false,
     cell: ({ row }) => (
       <RowActions admin={row.original} onDelete={handleDelete} />
     ),

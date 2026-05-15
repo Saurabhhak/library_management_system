@@ -40,6 +40,7 @@ const NAV = {
     { label: "Help Center", to: "/help" },
     { label: "Status Page", to: "/status" },
     { label: "Feedback", to: "/feedback-page" },
+    { label: "Contact Us", to: "/contact-us" },
   ],
 };
 
