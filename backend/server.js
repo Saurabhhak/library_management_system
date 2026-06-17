@@ -90,3 +90,4 @@ console.log("FRONTEND:", process.env.FRONTEND_URL);
 console.log("------ ENV CHECK ------");
 console.log("SENDGRID:", process.env.SENDGRID_API_KEY ? "OK" : "Missing");
 console.log("SMTP:", process.env.SMTP_USER ? "OK" : "Missing");
+console.log("SENDGRID KEY:", process.env.SENDGRID_API_KEY?.slice(0, 10));

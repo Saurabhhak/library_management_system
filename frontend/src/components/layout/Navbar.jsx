@@ -139,6 +139,16 @@ function NavbarSection() {
             </span>
             Feedback
           </Link>
+          <Link
+            to="/contact-inventory"
+            onClick={closeAll}
+            className={styles.hoverDropDown}
+          >
+            <span className={styles.iconColor}>
+              <i className="fa-solid fa-envelope" />
+            </span>
+            Contact Us
+          </Link>
         </div>
       </nav>
 
@@ -148,7 +158,8 @@ function NavbarSection() {
       >
         <Link to="/" className={styles.navlink} onClick={closeAll}>
           <span className={styles.iconColor}>
-            <i className="fa-solid fa-gauge" />
+            {/* <i className="fa-solid fa-gauge" /> */}
+            <i class="fa fa-gauge"></i>
           </span>
           Dashboard
         </Link>
@@ -183,6 +194,17 @@ function NavbarSection() {
 
           {bookOpen && (
             <div className={styles.dropdownMenu}>
+              
+              <Link
+                to="/authors"
+                onClick={closeAll}
+                className={styles.hoverDropDown}
+              >
+                <span className={styles.DropdowniconColor}>
+                    <i class="fa fa-user-pen"></i>
+                </span>
+                Authors
+              </Link>
               <Link
                 to="/bookinventory"
                 onClick={closeAll}

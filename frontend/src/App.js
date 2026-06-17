@@ -24,7 +24,7 @@ import AdminInventory from "./pages/inventories/AdminInventory";
 import BookInventory from "./pages/inventories/BookInventory";
 import CategoryInventory from "./pages/inventories/CategoryInventory";
 import FeedbackInventory from "./pages/inventories/FeedbackInventory";
-
+import ContactInventory from "./pages/inventories/ContactInventory";
 /* ── Admin ── */
 import CreateAdmin from "./pages/admin/CreateAdmin";
 import UpdateAdmin from "./pages/admin/UpdateAdmin";
@@ -176,6 +176,7 @@ function App() {
               <Route path="/help" element={<HelpCenter />} />
               <Route path="/status" element={<StatusPage />} />
               <Route path="/contact-us" element={<ContactUs />} />
+              <Route path="/contact-inventory" element = {<ContactInventory/>}/>
 
               {/* Legal */}
               <Route path="/privacy" element={<Privacy />} />

@@ -1,12 +1,12 @@
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import styles from "./Footer.module.css";
 
-/* ════════════════════════════════════════
+/* --------------------------------------
    NAV CONFIG — single source of truth
    filter: ""     = /library (browse)
    filter: string = /library?filter=X
    filter: null   = match pathname only
-════════════════════════════════════════ */
+-------------------------------------- */
 const NAV = {
   Library: [
     { label: "Browse Books", to: "/library", filter: "" },
@@ -73,9 +73,9 @@ const LEGAL = [
   { label: "Cookies", to: "/cookies" },
 ];
 
-/* ════════════════════════════════════════
+/* -------------------------
    SUB-COMPONENTS
-════════════════════════════════════════ */
+-------------------------- */
 
 const Dot = () => <span className={styles.bottomDot}>·</span>;
 
@@ -128,9 +128,9 @@ function LinkColumn({ heading, links }) {
   );
 }
 
-/* ════════════════════════════════════════
+/* --------------------------------
    FOOTER
-════════════════════════════════════════ */
+---------------------------------*/
 function Footer() {
   const year = new Date().getFullYear();
 

@@ -1,0 +1,69 @@
+/* ═══════════════════════════════════════════
+   CONTACT ROW ACTIONS — teal-accent dark theme
+   ═══════════════════════════════════════════ */
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    transform 0.1s;
+}
+
+.actions button:active {
+  transform: scale(0.92);
+}
+
+.actions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* View */
+.btnView {
+  background: rgba(16, 165, 200, 0.12);
+  color: #10a5c8;
+}
+.btnView:hover {
+  background: rgba(16, 165, 200, 0.25);
+}
+
+/* Status cycle */
+.btnStatus {
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+}
+.btnStatus:hover {
+  background: rgba(34, 197, 94, 0.25);
+}
+
+/* Reply (mailto shortcut) */
+.btnReply {
+  background: rgba(99, 102, 241, 0.12);
+  color: #818cf8;
+}
+.btnReply:hover {
+  background: rgba(99, 102, 241, 0.25);
+}
+
+/* Delete */
+.btnDelete {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+.btnDelete:hover {
+  background: rgba(239, 68, 68, 0.25);
+}

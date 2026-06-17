@@ -10,7 +10,7 @@ const {
   getAllContacts,
   updateContactStatus,
   deleteContact,
-} = require("../../controllers/resources/contact.controller");
+} = require("../../controllers/contact/contact.controller");
 
 router.post("/", submitContact); // Public
 router.get("/", auth, adminMw, getAllContacts); // Admin
