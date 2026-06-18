@@ -17,7 +17,7 @@ const PublicRoute = () => {
     }
 
     // Token valid → redirect to dashboard
-    return <Navigate to="/" replace />;
+    return <Navigate to="/home"  replace />;
   } catch (err) {
     localStorage.removeItem("token");
     localStorage.removeItem("role");

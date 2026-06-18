@@ -26,7 +26,7 @@ const NotFound = () => {
             </button>
           )}
 
-          <Link to="/">
+          <Link to="/home">
             <button className={`${styles.btn} ${styles.btnPrimary}`}>
               <i className="fa-solid fa-house" /> Go to Home
             </button>

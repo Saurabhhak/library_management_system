@@ -156,7 +156,7 @@ function NavbarSection() {
       <nav
         className={`${styles.leftIcons} ${menuOpen ? styles.activeMenu : ""}`}
       >
-        <Link to="/" className={styles.navlink} onClick={closeAll}>
+        <Link to="/home" className={styles.navlink} onClick={closeAll}>
           <span className={styles.iconColor}>
             {/* <i className="fa-solid fa-gauge" /> */}
             <i class="fa fa-gauge"></i>

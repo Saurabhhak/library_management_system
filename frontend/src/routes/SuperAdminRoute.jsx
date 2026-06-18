@@ -37,7 +37,7 @@ const SuperAdminRoute = ({ children }) => {
 
     /* Not superadmin */
     if (decoded.role !== "superadmin") {
-      return <Navigate to="/" replace />;
+      return <Navigate to="/home" replace />;
     }
 
     /* children = Pattern B, undefined = Pattern A (Outlet) */

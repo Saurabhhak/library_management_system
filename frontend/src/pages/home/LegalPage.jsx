@@ -34,7 +34,7 @@ function LegalPage({ title, subtitle, icon, updatedDate, children }) {
 
       {/* Breadcrumb */}
       <nav className={styles.breadcrumb} aria-label="breadcrumb">
-        <Link to="/">Home</Link>
+        <Link to="/home">Home</Link>
         <i className="fa-solid fa-chevron-right" />
         <span>{title}</span>
       </nav>

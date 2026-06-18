@@ -27,7 +27,7 @@ const NAV = {
     { label: "Membership Plans", to: "/plans" },
   ],
   Admin: [
-    { label: "Dashboard", to: "/" },
+    { label: "Dashboard", to: "/home" },
     { label: "Manage Books", to: "/bookinventory" },
     { label: "Manage Members", to: "/memberinventory" },
     { label: "Reports", to: "/adminpage" },

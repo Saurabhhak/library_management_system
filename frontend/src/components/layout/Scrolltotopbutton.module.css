@@ -1,0 +1,79 @@
+/* ════════════════════════════════
+   ScrollToTopButton.module.css
+   Teal dark theme — #10a5c8 accent
+   ════════════════════════════════ */
+
+.btn {
+  /* Position */
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9999;
+
+  /* Size & Shape */
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+
+  /* Color — teal accent matching your dark theme */
+  background: #10a5c8;
+  color: #fff;
+  font-size: 1rem;
+
+  /* Layout */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Hidden by default — fade + slide up on show */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease,
+    visibility 0.25s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+
+  box-shadow: 0 4px 14px rgba(16, 165, 200, 0.35);
+}
+
+/* Visible state */
+.btn.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Hover */
+.btn:hover {
+  background: #0d8faf;
+  box-shadow: 0 6px 20px rgba(16, 165, 200, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Active press */
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(16, 165, 200, 0.3);
+}
+
+/* Focus visible — keyboard a11y */
+.btn:focus-visible {
+  outline: 2px solid #10a5c8;
+  outline-offset: 3px;
+}
+
+/* Mobile — slightly smaller, keep above mobile nav */
+@media (max-width: 768px) {
+  .btn {
+    width: 40px;
+    height: 40px;
+    bottom: 20px;
+    right: 20px;
+    font-size: 0.9rem;
+  }
+}

@@ -55,7 +55,7 @@ function AdminLoginForm() {
         title: "Login successful",
       });
 
-      navigate("/");
+      navigate("/home" );
     } catch (err) {
       console.error("Login error:", err);
 
