@@ -1,8 +1,16 @@
 import API from "../../api/axiosInstance";
-// otp.service.js FINAL
 
-export const sendOtpAPI = (data) =>
-  API.post("/auth/send-otp", data);
+/**
+ * Unified OTP service — ek hi function, dono roles ke liye.
+ * role   : "admin" | "member"
+ * purpose: "registration" | "password_reset"
+ */
 
-export const verifyOtpAPI = (data) =>
-  API.post("/auth/verify-otp", data);
+export const sendOtp = ({ email, role, purpose = "registration" }) =>
+  API.post("/auth/send-otp", { email, role, purpose });
+
+export const verifyOtp = ({ email, otp, role, purpose = "registration" }) =>
+  API.post("/auth/verify-otp", { email, otp, role, purpose });
+
+export const checkEmail = ({ email, role }) =>
+  API.post("/auth/check-email", { email, role });

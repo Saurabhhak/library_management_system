@@ -1,16 +1,10 @@
 import API from "../../api/axiosInstance";
 
-// Create member
+// Public — self registration (requires OTP verified first, role: "member")
 export const createMember = (data) => API.post("/members", data);
 
-// Get all members
+// Admin-protected CRUD
 export const getMembers = () => API.get("/members");
-
-// Get single member
 export const getMemberById = (id) => API.get(`/members/${id}`);
-
-// Update member
 export const updateMember = (id, data) => API.put(`/members/${id}`, data);
-
-// Delete member
 export const deleteMember = (id) => API.delete(`/members/${id}`);

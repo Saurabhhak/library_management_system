@@ -1,136 +1,145 @@
+"use strict";
+
 const pool = require("../../config/db");
 const bcrypt = require("bcrypt");
 
-/* ---------------- CREATE MEMBER ---------------- */
+const VALID_MEMBER_TYPES = [
+  "student",
+  "teacher",
+  "professor",
+  "staff",
+  "guest",
+];
+
 const createMember = async (req, res) => {
   try {
     const {
       first_name,
       last_name,
       email,
-      phone,
       password,
-      state_id,
-      city_id,
-      date_of_birth,
-      membership_end,
-      max_books_allowed,
+      phone,
+      member_type = "guest",
     } = req.body;
 
-    // Duplicate email check
-    const emailCheck = await pool.query(
-      "SELECT id FROM members WHERE email=$1",
-      [email],
-    );
+    if (!first_name || !last_name || !email || !password)
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "first_name, last_name, email and password are required",
+        });
 
-    if (emailCheck.rows.length > 0) {
-      return res.status(409).json({
-        success: false,
-        message: "Email already exists",
-      });
-    }
+    if (!VALID_MEMBER_TYPES.includes(member_type))
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: `member_type must be one of: ${VALID_MEMBER_TYPES.join(", ")}`,
+        });
+
+    const lEmail = email.toLowerCase();
+
+    const { rows: existing } = await pool.query(
+      "SELECT id FROM members WHERE LOWER(email)=$1 AND is_deleted=false",
+      [lEmail],
+    );
+    if (existing.length)
+      return res
+        .status(409)
+        .json({ success: false, message: "Email already exists" });
+
+    const { rows: otpRows } = await pool.query(
+      `SELECT id FROM otp_verifications
+       WHERE LOWER(email) = $1 AND role = 'member' AND purpose = 'registration' AND is_verified = true
+       ORDER BY id DESC LIMIT 1`,
+      [lEmail],
+    );
+    if (!otpRows.length)
+      return res
+        .status(400)
+        .json({ success: false, message: "Please verify OTP first" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const result = await pool.query(
-      `INSERT INTO members
-      (first_name,last_name,email,phone,password,date_of_birth,state_id,city_id,membership_end,max_books_allowed)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
-      RETURNING id,first_name,last_name,email,phone,status`,
+    const { rows } = await pool.query(
+      `INSERT INTO members (first_name, last_name, email, password, phone, member_type, email_verified)
+       VALUES ($1,$2,$3,$4,$5,$6,true)
+       RETURNING id, first_name, last_name, email, member_type, status`,
       [
         first_name,
         last_name,
-        email,
-        phone,
+        lEmail,
         hashedPassword,
-        date_of_birth,
-        state_id,
-        city_id,
-        membership_end,
-        max_books_allowed || 3,
+        phone || null,
+        member_type,
       ],
     );
 
-    res.status(201).json({
-      success: true,
-      message: "Member created successfully",
-      data: result.rows[0],
-    });
+    await pool.query(
+      "DELETE FROM otp_verifications WHERE LOWER(email)=$1 AND role='member' AND purpose='registration'",
+      [lEmail],
+    );
+
+    res
+      .status(201)
+      .json({
+        success: true,
+        message: "Member registered successfully",
+        data: rows[0],
+      });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    console.error("[createMember]", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
-/* ---------------- GET ALL MEMBERS ---------------- */
 const getMembers = async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT 
-        m.id,
-        m.first_name,
-        m.last_name,
-        m.email,
-        m.phone,
-        m.status,
-        s.name AS state,
-        c.name AS city,
-        m.membership_start,
-        m.membership_end
-      FROM  members m
+      SELECT m.id, m.first_name, m.last_name, m.email, m.phone, m.member_type, m.status,
+             s.name AS state, c.name AS city, m.membership_start, m.membership_end
+      FROM members m
       LEFT JOIN states s ON m.state_id = s.id
       LEFT JOIN cities c ON m.city_id = c.id
-      WHERE m.is_deleted=false
+      WHERE m.is_deleted = false
       ORDER BY m.id DESC
     `);
-
-    res.json({
-      success: true,
-      data: result.rows,
-    });
+    res.json({ success: true, data: result.rows });
   } catch (error) {
+    console.error("[getMembers]", error.message);
     res.status(500).json({ success: false, message: "Fetch error" });
   }
 };
 
-/* ---------------- GET MEMBER BY ID ---------------- */
 const getMemberById = async (req, res) => {
   try {
     const { id } = req.params;
-
     const result = await pool.query(
-      `SELECT * FROM members WHERE id=$1 AND is_deleted=false`,
+      `SELECT id, first_name, last_name, email, phone, member_type, status,
+              state_id, city_id, membership_start, membership_end, max_books_allowed
+       FROM members WHERE id=$1 AND is_deleted=false`,
       [id],
     );
-
-    if (!result.rows.length) {
-      return res.status(404).json({
-        success: false,
-        message: "Member not found",
-      });
-    }
-
-    res.json({
-      success: true,
-      data: result.rows[0],
-    });
+    if (!result.rows.length)
+      return res
+        .status(404)
+        .json({ success: false, message: "Member not found" });
+    res.json({ success: true, data: result.rows[0] });
   } catch (error) {
+    console.error("[getMemberById]", error.message);
     res.status(500).json({ success: false, message: "Fetch error" });
   }
 };
 
-/* ---------------- UPDATE MEMBER ---------------- */
 const updateMember = async (req, res) => {
   try {
     const { id } = req.params;
-
     let {
       first_name,
       last_name,
       phone,
+      member_type,
       state_id,
       city_id,
       membership_end,
@@ -138,29 +147,29 @@ const updateMember = async (req, res) => {
       max_books_allowed,
     } = req.body;
 
-    //  Convert types
+    if (member_type && !VALID_MEMBER_TYPES.includes(member_type))
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: `member_type must be one of: ${VALID_MEMBER_TYPES.join(", ")}`,
+        });
+
     state_id = Number(state_id) || null;
     city_id = Number(city_id) || null;
     max_books_allowed = Number(max_books_allowed) || 3;
     membership_end = membership_end || null;
 
     const result = await pool.query(
-      `UPDATE members SET
-        first_name=$1,
-        last_name=$2,
-        phone=$3,
-        state_id=$4,
-        city_id=$5,
-        membership_end=$6,
-        status=$7,
-        max_books_allowed=$8,
-        updated_at=NOW()
-      WHERE id=$9 AND is_deleted=false
-      RETURNING id,first_name,last_name,phone,status`,
+      `UPDATE members SET first_name=$1, last_name=$2, phone=$3, member_type=$4, state_id=$5, city_id=$6,
+        membership_end=$7, status=$8, max_books_allowed=$9, updated_at=NOW()
+       WHERE id=$10 AND is_deleted=false
+       RETURNING id, first_name, last_name, phone, member_type, status`,
       [
         first_name,
         last_name,
         phone,
+        member_type,
         state_id,
         city_id,
         membership_end,
@@ -170,51 +179,35 @@ const updateMember = async (req, res) => {
       ],
     );
 
-    if (!result.rows.length) {
-      return res.status(404).json({
-        success: false,
-        message: "Member not found",
-      });
-    }
-
+    if (!result.rows.length)
+      return res
+        .status(404)
+        .json({ success: false, message: "Member not found" });
     res.json({
       success: true,
       message: "Member updated successfully",
       data: result.rows[0],
     });
   } catch (error) {
-    console.error(error); // VERY IMPORTANT
-    res.status(500).json({
-      success: false,
-      message: error.message, // show real error
-    });
+    console.error("[updateMember]", error.message);
+    res.status(500).json({ success: false, message: "Update error" });
   }
 };
-/* ---------------- DELETE (SOFT DELETE) ---------------- */
+
 const deleteMember = async (req, res) => {
   try {
     const { id } = req.params;
-
     const result = await pool.query(
-      `UPDATE members 
-       SET is_deleted=true, updated_at=NOW()
-       WHERE id=$1
-       RETURNING id`,
+      `UPDATE members SET is_deleted=true, updated_at=NOW() WHERE id=$1 RETURNING id`,
       [id],
     );
-
-    if (!result.rows.length) {
-      return res.status(404).json({
-        success: false,
-        message: "Member not found",
-      });
-    }
-
-    res.json({
-      success: true,
-      message: "Member deleted successfully",
-    });
+    if (!result.rows.length)
+      return res
+        .status(404)
+        .json({ success: false, message: "Member not found" });
+    res.json({ success: true, message: "Member deleted successfully" });
   } catch (error) {
+    console.error("[deleteMember]", error.message);
     res.status(500).json({ success: false, message: "Delete error" });
   }
 };

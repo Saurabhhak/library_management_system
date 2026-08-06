@@ -1,7 +1,12 @@
 import API from "../../api/axiosInstance";
 
-export const forgotPassword = (email) =>
-  API.post("/password/forgot-password", { email });
+/**
+ * Unified password service — ek hi function, dono roles ke liye.
+ * role: "admin" | "member"
+ */
 
-export const resetPassword = (data) =>
-  API.post("/password/reset-password", data);
+export const forgotPassword = ({ email, role }) =>
+  API.post("/auth/forgot-password", { email, role });
+
+export const resetPassword = ({ email, otp, password, role }) =>
+  API.post("/auth/reset-password", { email, otp, password, role });

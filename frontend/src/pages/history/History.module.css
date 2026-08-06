@@ -1,0 +1,216 @@
+/* History.module.css → src/pages/history/History.module.css */
+
+.page {
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  background: #0d1117;
+  color: #c9d1d9;
+  min-height: 100vh;
+  margin-top: 3rem;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pageTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #e6edf3;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.pageTitle i {
+  color: #2ee6a6;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+.statCard {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+}
+.statLabel {
+  font-size: 0.75rem;
+  color: #8b949e;
+  margin: 0 0 0.2rem;
+}
+.statValue {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #e6edf3;
+  margin: 0;
+}
+.stat_blue .statValue {
+  color: #388bfd;
+}
+.stat_green .statValue {
+  color: #2ee6a6;
+}
+.stat_red .statValue {
+  color: #f85149;
+}
+.stat_orange .statValue {
+  color: #ffa657;
+}
+.stat_purple .statValue {
+  color: #a371f7;
+}
+
+.tabBar {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid #30363d;
+}
+.tab {
+  background: none;
+  border: none;
+  color: #8b949e;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.65rem 1.1rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.tab:hover {
+  color: #c9d1d9;
+}
+.tabActive {
+  color: #2ee6a6 !important;
+  border-bottom-color: #2ee6a6;
+}
+
+.searchInput {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+  color: #c9d1d9;
+  font-size: 0.875rem;
+  outline: none;
+  max-width: 400px;
+}
+.searchInput:focus {
+  border-color: #2ee6a6;
+}
+
+.tableWrap {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+.table thead th {
+  background: #0d1117;
+  color: #8b949e;
+  font-weight: 600;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  padding: 0.8rem 0.9rem;
+  text-align: left;
+  border-bottom: 1px solid #30363d;
+}
+.table tbody tr {
+  border-bottom: 1px solid #21262d;
+}
+.table tbody tr:hover {
+  background: #1c2128;
+}
+.table tbody td {
+  padding: 0.8rem 0.9rem;
+  color: #c9d1d9;
+}
+
+.rowOverdue {
+  background: rgba(248, 81, 73, 0.04);
+}
+.overdueDate {
+  color: #f85149;
+  font-weight: 600;
+}
+
+.badge {
+  display: inline-flex;
+  padding: 0.25rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+.issued {
+  background: rgba(56, 139, 253, 0.15);
+  color: #388bfd;
+}
+.returned {
+  background: rgba(46, 230, 166, 0.12);
+  color: #2ee6a6;
+}
+.overdue {
+  background: rgba(248, 81, 73, 0.15);
+  color: #f85149;
+}
+
+.btnReturn {
+  background: transparent;
+  border: 1px solid #2ee6a6;
+  color: #2ee6a6;
+  border-radius: 7px;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.btnReturn:hover:not(:disabled) {
+  background: #2ee6a6;
+  color: #0d1117;
+}
+.btnReturn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loading,
+.empty {
+  padding: 2.5rem 0;
+  text-align: center;
+  color: #8b949e;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.3rem;
+}
+.pageBtn {
+  background: #21262d;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+  width: 34px;
+  height: 34px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 0.82rem;
+}
+.pageBtn:hover {
+  background: #30363d;
+}
+.pageBtnActive {
+  background: #2ee6a6 !important;
+  border-color: #2ee6a6 !important;
+  color: #0d1117 !important;
+  font-weight: 700;
+}

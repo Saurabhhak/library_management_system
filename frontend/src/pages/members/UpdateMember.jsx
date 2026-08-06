@@ -7,83 +7,108 @@ import {
   getMemberById,
   updateMember,
 } from "../../services/member/member.service";
-import { validateAdminForm } from "../../utils/validateAdminForm";
-import { useFetchStatesCities } from "../../utils/useFetchStatesCities";
+import {
+  getStates,
+  getCitiesByState,
+} from "../../services/admin/admin.service";
 
+const INIT = {
+  first_name: "",
+  last_name: "",
+  phone: "",
+  date_of_birth: "",
+  state_id: "",
+  city_id: "",
+  membership_end: "",
+  max_books_allowed: 3,
+  status: "active",
+};
+
+/**
+ * UpdateMember — admin-only edit page.
+ * Any admin/superadmin can update a member's profile at any time after
+ * the member has registered (this does NOT touch login credentials —
+ * password changes go through the member's own forgot/reset-password flow).
+ */
 function UpdateMember() {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const initialState = {
-    first_name: "",
-    last_name: "",
-    email: "",
-    phone: "",
-    state_id: "",
-    city_id: "",
-    membership_start: "",
-    membership_end: "",
-    max_books_allowed: 3,
-    status: "active",
-  };
-
-  const [userinfo, setUserInfo] = useState(initialState);
-  const [loading, setLoading] = useState(false);
+  const [userinfo, setUserInfo] = useState(INIT);
   const [errors, setErrors] = useState({});
-  const { states, cities } = useFetchStatesCities(userinfo.state_id);
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
 
-  /* ---------------- FETCH MEMBER ---------------- */
+  /* ── Fetch states ─────────────────────────────────────────────── */
   useEffect(() => {
-    const fetchMember = async () => {
-      try {
-        const res = await getMemberById(id);
+    getStates()
+      .then((r) => setStates(r?.data?.data || []))
+      .catch(() => Swal.fire("Error", "Failed to load states.", "error"));
+  }, []);
+
+  /* ── Fetch member ─────────────────────────────────────────────── */
+  useEffect(() => {
+    getMemberById(id)
+      .then((res) => {
         const m = res?.data?.data;
-
         if (!m) return;
-
         setUserInfo({
           first_name: m.first_name || "",
           last_name: m.last_name || "",
-          email: m.email || "",
           phone: m.phone || "",
+          date_of_birth: m.date_of_birth
+            ? new Date(m.date_of_birth).toISOString().split("T")[0]
+            : "",
           state_id: m.state_id || "",
           city_id: m.city_id || "",
-          membership_start: m.membership_start || "",
-          membership_end: m.membership_end || "",
+          membership_end: m.membership_end
+            ? new Date(m.membership_end).toISOString().split("T")[0]
+            : "",
           max_books_allowed: m.max_books_allowed || 3,
           status: m.status || "active",
         });
-      } catch (err) {
-        Swal.fire("Error", "Failed to load member", "error");
-      }
-    };
-
-    fetchMember();
+      })
+      .catch(() => Swal.fire("Error", "Failed to load member.", "error"))
+      .finally(() => setFetching(false));
   }, [id]);
 
-  /* ---------------- HANDLE CHANGE ---------------- */
+  /* ── Fetch cities when state changes ─────────────────────────── */
+  useEffect(() => {
+    if (!userinfo.state_id) return;
+    getCitiesByState(userinfo.state_id)
+      .then((r) => setCities(r?.data?.data || []))
+      .catch(() => Swal.fire("Error", "Failed to load cities.", "error"));
+  }, [userinfo.state_id]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     setUserInfo((prev) => ({
       ...prev,
       [name]: value,
-      ...(name === "state_id" && { city_id: "" }),
+      ...(name === "state_id" && { city_id: "" }), // reset city on state change
     }));
-
-    setErrors((prev) => ({
-      ...prev,
-      [name]: "",
-    }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  /* ---------------- SUBMIT ---------------- */
+  const validate = () => {
+    const errs = {};
+    if (!userinfo.first_name?.trim())
+      errs.first_name = "First name is required.";
+    if (!userinfo.phone?.trim()) errs.phone = "Phone is required.";
+    if (!userinfo.state_id) errs.state_id = "State is required.";
+    if (!userinfo.city_id) errs.city_id = "City is required.";
+    if (!userinfo.status) errs.status = "Status is required.";
+    return errs;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const validationErrors = validateAdminForm(userinfo, "update");
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
+    const errs = validate();
+    if (Object.keys(errs).length) {
+      setErrors(errs);
       return;
     }
 
@@ -96,7 +121,6 @@ function UpdateMember() {
       background: "#0f172a",
       color: "#e5e7eb",
     });
-
     if (!confirm.isConfirmed) return;
 
     try {
@@ -117,29 +141,16 @@ function UpdateMember() {
         "Error",
         error?.response?.data?.message || "Update failed",
         "error",
-        { background: "#0f172a", color: "#e5e7eb" },
       );
     } finally {
       setLoading(false);
     }
   };
 
-  /* ---------------- CANCEL ---------------- */
-  const handleCancel = async () => {
-    const confirm = await Swal.fire({
-      title: "Cancel?",
-      text: "Changes will be lost",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes",
-      background: "#0f172a",
-      color: "#e5e7eb",
-    });
-
-    if (confirm.isConfirmed) {
-      navigate("/memberinventory");
-    }
-  };
+  if (fetching)
+    return (
+      <p style={{ textAlign: "center", padding: "3rem" }}>Loading member…</p>
+    );
 
   return (
     <MemberForm
@@ -147,12 +158,10 @@ function UpdateMember() {
       userinfo={userinfo}
       handleChange={handleChange}
       handleSubmit={handleSubmit}
-      handleCancel={handleCancel}
       states={states}
       cities={cities}
       errors={errors}
       loading={loading}
-      isEdit={true}
     />
   );
 }

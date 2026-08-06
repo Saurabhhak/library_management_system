@@ -255,7 +255,7 @@ function MemberInventory() {
         </h1>
 
         <Link
-          to="/createmember"
+          to="/register"
           className={styles.addBtn}
           title="Add New Member"
         >

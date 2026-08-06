@@ -1,5 +1,5 @@
 import MemberRowActions from "./MembersRowActions";
-
+import { getMemberTypeInfo } from "../../../utils/roleLabels";
 const bold = (info) => <b>{info.getValue()}</b>;
 
 export const getColumns = (handleDelete) => [
@@ -18,7 +18,14 @@ export const getColumns = (handleDelete) => [
     enableColumnFilter: true,
     cell: bold,
   },
-
+  {
+    accessorKey: "member_type",
+    header: "Type",
+    cell: ({ getValue }) => {
+      const info = getMemberTypeInfo(getValue());
+      return <span className={`badge ${info.badgeClass}`}>{info.label}</span>;
+    },
+  },
   {
     header: "Email",
     accessorKey: "email",

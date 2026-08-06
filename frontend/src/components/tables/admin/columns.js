@@ -1,7 +1,7 @@
 // columns.js
 import RowActions from "./RowActions";
 import styles from "./columns.module.css";
-
+import { getRoleInfo } from "../../../utils/roleLabels";
 const ONLINE_THRESHOLD_SECONDS = 90;
 
 const timeAgo = (ts) => {
@@ -87,18 +87,11 @@ export const getColumns = (handleDelete) => [
   { header: "State", accessorKey: "state", enableColumnFilter: true },
   { header: "City", accessorKey: "city", enableColumnFilter: true },
   {
-    header: "Role",
     accessorKey: "role",
-    size: 150,
-    enableColumnFilter: true,
+    header: "Role",
     cell: ({ getValue }) => {
-      const role = getValue();
-      return (
-        <Badge
-          label={role === "superadmin" ? "Super Admin" : "Admin"}
-          color={role === "superadmin" ? "#8e4dff" : "#3583ff"}
-        />
-      );
+      const info = getRoleInfo(getValue());
+      return <span className={`badge ${info.badgeClass}`}>{info.label}</span>;
     },
   },
   {

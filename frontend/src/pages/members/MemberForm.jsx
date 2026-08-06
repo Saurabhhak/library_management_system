@@ -1,6 +1,5 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, CheckCircle, Mail } from "lucide-react";
 import styles from "./MemberForm.module.css";
 
 const getMaxDob = () => {
@@ -9,33 +8,29 @@ const getMaxDob = () => {
   return d.toISOString().split("T")[0];
 };
 
+/**
+ * MemberForm — EDIT ONLY.
+ *
+ * Registration (create) now goes through RegisterMember.jsx, which is a
+ * separate, simplified, OTP-gated public form. This component used to
+ * handle both create + edit with a large set of conditional branches
+ * (isEdit ? ... : ...) — that dead "create" code (email+OTP fields,
+ * password/confirm fields, Reset button) has been removed since
+ * UpdateMember.jsx is the only remaining consumer.
+ */
 function MemberForm({
-  title,
+  title = "Update Member",
   userinfo,
   handleChange,
   handleSubmit,
-  handleReset,
   states = [],
   cities = [],
   errors = {},
-  isEdit = false,
   loading = false,
-  /* OTP — create only */
-  handleSendOtp,
-  handleVerifyOtp,
-  otp,
-  setOtp,
-  otpSent,
-  otpVerified,
-  timer,
-  resendDisabled,
 }) {
-  const [showPw, setShowPw] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const navigate = useNavigate();
   const maxDob = useMemo(getMaxDob, []);
 
-  /* Common bind helper */
   const bind = (name, extra = {}) => ({
     name,
     value: userinfo[name] ?? "",
@@ -50,10 +45,9 @@ function MemberForm({
   return (
     <div className={styles.page}>
       <form onSubmit={handleSubmit} className={styles.form} noValidate>
-        {/* ── Title ──────────────────────────────────── */}
         <h1 className={styles.title}>{title}</h1>
 
-        {/* _______ PERSONAL INFO _______ */}
+        {/* ── Personal Info ── */}
         <p className={styles.divider}>Personal Info</p>
 
         <div className={styles.field}>
@@ -84,87 +78,7 @@ function MemberForm({
           <Err name="date_of_birth" />
         </div>
 
-        {/* _______ EMAIL + OTP (create only) _______ */}
-        {!isEdit && (
-          <div className={`${styles.field} ${styles.span2}`}>
-            <label className={styles.label}>
-              Email Address <sup>*</sup>
-            </label>
-
-            <div className={styles.otpRow}>
-              <input
-                name="email"
-                value={userinfo.email}
-                onChange={handleChange}
-                disabled={otpVerified}
-                inputMode="email"
-                autoComplete="email"
-                placeholder="john@example.com"
-                className={`${styles.input} ${errors.email ? styles.inputErr : ""}`}
-              />
-              {otpVerified ? (
-                <div className={styles.verifiedBadge}>
-                  <CheckCircle size={14} strokeWidth={2.5} /> Verified
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleSendOtp}
-                  disabled={loading || (otpSent && resendDisabled)}
-                  className={styles.btnInline}
-                >
-                  {loading ? (
-                    <span className={styles.spinner}>
-                      <i className="fa-solid fa-spinner fa-spin" /> Sending…
-                    </span>
-                  ) : otpSent ? (
-                    "Resend OTP"
-                  ) : (
-                    "Send OTP"
-                  )}
-                </button>
-              )}
-            </div>
-            <Err name="email" />
-
-            {otpSent && !otpVerified && (
-              <div className={styles.otpBox}>
-                <div className={styles.otpInputRow}>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={6}
-                    placeholder="6-digit OTP"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                    className={styles.input}
-                  />
-                  <button
-                    type="button"
-                    onClick={handleVerifyOtp}
-                    disabled={otp.length < 6}
-                    className={styles.btnInline}
-                  >
-                    <Mail size={13} /> Verify
-                  </button>
-                </div>
-                {resendDisabled ? (
-                  <p className={styles.timer}>Resend in {timer}s</p>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleSendOtp}
-                    className={styles.resendBtn}
-                  >
-                    Resend OTP
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* _______ LOCATION _______ */}
+        {/* ── Location ── */}
         <p className={styles.divider}>Location</p>
 
         <div className={styles.field}>
@@ -197,128 +111,55 @@ function MemberForm({
           <Err name="city_id" />
         </div>
 
-        {/* _______ MEMBERSHIP (edit only — admin sets these) _______ */}
-        {isEdit && (
-          <>
-            <p className={styles.divider}>Membership</p>
+        {/* ── Membership (admin-controlled fields) ── */}
+        <p className={styles.divider}>Membership</p>
 
-            <div className={styles.field}>
-              <label className={styles.label}>Membership End</label>
-              <input type="date" {...bind("membership_end")} />
-              <Err name="membership_end" />
-            </div>
+        <div className={styles.field}>
+          <label className={styles.label}>Membership End</label>
+          <input type="date" {...bind("membership_end")} />
+          <Err name="membership_end" />
+        </div>
 
-            <div className={styles.field}>
-              <label className={styles.label}>Max Books Allowed</label>
-              <input
-                type="number"
-                min="1"
-                max="10"
-                {...bind("max_books_allowed")}
-                placeholder="3"
-              />
-              <Err name="max_books_allowed" />
-            </div>
+        <div className={styles.field}>
+          <label className={styles.label}>Max Books Allowed</label>
+          <input
+            type="number"
+            min="1"
+            max="10"
+            {...bind("max_books_allowed")}
+            placeholder="3"
+          />
+          <Err name="max_books_allowed" />
+        </div>
 
-            <div className={styles.field}>
-              <label className={styles.label}>
-                Account Status <sup>*</sup>
-              </label>
-              <select {...bind("status")}>
-                <option value="">Select status</option>
-                <option value="active">Active — can borrow</option>
-                <option value="inactive">Inactive — access blocked</option>
-                <option value="suspended">Suspended</option>
-              </select>
-              <Err name="status" />
-            </div>
-          </>
-        )}
+        <div className={styles.field}>
+          <label className={styles.label}>
+            Account Status <sup>*</sup>
+          </label>
+          <select {...bind("status")}>
+            <option value="">Select status</option>
+            <option value="active">Active — can borrow</option>
+            <option value="inactive">Inactive — access blocked</option>
+            <option value="suspended">Suspended</option>
+          </select>
+          <Err name="status" />
+        </div>
 
-        {/* _______ SECURITY (create only) _______ */}
-        {!isEdit && (
-          <>
-            <p className={styles.divider}>Security</p>
-
-            <div className={styles.pwField}>
-              <label className={styles.label}>
-                Password <sup>*</sup>
-              </label>
-              <input
-                type={showPw ? "text" : "password"}
-                autoComplete="new-password"
-                placeholder="Min. 8 characters"
-                {...bind("password", {
-                  className: `${styles.input} ${styles.pwInput} ${errors.password ? styles.inputErr : ""}`,
-                })}
-              />
-              <button
-                type="button"
-                className={styles.eyeBtn}
-                onClick={() => setShowPw((v) => !v)}
-                aria-label={showPw ? "Hide password" : "Show password"}
-              >
-                {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-              <Err name="password" />
-            </div>
-
-            <div className={styles.pwField}>
-              <label className={styles.label}>
-                Confirm Password <sup>*</sup>
-              </label>
-              <input
-                type={showConfirm ? "text" : "password"}
-                autoComplete="new-password"
-                placeholder="Re-enter password"
-                {...bind("confirm_password", {
-                  className: `${styles.input} ${styles.pwInput} ${errors.confirm_password ? styles.inputErr : ""}`,
-                })}
-              />
-              <button
-                type="button"
-                className={styles.eyeBtn}
-                onClick={() => setShowConfirm((v) => !v)}
-                aria-label={showConfirm ? "Hide password" : "Show password"}
-              >
-                {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-              <Err name="confirm_password" />
-            </div>
-          </>
-        )}
-
-        {/* _______ ACTIONS _______ */}
+        {/* ── Actions ── */}
         <div className={styles.actions}>
-          {isEdit ? (
-            <button
-              type="button"
-              onClick={() => navigate("/memberinventory")}
-              className={styles.btnGhost}
-            >
-              Cancel
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleReset}
-              className={styles.btnGhost}
-            >
-              Reset
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => navigate("/memberinventory")}
+            className={styles.btnGhost}
+          >
+            Cancel
+          </button>
           <button
             type="submit"
             className={styles.btnPrimary}
             disabled={loading}
           >
-            {loading
-              ? isEdit
-                ? "Updating…"
-                : "Creating…"
-              : isEdit
-                ? "Update Member"
-                : "Create Member"}
+            {loading ? "Updating…" : "Update Member"}
           </button>
         </div>
       </form>

@@ -1,10 +1,8 @@
 "use strict";
 
 const router = require("express").Router();
-
 const auth = require("../../middleware/auth.middleware");
-const superAdmin = require("../../middleware/superAdmin.middleware");
-const adminMw = require("../../middleware/admin.middleware");
+const role = require("../../middleware/role.middleware");
 
 const {
   createAdmin,
@@ -14,25 +12,30 @@ const {
   deleteAdmin,
 } = require("../../controllers/admin/admin.controller");
 
-const {
-  profileAdmin,
-  deleteOwnAccount,
-} = require("../../controllers/admin/auth.controller");
+const authCtrl = require("../../controllers/auth/auth.controller");
 
-/* ───────────────── OWN ACCOUNT ───────────────── */
-router.get("/profile", auth, adminMw, profileAdmin);
-
-router.delete("/delete-account", auth, adminMw, deleteOwnAccount);
+/* ───────────────── OWN PROFILE / SECURITY (any staff role) ─────────────────
+   IMPORTANT: registered BEFORE "/:id" routes — warna Express "/profile"
+   ko :id="profile" samajh kar updateAdmin pe bhej deta (maine ye real
+   Express server pe test karke confirm kiya hai). */
+router.put(
+  "/profile",
+  auth,
+  role("admin", "superadmin", "librarian", "staff"),
+  authCtrl.updateProfile,
+);
+router.put(
+  "/change-password",
+  auth,
+  role("admin", "superadmin", "librarian", "staff"),
+  authCtrl.changePassword,
+);
 
 /* ───────────────── SUPER ADMIN CRUD ───────────────── */
-router.post("/", auth, superAdmin, createAdmin);
-
-router.get("/", auth, superAdmin, getAllAdmins);
-
-router.get("/:id", auth, superAdmin, getAdminById);
-
-router.put("/:id", auth, superAdmin, updateAdmin);
-
-router.delete("/:id", auth, superAdmin, deleteAdmin);
+router.post("/", auth, role("superadmin"), createAdmin);
+router.get("/", auth, role("admin", "superadmin"), getAllAdmins);
+router.get("/:id", auth, role("superadmin"), getAdminById);
+router.put("/:id", auth, role("superadmin"), updateAdmin);
+router.delete("/:id", auth, role("superadmin"), deleteAdmin);
 
 module.exports = router;

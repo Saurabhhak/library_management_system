@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 import Profile from "../../pages/profile/Profile";
 import styles from "./Navbar.module.css";
 import Swal from "sweetalert2";
-
+import { useAuth } from "../../context/AuthContext";
 function NavbarSection() {
+  const { user } = useAuth();
   // ── STATE ──────────────────────────────────────────────────
   const [menuOpen, setMenuOpen] = useState(false);
   const [adminBarOpen, setAdminBarOpen] = useState(false);
@@ -43,20 +44,21 @@ function NavbarSection() {
     setHistoryOpen(false);
   };
 
-  const role = localStorage.getItem("role");
+  // const role = localStorage.getItem("role");
 
   // WIP alert for unbuilt pages
-  function handleAlert() {
-    closeAll();
-    Swal.fire({
-      icon: "info",
-      title: "Coming Soon",
-      text: "All, Issued & Returned pages are under development.",
-      confirmButtonColor: "#2ee6a6",
-      background: "#0d1117",
-      color: "#c9d1d9",
-    });
-  }
+  // function handleAlert() {
+  //   closeAll();
+  // //   Swal.fire({
+  // //     icon: "info",
+  // //     title: "Coming Soon",
+  // //     text: "All, Issued & Returned pages are under development.",
+  // //     confirmButtonColor: "#2ee6a6",
+  // //     background: "#0d1117",
+  // //     color: "#c9d1d9",
+  // //   });
+
+  // }
 
   return (
     <div className={styles.navbarHeader}>
@@ -65,7 +67,7 @@ function NavbarSection() {
         className={`${styles.iconBtn} ${adminBarOpen ? styles.active : ""}`}
         title="Admin Panel"
         onClick={() => {
-          if (role !== "superadmin") {
+          if (user?.role !== "superadmin") {
             Swal.fire({
               icon: "error",
               title: "Access Denied",
@@ -127,7 +129,7 @@ function NavbarSection() {
             <span className={styles.iconColor}>
               <i className="fa-solid fa-chart-line" />
             </span>
-            Admin Charts
+            Admin Analytics
           </Link>
           <Link
             to="/feedbackinventory"
@@ -194,14 +196,13 @@ function NavbarSection() {
 
           {bookOpen && (
             <div className={styles.dropdownMenu}>
-              
               <Link
                 to="/authors"
                 onClick={closeAll}
                 className={styles.hoverDropDown}
               >
                 <span className={styles.DropdowniconColor}>
-                    <i class="fa fa-user-pen"></i>
+                  <i class="fa fa-user-pen"></i>
                 </span>
                 Authors
               </Link>
@@ -223,7 +224,7 @@ function NavbarSection() {
                 <span className={styles.DropdowniconColor}>
                   <i className="fa-solid fa-chart-line" />
                 </span>
-                Books Chart
+                Books Analytics
               </Link>
               <Link
                 to="/categoryinventory"
@@ -243,7 +244,7 @@ function NavbarSection() {
                 <span className={styles.DropdowniconColor}>
                   <i className="fa-solid fa-chart-line" />
                 </span>
-                Categories Chart
+                Categories Analytics
               </Link>
             </div>
           )}
@@ -290,7 +291,7 @@ function NavbarSection() {
                 <span className={styles.DropdowniconColor}>
                   <i className="fa-solid fa-chart-line" />
                 </span>
-                Member Chart
+                Member Analytics
               </Link>
             </div>
           )}
@@ -307,9 +308,9 @@ function NavbarSection() {
             onClick={() => menuOpen && setHistoryOpen(!historyOpen)}
           >
             <span className={styles.iconColor}>
-              <i className="fa-solid fa-clock-rotate-left" />
+              <i className="fa-solid fa-arrow-right-arrow-left" />
             </span>
-            History
+            Transactions
             <span className={styles.iconColor}>
               <i
                 className={`fa-solid ${historyOpen && menuOpen ? "fa-chevron-up" : "fa-chevron-down"}`}
@@ -319,23 +320,25 @@ function NavbarSection() {
 
           {historyOpen && (
             <div className={styles.dropdownMenu}>
-              <Link onClick={handleAlert} className={styles.hoverDropDown}>
-                <span className={styles.DropdowniconColor}>
-                  <i className="fa-solid fa-clock-rotate-left" />
-                </span>
-                All
-              </Link>
-              <Link onClick={handleAlert} className={styles.hoverDropDown}>
+              <Link
+                to="/issuebook"
+                onClick={closeAll}
+                className={styles.hoverDropDown}
+              >
                 <span className={styles.DropdowniconColor}>
                   <i className="fa-solid fa-book-bookmark" />
                 </span>
                 Issued
               </Link>
-              <Link onClick={handleAlert} className={styles.hoverDropDown}>
+              <Link
+                to="/history"
+                onClick={closeAll}
+                className={styles.hoverDropDown}
+              >
                 <span className={styles.DropdowniconColor}>
-                  <i className="fa-solid fa-rotate-left" />
+                  <i className="fa-solid fa-clock-rotate-left"></i>
                 </span>
-                Returned
+                Transaction History
               </Link>
             </div>
           )}

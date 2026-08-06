@@ -185,7 +185,8 @@ function AdminForm({
           <select {...bind("role")}>
             <option value="">Select role</option>
             <option value="admin">Admin</option>
-            <option value="superadmin">Super Admin</option>
+            <option value="librarian">Librarian</option>
+            <option value="staff">Staff</option>
           </select>
           <Err name="role" />
         </div>

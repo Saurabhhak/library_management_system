@@ -1,7 +1,7 @@
 "use strict";
-const jwt = require("jsonwebtoken");
+const { verifyAccessToken } = require("../utils/token");
 
-module.exports = (req, res, next) => {
+module.exports = function auth(req, res, next) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -10,11 +10,11 @@ module.exports = (req, res, next) => {
       .json({ success: false, message: "No token provided" });
   }
 
-  const token = authHeader.split(" ")[1];
+  const token = authHeader.slice(7);
 
   try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET);
-    next();
+    req.user = verifyAccessToken(token); // { id, role, userType, email, iat, exp }
+    return next();
   } catch (err) {
     const message =
       err.name === "TokenExpiredError" ? "Token expired" : "Invalid token";

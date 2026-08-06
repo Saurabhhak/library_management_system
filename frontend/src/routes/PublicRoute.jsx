@@ -1,28 +1,11 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+import { useAuth } from "../context/AuthContext";
+import { getDashboardPath } from "../utils/roleRoutes";
 
-const PublicRoute = () => {
-  const token = localStorage.getItem("token");
-
-  if (!token) return <Outlet />;
-
-  try {
-    const decoded = jwtDecode(token);
-
-    // Token expired → allow login
-    if (decoded.exp * 1000 < Date.now()) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("role");
-      return <Outlet />;
-    }
-
-    // Token valid → redirect to dashboard
-    return <Navigate to="/home"  replace />;
-  } catch (err) {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    return <Outlet />;
-  }
-};
-
-export default PublicRoute;
+export default function PublicRoute() {
+  const { isAuthenticated, isMember, isStaff, loading } = useAuth();
+  if (loading) return null;
+  if (isAuthenticated)
+    return <Navigate to={getDashboardPath({ isMember, isStaff })} replace />;
+  return <Outlet />;
+}

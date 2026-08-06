@@ -1,6 +1,6 @@
 .profileContainer {
   width: 18rem;
-  height: 65vh;
+  height: 55vh;
   padding: 1.2rem;
   border-radius: 0.7rem;
   background: #161b22;
@@ -13,7 +13,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-y: auto;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 .header {
@@ -40,7 +41,29 @@
   opacity: 1;
   transform: rotate(90deg) scale(1.1);
 }
+.avatarRow {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #1e293b;
+}
 
+.avatar {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1e3a5f, #0f4c3a);
+  border: 2px solid #2ee6a6;
+  color: #2ee6a6;
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
 .profileCard {
   font-size: 0.86rem;
   padding: 1rem;
@@ -55,7 +78,8 @@
 
 .profileCard p {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  /* justify-content: space-between; */
   align-items: center;
   padding: 0.45rem 0;
   color: #b9c0c7;
@@ -92,16 +116,16 @@
   text-align: start;
 }
 
-.profileCard .role {
+.profileCard .admins_role {
   position: relative;
   color: #00a778;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: .11rem;
-  line-clamp: calc(.5rem);
+  letter-spacing: 0.11rem;
+  line-clamp: calc(0.5rem);
 }
 
-.profileCard .role::after {
+.profileCard .admins_role::after {
   content: "";
   position: absolute;
   left: 50%;
@@ -116,9 +140,30 @@
 
   animation: underlineExpand 3s ease-in-out infinite;
 }
-.Roles{
+.Roles {
   background: linear-gradient(190deg, #10b981, #6366f1);
-
+}
+.profileCard .member_role {
+  position: relative;
+  color: #6366f1;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.11rem;
+  line-clamp: calc(0.5rem);
+}
+.profileCard .member_role::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  width: 100%;
+  height: 1px;
+  /* background: #005acf; */
+  background: linear-gradient(190deg, #a0a2ff);
+  /* box-shadow: 0 0 8px rgba(88, 166, 255, 0.6); */
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: center;
+  animation: underlineExpand 3s ease-in-out infinite;
 }
 /* Keyframes */
 @keyframes underlineExpand {
@@ -157,12 +202,15 @@
 .deleteBtn {
   flex: 1;
   /* equal width */
+  align-items: end;
   padding: 0.45rem;
-  border-radius: 0.35rem;
+  border-left: 0.35rem;
   border: 1px solid transparent;
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  text-align: left;
+  justify-content: first baseline;
 }
 
 /* Logout (Neutral Primary) */

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { forgotPassword } from "../../services/validations/password.service";
+import { forgotPassword } from "../../services/auth/password.service";
 import styles from "./ForgotPassword.module.css";
 
 const toast = Swal.mixin({
@@ -12,7 +12,11 @@ const toast = Swal.mixin({
   timerProgressBar: true,
 });
 
-function ForgotPassword() {
+/**
+ * ForgotPassword — the ONLY forgot-password page. No role needed;
+ * the backend searches both admin and member tables by email.
+ */
+export default function ForgotPassword() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -20,7 +24,6 @@ function ForgotPassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!email.trim()) {
       setError("Email is required");
       return;
@@ -28,9 +31,12 @@ function ForgotPassword() {
 
     try {
       setLoading(true);
-      await forgotPassword(email.trim());
+      await forgotPassword({ email: email.trim() });
       toast.fire({ icon: "success", title: "OTP sent to your email" });
-      setTimeout(() => navigate("/reset-password", { state: { email: email.trim() } }), 1000);
+      setTimeout(
+        () => navigate("/reset-password", { state: { email: email.trim() } }),
+        1000,
+      );
     } catch (err) {
       const message =
         err.response?.data?.message ||
@@ -55,12 +61,16 @@ function ForgotPassword() {
 
       <form onSubmit={handleSubmit} className={styles.formSection}>
         <h2>Forgot Password</h2>
+        <p className={styles.subText}>Enter your account email</p>
 
         <input
           type="email"
-          placeholder="Enter admin email"
+          placeholder="you@example.com"
           value={email}
-          onChange={(e) => { setEmail(e.target.value); setError(""); }}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setError("");
+          }}
           className={`${styles.formInput} ${error ? styles.inputError : ""}`}
         />
         {error && <p className={styles.errorMsg}>{error}</p>}
@@ -72,5 +82,3 @@ function ForgotPassword() {
     </>
   );
 }
-
-export default ForgotPassword;

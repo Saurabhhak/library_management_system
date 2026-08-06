@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { resetPassword, forgotPassword } from "../../services/validations/password.service";
+import {
+  resetPassword,
+  forgotPassword,
+} from "../../services/auth/password.service";
 import styles from "./ForgotPassword.module.css";
 
 const PASSWORD_REGEX =
@@ -17,7 +20,11 @@ const toast = Swal.mixin({
   timerProgressBar: true,
 });
 
-function ResetPassword() {
+/**
+ * ResetPassword — the ONLY reset-password page. Reads { email } from
+ * location.state (set by ForgotPassword). No role needed.
+ */
+export default function ResetPassword() {
   const navigate = useNavigate();
   const { state } = useLocation();
   const email = state?.email;
@@ -29,14 +36,15 @@ function ResetPassword() {
   const [timer, setTimer] = useState(OTP_RESEND_DELAY);
   const [canResend, setCanResend] = useState(false);
 
-  // Redirect if arrived without email in state
   useEffect(() => {
     if (!email) navigate("/forgot-password", { replace: true });
   }, [email, navigate]);
 
-  // Countdown timer
   useEffect(() => {
-    if (timer === 0) { setCanResend(true); return; }
+    if (timer === 0) {
+      setCanResend(true);
+      return;
+    }
     const id = setInterval(() => setTimer((t) => t - 1), 1000);
     return () => clearInterval(id);
   }, [timer]);
@@ -52,9 +60,11 @@ function ResetPassword() {
     if (!fields.password) {
       errs.password = "Password is required";
     } else if (!PASSWORD_REGEX.test(fields.password)) {
-      errs.password = "Min 8 chars, 1 uppercase, 1 number, 1 special character & at least 3 letters";
+      errs.password =
+        "Min 8 chars, 1 uppercase, 1 number, 1 special character & at least 3 letters";
     }
-    if (fields.password !== fields.confirm) errs.confirm = "Passwords do not match";
+    if (fields.password !== fields.confirm)
+      errs.confirm = "Passwords do not match";
     return errs;
   };
 
@@ -66,7 +76,11 @@ function ResetPassword() {
 
     try {
       setLoading(true);
-      await resetPassword({ email, otp: fields.otp, password: fields.password });
+      await resetPassword({
+        email,
+        otp: fields.otp,
+        password: fields.password,
+      });
       toast.fire({ icon: "success", title: "Password updated successfully" });
       setTimeout(() => navigate("/login", { replace: true }), 1500);
     } catch (err) {
@@ -83,7 +97,7 @@ function ResetPassword() {
   const handleResend = async () => {
     try {
       setLoading(true);
-      await forgotPassword(email);
+      await forgotPassword({ email });
       toast.fire({ icon: "success", title: "OTP resent to your email" });
       setTimer(OTP_RESEND_DELAY);
       setCanResend(false);
@@ -112,7 +126,6 @@ function ResetPassword() {
       <form onSubmit={handleSubmit} className={styles.formSection}>
         <h2>Reset Password</h2>
 
-        {/* OTP */}
         <input
           type="text"
           placeholder="Enter OTP"
@@ -123,7 +136,6 @@ function ResetPassword() {
         />
         {errors.otp && <p className={styles.errorMsg}>{errors.otp}</p>}
 
-        {/* New Password */}
         <div className={styles.password_wrapper}>
           <input
             type={show.password ? "text" : "password"}
@@ -132,13 +144,19 @@ function ResetPassword() {
             onChange={(e) => setField("password", e.target.value)}
             className={`${styles.formInput} ${errors.password ? styles.inputError : ""}`}
           />
-          <span className={styles.eye_icon} onClick={() => setShow((s) => ({ ...s, password: !s.password }))}>
-            <i className={`fa-solid ${show.password ? "fa-eye-slash" : "fa-eye"}`} />
+          <span
+            className={styles.eye_icon}
+            onClick={() => setShow((s) => ({ ...s, password: !s.password }))}
+          >
+            <i
+              className={`fa-solid ${show.password ? "fa-eye-slash" : "fa-eye"}`}
+            />
           </span>
         </div>
-        {errors.password && <p className={styles.errorMsg}>{errors.password}</p>}
+        {errors.password && (
+          <p className={styles.errorMsg}>{errors.password}</p>
+        )}
 
-        {/* Confirm Password */}
         <div className={styles.password_wrapper}>
           <input
             type={show.confirm ? "text" : "password"}
@@ -147,8 +165,13 @@ function ResetPassword() {
             onChange={(e) => setField("confirm", e.target.value)}
             className={`${styles.formInput} ${errors.confirm ? styles.inputError : ""}`}
           />
-          <span className={styles.eye_icon} onClick={() => setShow((s) => ({ ...s, confirm: !s.confirm }))}>
-            <i className={`fa-solid ${show.confirm ? "fa-eye-slash" : "fa-eye"}`} />
+          <span
+            className={styles.eye_icon}
+            onClick={() => setShow((s) => ({ ...s, confirm: !s.confirm }))}
+          >
+            <i
+              className={`fa-solid ${show.confirm ? "fa-eye-slash" : "fa-eye"}`}
+            />
           </span>
         </div>
         {errors.confirm && <p className={styles.errorMsg}>{errors.confirm}</p>}
@@ -169,5 +192,3 @@ function ResetPassword() {
     </>
   );
 }
-
-export default ResetPassword;
