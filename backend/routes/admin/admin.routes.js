@@ -1,9 +1,12 @@
 "use strict";
 
 const router = require("express").Router();
+
+// Middlewares
 const auth = require("../../middleware/auth.middleware");
 const role = require("../../middleware/role.middleware");
 
+// Controllers
 const {
   createAdmin,
   getAllAdmins,
@@ -11,19 +14,23 @@ const {
   updateAdmin,
   deleteAdmin,
 } = require("../../controllers/admin/admin.controller");
-
 const authCtrl = require("../../controllers/auth/auth.controller");
 
-/* ───────────────── OWN PROFILE / SECURITY (any staff role) ─────────────────
-   IMPORTANT: registered BEFORE "/:id" routes — warna Express "/profile"
-   ko :id="profile" samajh kar updateAdmin pe bhej deta (maine ye real
-   Express server pe test karke confirm kiya hai). */
+/* ════════════════════════════════════════════════════════════════
+   SELF-SERVICE ROUTES
+   NOTE: Must be registered before "/:id" routes to avoid Express 
+   treating "/profile" as a dynamic ID parameter.
+════════════════════════════════════════════════════════════════ */
+
+// Update own profile details (Accessible to all staff)
 router.put(
   "/profile",
   auth,
   role("admin", "superadmin", "librarian", "staff"),
   authCtrl.updateProfile,
 );
+
+// Change own password (Accessible to all staff)
 router.put(
   "/change-password",
   auth,
@@ -31,11 +38,23 @@ router.put(
   authCtrl.changePassword,
 );
 
-/* ───────────────── SUPER ADMIN CRUD ───────────────── */
+/* ════════════════════════════════════════════════════════════════
+   ADMIN MANAGEMENT (CRUD)
+════════════════════════════════════════════════════════════════ */
+
+// Create a new admin (Superadmin only)
 router.post("/", auth, role("superadmin"), createAdmin);
+
+// Fetch all admins (Admin & Superadmin)
 router.get("/", auth, role("admin", "superadmin"), getAllAdmins);
+
+// Fetch a specific admin by ID (Superadmin only)
 router.get("/:id", auth, role("superadmin"), getAdminById);
+
+// Update a specific admin by ID (Superadmin only)
 router.put("/:id", auth, role("superadmin"), updateAdmin);
+
+// Delete an admin (Superadmin only)
 router.delete("/:id", auth, role("superadmin"), deleteAdmin);
 
 module.exports = router;

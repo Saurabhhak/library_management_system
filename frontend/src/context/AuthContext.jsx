@@ -5,7 +5,7 @@ import axiosInstance, {
   getRefreshToken,
   setTokens,
   clearTokens,
-  performRefresh, // ← ye naya import missing hai aapki file me
+  performRefresh,
 } from "../api/axiosInstance";
 
 const AuthContext = createContext(null);
@@ -15,6 +15,7 @@ function readValidToken() {
   if (!token) return null;
   try {
     const decoded = jwtDecode(token);
+    // JWT exp is in seconds, Date.now() is in ms
     if (decoded.exp * 1000 < Date.now()) return null;
     return decoded;
   } catch {
@@ -31,6 +32,8 @@ export function AuthProvider({ children }) {
 
     async function init() {
       const decoded = readValidToken();
+
+      // Fast UI mount using valid access token
       if (decoded) {
         if (!cancelled) {
           setUser({
@@ -41,13 +44,19 @@ export function AuthProvider({ children }) {
           });
           setLoading(false);
         }
+
+        // Background sync to get full profile
         axiosInstance
           .get("/auth/profile")
-          .then(({ data }) => !cancelled && setUser(data.data))
+          .then(({ data }) => {
+            const profileData = data.data || data.user || data;
+            if (!cancelled) setUser(profileData);
+          })
           .catch(() => {});
         return;
       }
 
+      // If no valid access token, try refresh
       const refreshToken = getRefreshToken();
       if (!refreshToken) {
         if (!cancelled) setLoading(false);
@@ -55,12 +64,10 @@ export function AuthProvider({ children }) {
       }
 
       try {
-        // ← YE badla hai: seedha axiosInstance.post ki jagah shared
-        //    performRefresh() — StrictMode ke dono effect-runs isi
-        //    EK in-flight promise ka wait karte hain.
         await performRefresh();
-        const { data: profile } = await axiosInstance.get("/auth/profile");
-        if (!cancelled) setUser(profile.data);
+        const { data } = await axiosInstance.get("/auth/profile");
+        const profileData = data.data || data.user || data;
+        if (!cancelled) setUser(profileData);
       } catch {
         if (!cancelled) clearTokens();
       } finally {
@@ -69,6 +76,7 @@ export function AuthProvider({ children }) {
     }
 
     init();
+
     return () => {
       cancelled = true;
     };
@@ -85,7 +93,7 @@ export function AuthProvider({ children }) {
         refreshToken: getRefreshToken(),
       });
     } catch {
-      // ignore
+      // Ignore network errors, proceed with local logout
     } finally {
       clearTokens();
       setUser(null);

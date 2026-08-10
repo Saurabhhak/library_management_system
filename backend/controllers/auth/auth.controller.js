@@ -12,6 +12,8 @@ const {
 /* ════════════════════════════════════════════════════════════════
    PRIVATE HELPERS
 ════════════════════════════════════════════════════════════════ */
+
+// Fetch user details (Admin or Member) by email
 const findUserByEmail = async (email) => {
   const { rows: adminRows } = await pool.query(
     `SELECT id, first_name, last_name, email,
@@ -38,7 +40,7 @@ const findUserByEmail = async (email) => {
   return null;
 };
 
-/** Hashed opaque refresh token DB me save karo (cookie kahi nahi). */
+// Hash and store the opaque refresh token in the database
 const saveRefreshToken = (userId, userType, rawToken, req) =>
   pool.query(
     `INSERT INTO refresh_tokens
@@ -56,8 +58,7 @@ const saveRefreshToken = (userId, userType, rawToken, req) =>
 
 /* ════════════════════════════════════════════════════════════════
    POST /api/auth/login
-   Body: { email, password }
-   Response: { success, data: { accessToken, refreshToken, user } }
+   Authenticates user, generates tokens, and saves session.
 ════════════════════════════════════════════════════════════════ */
 exports.login = async (req, res) => {
   const { email, password } = req.body;
@@ -65,33 +66,37 @@ exports.login = async (req, res) => {
   if (!email || !password)
     return res
       .status(400)
-      .json({ success: false, message: "email and password are required" });
+      .json({ success: false, message: "Email and password are required" });
 
   try {
     const user = await findUserByEmail(email.toLowerCase());
 
+    // Validate user existence and password match
     if (!user || !(await bcrypt.compare(password, user.pwd)))
       return res
         .status(401)
         .json({ success: false, message: "Invalid credentials" });
 
+    // Ensure account is active
     if (user.active_flag !== "active")
       return res.status(403).json({
         success: false,
         message: "Account inactive. Contact support.",
       });
 
+    // Update admin activity status
     if (user.userType === "admin")
       await pool.query(
         "UPDATE admin SET last_seen = NOW(), is_online = true WHERE id = $1",
         [user.id],
       );
 
+    // Generate tokens
     const tokenPayload = {
       id: user.id,
       email: user.email,
       role: user.role,
-      userType: user.userType, // ← AuthContext isse decode karke padhta hai
+      userType: user.userType, // Used by AuthContext for decoding
     };
     const accessToken = signAccessToken(tokenPayload);
     const refreshToken = generateRefreshToken();
@@ -103,7 +108,7 @@ exports.login = async (req, res) => {
       message: "Login successful",
       data: {
         accessToken,
-        refreshToken, // ← body me, koi Set-Cookie nahi
+        refreshToken,
         user: {
           id: user.id,
           first_name: user.first_name,
@@ -121,24 +126,18 @@ exports.login = async (req, res) => {
 
 /* ════════════════════════════════════════════════════════════════
    POST /api/auth/refresh
-   Body: { refreshToken }
-   Response: { success, data: { accessToken, refreshToken } }
-════════════════════════════════════════════════════════════════ */
-/* ════════════════════════════════════════════════════════════════
-   POST /api/auth/refresh
-   Body: { refreshToken }
-   Response: { success, data: { accessToken, refreshToken } }
+   Validates refresh token, checks for theft, and issues new tokens.
 ════════════════════════════════════════════════════════════════ */
 exports.refresh = async (req, res) => {
   const rawToken = req.body?.refreshToken;
+
   if (!rawToken)
     return res
       .status(401)
-      .json({ success: false, message: "No refresh token" });
+      .json({ success: false, message: "No refresh token provided" });
 
   try {
-    // NOTE: is_revoked filter hata diya — revoked token bhi fetch karna hai
-    // taaki reuse (theft) detect kar sakein.
+    // Fetch token regardless of revocation status to detect theft
     const { rows } = await pool.query(
       `SELECT * FROM refresh_tokens WHERE token_hash = $1`,
       [hashToken(rawToken)],
@@ -151,11 +150,9 @@ exports.refresh = async (req, res) => {
 
     const rt = rows[0];
 
-    /* ── Reuse / theft detection ──────────────────────────────────
-       Agar ye token pehle se revoked hai (matlab already rotate ho
-       chuka tha) aur phir bhi use ho raha hai → kisi ne ise chura
-       kar use karne ki koshish ki. Is user ke SAARE refresh tokens
-       revoke karo, force re-login. */
+    /* ── Reuse / Theft Detection ── 
+       If a revoked token is used again, it might be stolen. 
+       Invalidate all active sessions for this user to ensure security. */
     if (rt.is_revoked) {
       await pool.query(
         "UPDATE refresh_tokens SET is_revoked = true WHERE user_id=$1 AND user_type=$2",
@@ -167,11 +164,13 @@ exports.refresh = async (req, res) => {
       });
     }
 
+    // Check expiration time
     if (new Date(rt.expires_at) <= new Date())
       return res
         .status(401)
         .json({ success: false, message: "Invalid or expired refresh token" });
 
+    // Fetch user details based on user type
     let user;
     if (rt.user_type === "member") {
       const { rows: r } = await pool.query(
@@ -197,7 +196,7 @@ exports.refresh = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    // Rotation: purana revoke, naya issue
+    // Token Rotation: Revoke old token, issue a new one
     await pool.query(
       "UPDATE refresh_tokens SET is_revoked = true WHERE id = $1",
       [rt.id],
@@ -224,25 +223,28 @@ exports.refresh = async (req, res) => {
 };
 
 /* ════════════════════════════════════════════════════════════════
-   POST /api/auth/logout   (auth required)
-   Body: { refreshToken }
+   POST /api/auth/logout
+   Revokes the active refresh token and updates online status.
 ════════════════════════════════════════════════════════════════ */
 exports.logout = async (req, res) => {
   const rawToken = req.body?.refreshToken;
+
   try {
+    // Revoke the token in the database
     if (rawToken)
       await pool.query(
         "UPDATE refresh_tokens SET is_revoked = true WHERE token_hash = $1",
         [hashToken(rawToken)],
       );
 
+    // Update admin's online status
     if (req.user?.role !== "member")
       await pool.query(
         "UPDATE admin SET last_seen = NOW(), is_online = false WHERE id = $1",
         [req.user.id],
       );
 
-    return res.json({ success: true, message: "Logged out" });
+    return res.json({ success: true, message: "Logged out successfully" });
   } catch (err) {
     console.error("[auth:logout]", err.message);
     return res.status(500).json({ success: false, message: "Server error" });
@@ -250,7 +252,8 @@ exports.logout = async (req, res) => {
 };
 
 /* ════════════════════════════════════════════════════════════════
-   GET /api/auth/profile   (auth required) — UNCHANGED from original
+   GET /api/auth/profile
+   Fetches full user profile details based on role.
 ════════════════════════════════════════════════════════════════ */
 exports.profile = async (req, res) => {
   try {
@@ -296,7 +299,8 @@ exports.profile = async (req, res) => {
 };
 
 /* ════════════════════════════════════════════════════════════════
-   POST /api/auth/check-email   (public) — UNCHANGED
+   POST /api/auth/check-email
+   Public endpoint to verify if an email is already registered.
 ════════════════════════════════════════════════════════════════ */
 exports.checkEmail = async (req, res) => {
   const { email, role } = req.body;
@@ -304,7 +308,7 @@ exports.checkEmail = async (req, res) => {
   if (!email || !["admin", "member"].includes(role))
     return res
       .status(400)
-      .json({ success: false, message: "email and valid role required" });
+      .json({ success: false, message: "Email and valid role are required" });
 
   try {
     const table = role === "admin" ? "admin" : "members";
@@ -312,6 +316,7 @@ exports.checkEmail = async (req, res) => {
       `SELECT id FROM ${table} WHERE LOWER(email) = $1 AND is_deleted = false`,
       [email.toLowerCase()],
     );
+
     return res.json({ success: true, exists: rows.length > 0 });
   } catch (err) {
     console.error("[auth:checkEmail]", err.message);
@@ -320,7 +325,8 @@ exports.checkEmail = async (req, res) => {
 };
 
 /* ════════════════════════════════════════════════════════════════
-   POST /api/auth/heartbeat   (auth required) — UNCHANGED
+   POST /api/auth/heartbeat
+   Updates the "last active" timestamp for admins.
 ════════════════════════════════════════════════════════════════ */
 exports.heartbeat = async (req, res) => {
   try {
@@ -336,14 +342,16 @@ exports.heartbeat = async (req, res) => {
 };
 
 /* ════════════════════════════════════════════════════════════════
-   PUT /api/auth/profile   (auth required) — UNCHANGED
+   PUT /api/auth/profile
+   Updates basic user profile information.
 ════════════════════════════════════════════════════════════════ */
 exports.updateProfile = async (req, res) => {
   const { first_name, last_name, phone } = req.body;
+
   if (!first_name || !last_name)
     return res.status(400).json({
       success: false,
-      message: "first_name and last_name are required",
+      message: "First name and last name are required",
     });
 
   try {
@@ -354,30 +362,35 @@ exports.updateProfile = async (req, res) => {
          RETURNING id, first_name, last_name, email, phone, member_type, status`,
         [first_name, last_name, phone || null, req.user.id],
       );
+
       if (!rows.length)
         return res
           .status(404)
           .json({ success: false, message: "User not found" });
+
       return res.json({
         success: true,
-        message: "Profile updated",
+        message: "Profile updated successfully",
         user: rows[0],
       });
     }
 
+    // Handle Admin profile update
     const { rows } = await pool.query(
       `UPDATE admin SET first_name=$1, last_name=$2, phone=COALESCE($3, phone), updated_at=NOW()
        WHERE id=$4 AND is_deleted=false
        RETURNING id, first_name, last_name, email, phone, role`,
       [first_name, last_name, phone || null, req.user.id],
     );
+
     if (!rows.length)
       return res
         .status(404)
         .json({ success: false, message: "User not found" });
+
     return res.json({
       success: true,
-      message: "Profile updated",
+      message: "Profile updated successfully",
       user: rows[0],
     });
   } catch (err) {
@@ -387,15 +400,18 @@ exports.updateProfile = async (req, res) => {
 };
 
 /* ════════════════════════════════════════════════════════════════
-   POST /api/auth/change-password   (auth required) — UNCHANGED
+   POST /api/auth/change-password
+   Verifies current password and updates to a new one.
 ════════════════════════════════════════════════════════════════ */
 exports.changePassword = async (req, res) => {
   const { currentPassword, newPassword } = req.body;
+
   if (!currentPassword || !newPassword)
     return res.status(400).json({
       success: false,
-      message: "currentPassword and newPassword are required",
+      message: "Current password and new password are required",
     });
+
   if (newPassword.length < 8)
     return res.status(400).json({
       success: false,
@@ -407,26 +423,33 @@ exports.changePassword = async (req, res) => {
     const table = isMember ? "members" : "admin";
     const pwdCol = isMember ? "password" : "password_hash";
 
+    // Fetch current hashed password
     const { rows } = await pool.query(
       `SELECT ${pwdCol} AS pwd FROM ${table} WHERE id=$1 AND is_deleted=false`,
       [req.user.id],
     );
+
     if (!rows.length)
       return res
         .status(404)
         .json({ success: false, message: "User not found" });
 
+    // Verify current password
     const valid = await bcrypt.compare(currentPassword, rows[0].pwd);
     if (!valid)
       return res
         .status(401)
         .json({ success: false, message: "Current password is incorrect" });
 
+    // Hash new password and update database
     const hashed = await bcrypt.hash(newPassword, 10);
+
     await pool.query(
       `UPDATE ${table} SET ${pwdCol}=$1, updated_at=NOW() WHERE id=$2`,
       [hashed, req.user.id],
     );
+
+    // Revoke all existing sessions for security
     await pool.query(
       `UPDATE refresh_tokens SET is_revoked=true WHERE user_id=$1 AND user_type=$2`,
       [req.user.id, isMember ? "member" : "admin"],

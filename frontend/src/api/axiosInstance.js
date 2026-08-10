@@ -54,9 +54,7 @@ const PUBLIC_AUTH_ENDPOINTS = [
   "/auth/check-email",
 ];
 
-/* ── Single shared in-flight refresh promise — avoids duplicate
-   /auth/refresh calls (StrictMode double-effect race, multiple
-   simultaneous 401s, etc). Exported so AuthContext can reuse it. ── */
+/* ── Single shared in-flight refresh promise ── */
 let refreshPromise = null;
 
 export function performRefresh() {
@@ -68,8 +66,15 @@ export function performRefresh() {
   refreshPromise = axios
     .post(`${BASE_URL}/auth/refresh`, { refreshToken }, { timeout: 8000 })
     .then(({ data }) => {
-      setTokens(data.data.accessToken, data.data.refreshToken);
-      return data.data.accessToken;
+      // Handles both { data: { accessToken } } and { accessToken } structures
+      const newAccess = data.data?.accessToken || data.accessToken;
+      const newRefresh = data.data?.refreshToken || data.refreshToken;
+      setTokens(newAccess, newRefresh);
+      return newAccess;
+    })
+    .catch((error) => {
+      clearTokens();
+      return Promise.reject(error);
     })
     .finally(() => {
       refreshPromise = null;
