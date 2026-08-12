@@ -55,6 +55,7 @@ import MemberPage from "./pages/analytics/members/MemberPage";
 /* ── Shared Authenticated Pages ── */
 import Profile from "./pages/profile/Profile";
 import Settings from "./settings/Settings";
+import DeletedAccountsInventory from "./pages/inventories/DeletedAccountsInventory";
 import Home from "./pages/home/Home";
 import History from "./pages/history/History";
 
@@ -170,10 +171,8 @@ function AppShell() {
                 <Route path="/help" element={<HelpCenter />} />
                 <Route path="/status" element={<StatusPage />} />
                 <Route path="/contact-us" element={<ContactUs />} />
-                <Route
-                  path="/contact-inventory"
-                  element={<ContactInventory />}
-                />
+                <Route path="/contact-inventory" element={<ContactInventory />}/>
+                <Route path="/deleted-accounts-inventory" element={<DeletedAccountsInventory />} />
 
                 {/* Legal */}
                 <Route path="/privacy" element={<Privacy />} />

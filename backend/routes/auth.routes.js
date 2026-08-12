@@ -19,6 +19,7 @@ router.post("/reset-password", pwdCtrl.resetPassword);
 router.post("/logout", auth, authCtrl.logout);
 router.get("/profile", auth, authCtrl.profile);
 router.put("/profile", auth, authCtrl.updateProfile);
+router.delete("/profile/delete", auth, authCtrl.deleteMyAccount);
 router.post("/change-password", auth, authCtrl.changePassword);
 router.post("/heartbeat", auth, authCtrl.heartbeat);
 

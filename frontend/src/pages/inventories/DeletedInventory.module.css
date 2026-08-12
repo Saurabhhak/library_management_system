@@ -1,0 +1,276 @@
+/*____ DELETED INVENTORY — Dark Theme Sync ____*/
+.pageWrapper {
+  width: 100%;
+  max-width: 1400px;
+  margin: 2rem auto;
+  box-sizing: border-box;
+}
+
+/* ── STATS BAR ── */
+.statsBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  width: calc(100% - 2rem);
+  max-width: 1400px;
+  margin: 4rem auto 1rem auto;
+  padding: 0;
+  animation: fadeInUp 0.5s ease;
+  box-sizing: border-box;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.statCard {
+  display: flex;
+  width: fit-content;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 10px;
+  background: #0d1117;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  min-width: 80px;
+}
+
+.statNum {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #d9edff;
+  line-height: 1;
+}
+.statLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #4a5a70;
+}
+
+.statAdmin .statNum {
+  color: #f59e0b;
+}
+.statMember .statNum {
+  color: #3b82f6;
+}
+
+/* ── HEADER BAR ── */
+.headerBar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: calc(100% - 2rem);
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0.9rem 1.25rem;
+  background: #0d1117;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px 14px 0 0;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ef4444; /* Red accent for deleted */
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0.25rem 0 0;
+  white-space: nowrap;
+}
+
+/* ── SEARCH ── */
+.searchContainer {
+  position: relative;
+  flex: 1;
+  min-width: 180px;
+  max-width: 340px;
+}
+.searchIcon {
+  position: absolute;
+  left: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #4a5a70;
+  font-size: 0.8rem;
+  pointer-events: none;
+}
+.searchBox {
+  width: 100%;
+  padding: 0.5rem 0.75rem 0.5rem 2rem;
+  background: #161b22;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: #d0daf0;
+  font-size: 0.82rem;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+.searchBox:focus {
+  outline: none;
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* ── TABLE WRAPPER ── */
+.tableWrapper {
+  width: calc(100% - 2rem);
+  max-width: 1400px;
+  margin: 0 auto 5rem auto;
+  overflow-x: auto;
+  background: #0d1117;
+  border-radius: 0 0 0.75rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+  box-sizing: border-box;
+}
+
+.table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.thead th {
+  background: #0a0c10;
+  padding: 0.8rem 1rem;
+  font-weight: 600;
+  color: #6b7a94;
+  text-align: left;
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+.thead th:last-child {
+  border-right: none;
+}
+
+.tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background 0.12s;
+}
+.tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+.tbody td {
+  padding: 0.8rem 1rem;
+  color: #c0cfe0;
+  vertical-align: middle;
+  border-right: 1px solid rgba(255, 255, 255, 0.03);
+}
+.tbody td:last-child {
+  border-right: none;
+}
+
+/* ── ROLE BADGES ── */
+.badge {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.badgeAdmin {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+.badgeMember {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* ── RESTORE BUTTON ── */
+.restoreBtn {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #10b981;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.restoreBtn:hover {
+  background: rgba(16, 185, 129, 0.25);
+  transform: translateY(-1px);
+}
+
+/* ── EMPTY STATE (BIG UI) ── */
+.emptyCell {
+  text-align: center;
+  padding: 5rem 1rem !important;
+  color: #4a5a70;
+}
+.emptyIcon {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  opacity: 0.4;
+  color: #6b7a94;
+}
+.emptyTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #d9edff;
+  margin: 0 0 0.5rem 0;
+}
+.emptyDesc {
+  font-size: 0.9rem;
+  margin: 0;
+  opacity: 0.7;
+}
+
+/* ── SHIMMERING LOADER (SKELETON) ── */
+.skeletonRow {
+  height: 20px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #161b22 25%, #1c2333 50%, #161b22 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .statsBar,
+  .headerBar,
+  .tableWrapper {
+    width: 100%;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  .statsBar {
+    margin-top: 2rem;
+    justify-content: center;
+  }
+}

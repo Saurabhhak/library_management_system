@@ -464,3 +464,40 @@ exports.changePassword = async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+/* ════════════════════════════════════════════════════════════════
+   DELETE /api/auth/profile/delete   (Self Delete Account)
+════════════════════════════════════════════════════════════════ */
+exports.deleteMyAccount = async (req, res) => {
+  try {
+    const isMember = req.user.role === "member";
+    const userType = isMember ? "member" : "admin";
+
+    // 1. Soft delete the user (Separated queries to avoid column mismatch)
+    if (isMember) {
+      await pool.query(
+        `UPDATE members SET is_deleted=true, updated_at=NOW(), status='inactive' WHERE id=$1`,
+        [req.user.id],
+      );
+    } else {
+      await pool.query(
+        `UPDATE admin SET is_deleted=true, updated_at=NOW(), is_active=false WHERE id=$1`,
+        [req.user.id],
+      );
+    }
+
+    // 2. Revoke all active sessions
+    await pool.query(
+      `UPDATE refresh_tokens SET is_revoked=true WHERE user_id=$1 AND user_type=$2`,
+      [req.user.id, userType],
+    );
+
+    return res.json({
+      success: true,
+      message: "Account scheduled for deletion and logged out.",
+    });
+  } catch (err) {
+    console.error("[auth:deleteMyAccount]", err.message);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};

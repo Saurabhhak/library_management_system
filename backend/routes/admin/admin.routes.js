@@ -13,37 +13,30 @@ const {
   getAdminById,
   updateAdmin,
   deleteAdmin,
+  getDeletedAdmins,
+  restoreAdmin,    
 } = require("../../controllers/admin/admin.controller");
 const authCtrl = require("../../controllers/auth/auth.controller");
 
 /* ════════════════════════════════════════════════════════════════
    SELF-SERVICE ROUTES
-   NOTE: Must be registered before "/:id" routes to avoid Express 
-   treating "/profile" as a dynamic ID parameter.
 ════════════════════════════════════════════════════════════════ */
 
-// Update own profile details (Accessible to all staff)
-router.put(
-  "/profile",
-  auth,
-  role("admin", "superadmin", "librarian", "staff"),
-  authCtrl.updateProfile,
-);
-
-// Change own password (Accessible to all staff)
-router.put(
-  "/change-password",
-  auth,
-  role("admin", "superadmin", "librarian", "staff"),
-  authCtrl.changePassword,
-);
+router.put("/profile", auth, role("admin", "superadmin", "librarian", "staff"), authCtrl.updateProfile);
+router.put("/change-password", auth, role("admin", "superadmin", "librarian", "staff"), authCtrl.changePassword);
 
 /* ════════════════════════════════════════════════════════════════
-   ADMIN MANAGEMENT (CRUD)
+   ADMIN MANAGEMENT (CRUD) & RECYCLE BIN
 ════════════════════════════════════════════════════════════════ */
 
 // Create a new admin (Superadmin only)
 router.post("/", auth, role("superadmin"), createAdmin);
+
+// Get list of deleted admins & members (Superadmin only)
+router.get("/deleted", auth, role("superadmin"), getDeletedAdmins);
+
+// Restore a deleted admin/member (Superadmin only)
+router.patch("/restore/:id", auth, role("superadmin"), restoreAdmin);
 
 // Fetch all admins (Admin & Superadmin)
 router.get("/", auth, role("admin", "superadmin"), getAllAdmins);

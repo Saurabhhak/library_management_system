@@ -151,6 +151,16 @@ function NavbarSection() {
             </span>
             Contact Us
           </Link>
+          <Link
+            to="/deleted-accounts-inventory" 
+            onClick={closeAll}
+            className={styles.hoverDropDown}
+          >
+            <span className={styles.iconColor}>
+              <i className="fa-solid fa-recycle" />
+            </span>
+            Restore Delete Accounts
+          </Link> 
         </div>
       </nav>
 

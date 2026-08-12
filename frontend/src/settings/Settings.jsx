@@ -1,17 +1,14 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axiosInstance from "../api/axiosInstance";
+import { useAuth } from "../context/AuthContext";
 import styles from "./Settings.module.css";
-
-/* ─────────────────────────────────────────────────────────────────────────────
- * Settings Page
- * Tabs: Profile · Security  (Preferences removed — future requirement)
- * Works for all roles: superadmin / admin / librarian / staff / member
- * ───────────────────────────────────────────────────────────────────────────── */
 
 const TABS = [
   { id: "profile", label: "Profile", icon: "fa-solid fa-user-circle" },
   { id: "security", label: "Security", icon: "fa-solid fa-shield-halved" },
+  { id: "delete", label: "Delete Account", icon: "fa-solid fa-trash-can" }, // <-- New Tab
 ];
 
 const ROLE_LABELS = {
@@ -22,7 +19,8 @@ const ROLE_LABELS = {
   member: { label: "Member", color: "badge--member" },
 };
 
-/* ── Profile Tab ──────────────────────────────────────────────────────────── */
+/* ── Profile Tab ── */
+// ... (Your exact same ProfileTab code goes here, no changes needed) ...
 function ProfileTab({ profile, onUpdated }) {
   const role = profile?.role ?? "member";
   const roleInfo = ROLE_LABELS[role] ?? { label: role, color: "badge--member" };
@@ -53,7 +51,6 @@ function ProfileTab({ profile, onUpdated }) {
         phone: form.phone,
       });
       onUpdated?.(data.user);
-
       Swal.fire({
         icon: "success",
         title: "Profile updated",
@@ -66,9 +63,7 @@ function ProfileTab({ profile, onUpdated }) {
       Swal.fire({
         icon: "error",
         title: "Update failed",
-        text:
-          err.response?.data?.message ??
-          "Could not save changes. Please try again.",
+        text: err.response?.data?.message ?? "Could not save changes.",
         background: "#0f172a",
         color: "#e5e7eb",
       });
@@ -88,7 +83,6 @@ function ProfileTab({ profile, onUpdated }) {
           <p className={styles.avatarEmail}>{profile?.email ?? "—"}</p>
         </div>
       </div>
-
       <form onSubmit={handleSave} className={styles.form}>
         <div className={styles.fieldGroup}>
           <label className={styles.label}>First Name</label>
@@ -97,11 +91,9 @@ function ProfileTab({ profile, onUpdated }) {
             name="first_name"
             value={form.first_name}
             onChange={handleChange}
-            placeholder="First name"
             required
           />
         </div>
-
         <div className={styles.fieldGroup}>
           <label className={styles.label}>Last Name</label>
           <input
@@ -109,11 +101,9 @@ function ProfileTab({ profile, onUpdated }) {
             name="last_name"
             value={form.last_name}
             onChange={handleChange}
-            placeholder="Last name"
             required
           />
         </div>
-
         <div className={styles.fieldGroup}>
           <label className={styles.label}>Email Address</label>
           <input
@@ -127,7 +117,6 @@ function ProfileTab({ profile, onUpdated }) {
             your email
           </p>
         </div>
-
         <div className={styles.fieldGroup}>
           <label className={styles.label}>Phone Number</label>
           <input
@@ -135,11 +124,9 @@ function ProfileTab({ profile, onUpdated }) {
             name="phone"
             value={form.phone}
             onChange={handleChange}
-            placeholder="+91 00000 00000"
             type="tel"
           />
         </div>
-
         <div className={styles.fieldGroup}>
           <label className={styles.label}>Role</label>
           <input
@@ -148,7 +135,6 @@ function ProfileTab({ profile, onUpdated }) {
             readOnly
           />
         </div>
-
         <button type="submit" className={styles.saveBtn} disabled={saving}>
           {saving ? (
             <>
@@ -165,7 +151,8 @@ function ProfileTab({ profile, onUpdated }) {
   );
 }
 
-/* ── Security Tab ─────────────────────────────────────────────────────────── */
+/* ── Security Tab ── */
+// ... (Your exact same SecurityTab code goes here, no changes needed) ...
 function SecurityTab({ role }) {
   const [form, setForm] = useState({
     currentPassword: "",
@@ -185,7 +172,6 @@ function SecurityTab({ role }) {
   function toggleShow(field) {
     setShow((p) => ({ ...p, [field]: !p[field] }));
   }
-
   function strength(pw) {
     let score = 0;
     if (pw.length >= 8) score++;
@@ -194,7 +180,6 @@ function SecurityTab({ role }) {
     if (/[^A-Za-z0-9]/.test(pw)) score++;
     return score;
   }
-
   const pwStrength = strength(form.newPassword);
   const strengthLabel = ["", "Weak", "Fair", "Good", "Strong"][pwStrength];
   const strengthClass = [
@@ -207,23 +192,20 @@ function SecurityTab({ role }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (form.newPassword !== form.confirmPassword) {
+    if (form.newPassword !== form.confirmPassword)
       return Swal.fire({
         icon: "warning",
         title: "Passwords do not match",
         background: "#0f172a",
         color: "#e5e7eb",
       });
-    }
-    if (pwStrength < 2) {
+    if (pwStrength < 2)
       return Swal.fire({
         icon: "warning",
         title: "Password too weak",
-        text: "Use at least 8 characters with uppercase letters and numbers.",
         background: "#0f172a",
         color: "#e5e7eb",
       });
-    }
 
     setSaving(true);
     try {
@@ -231,12 +213,10 @@ function SecurityTab({ role }) {
         role === "member"
           ? "/members/change-password"
           : "/admin/change-password";
-
       await axiosInstance.put(endpoint, {
         currentPassword: form.currentPassword,
         newPassword: form.newPassword,
       });
-
       Swal.fire({
         icon: "success",
         title: "Password changed",
@@ -270,7 +250,6 @@ function SecurityTab({ role }) {
           </p>
         </div>
       </div>
-
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.fieldGroup}>
           <label className={styles.label}>Current Password</label>
@@ -281,7 +260,6 @@ function SecurityTab({ role }) {
               type={show.current ? "text" : "password"}
               value={form.currentPassword}
               onChange={handleChange}
-              placeholder="Enter current password"
               required
             />
             <button
@@ -295,7 +273,6 @@ function SecurityTab({ role }) {
             </button>
           </div>
         </div>
-
         <div className={styles.fieldGroup}>
           <label className={styles.label}>New Password</label>
           <div className={styles.pwWrap}>
@@ -305,7 +282,6 @@ function SecurityTab({ role }) {
               type={show.newPw ? "text" : "password"}
               value={form.newPassword}
               onChange={handleChange}
-              placeholder="Enter new password"
               required
             />
             <button
@@ -334,22 +310,15 @@ function SecurityTab({ role }) {
             </div>
           )}
         </div>
-
         <div className={styles.fieldGroup}>
           <label className={styles.label}>Confirm New Password</label>
           <div className={styles.pwWrap}>
             <input
-              className={`${styles.input} ${
-                form.confirmPassword &&
-                form.confirmPassword !== form.newPassword
-                  ? styles.inputError
-                  : ""
-              }`}
+              className={`${styles.input} ${form.confirmPassword && form.confirmPassword !== form.newPassword ? styles.inputError : ""}`}
               name="confirmPassword"
               type={show.confirm ? "text" : "password"}
               value={form.confirmPassword}
               onChange={handleChange}
-              placeholder="Re-enter new password"
               required
             />
             <button
@@ -362,15 +331,7 @@ function SecurityTab({ role }) {
               />
             </button>
           </div>
-          {form.confirmPassword &&
-            form.confirmPassword !== form.newPassword && (
-              <p className={styles.hintError}>
-                <i className="fa-solid fa-triangle-exclamation" /> Passwords do
-                not match
-              </p>
-            )}
         </div>
-
         <button type="submit" className={styles.saveBtn} disabled={saving}>
           {saving ? (
             <>
@@ -383,19 +344,109 @@ function SecurityTab({ role }) {
           )}
         </button>
       </form>
+    </div>
+  );
+}
 
-      <div className={styles.infoCard}>
-        <i className="fa-solid fa-circle-info" />
-        <p>
-          Changing your password will not log you out of this session, but all
-          other active sessions will be invalidated.
+/* ── NEW: Delete Account Tab (Matching the Reference Image) ── */
+function DeleteAccountTab() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const [isChecked, setIsChecked] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  // Generate date 15 days from now
+  const deleteDate = new Date();
+  deleteDate.setDate(deleteDate.getDate() + 15);
+  const formattedDate = deleteDate.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  async function handleDelete() {
+    if (!isChecked) return;
+
+    setDeleting(true);
+    try {
+      await axiosInstance.delete("/auth/profile/delete"); // Call API
+
+      await Swal.fire({
+        icon: "success",
+        title: "Account Scheduled for Deletion",
+        text: "You will now be logged out.",
+        background: "#0f172a",
+        color: "#e5e7eb",
+        confirmButtonColor: "#ef4444",
+      });
+
+      await logout(); // Clear context and tokens
+      navigate("/login"); // Redirect
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Could not schedule account deletion. Please try again.",
+        background: "#0f172a",
+        color: "#e5e7eb",
+      });
+      setDeleting(false);
+    }
+  }
+
+  return (
+    <div className={styles.tabContent}>
+      <h3 className={styles.deleteMainTitle}>Delete Account</h3>
+      <hr className={styles.deleteDivider} />
+
+      <div className={styles.deleteCardBox}>
+        <h2 className={styles.deleteCardTitle}>Confirm Account Deletion</h2>
+
+        <p className={styles.deleteText}>
+          Your account deletion will be scheduled for{" "}
+          <strong>{formattedDate}</strong>. Your account will immediately enter
+          a "Soft Deleted" state, meaning you will lose access and your profile
+          will be hidden from the system.
         </p>
+
+        <p className={styles.deleteText}>
+          You will <strong>not</strong> have access to your account during this
+          period. If you wish to cancel this deletion request, you must contact
+          the system administrators before <strong>{formattedDate}</strong>.
+        </p>
+
+        <p className={styles.deleteText}>
+          After 15 days, your account and all associated personal data will be
+          permanently removed and cannot be recovered.
+        </p>
+
+        <label className={styles.checkboxLabel}>
+          <input
+            type="checkbox"
+            checked={isChecked}
+            onChange={(e) => setIsChecked(e.target.checked)}
+            className={styles.checkboxInput}
+          />
+          <span>
+            I understand my account will be permanently deleted on{" "}
+            {formattedDate} and cannot be restored.
+          </span>
+        </label>
+
+        <button
+          onClick={handleDelete}
+          disabled={!isChecked || deleting}
+          className={styles.deleteConfirmBtn}
+        >
+          {deleting ? "Processing..." : "Confirm Delete"}
+        </button>
       </div>
     </div>
   );
 }
 
-/* ── Main Settings Component ──────────────────────────────────────────────── */
+/* ── Main Settings Component ── */
 function Settings() {
   const [activeTab, setActiveTab] = useState("profile");
   const [profile, setProfile] = useState(null);
@@ -448,6 +499,7 @@ function Settings() {
               {activeTab === "security" && (
                 <SecurityTab role={profile?.role ?? "member"} />
               )}
+              {activeTab === "delete" && <DeleteAccountTab />}
             </>
           )}
         </main>

@@ -494,3 +494,99 @@
 .toggleOn .toggleThumb {
   transform: translateX(20px);
 }
+/* ════════════════════════════════════════════════════════════════
+   NEW: Delete Account UI Styles (Matches Reference Image)
+════════════════════════════════════════════════════════════════ */
+
+.deleteMainTitle {
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #60a5fa; /* Blue title matching image */
+  margin: 0 0 0.8rem 0;
+}
+
+.deleteDivider {
+  border: 0;
+  height: 1px;
+  background: #1e293b;
+  margin-bottom: 2rem;
+}
+
+.deleteCardBox {
+  background: #151d2b; /* Slightly lighter than main background */
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.deleteCardTitle {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  text-align: center;
+  margin: 0 0 1.5rem 0;
+}
+
+.deleteText {
+  font-size: 0.95rem;
+  color: #cbd5e1;
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+}
+
+.deleteText strong {
+  color: #f1f5f9;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+  cursor: pointer;
+}
+
+.checkboxInput {
+  margin-top: 0.25rem;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #ef4444; /* Red accent for checkbox */
+}
+
+.checkboxLabel span {
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.deleteConfirmBtn {
+  display: block;
+  width: 100%;
+  max-width: 250px;
+  margin: 0 auto;
+  padding: 0.85rem 1rem;
+  background: #b91c1c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.deleteConfirmBtn:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.deleteConfirmBtn:disabled {
+  background: #7f1d1d;
+  color: #fca5a5;
+  cursor: not-allowed;
+  opacity: 0.7;
+}

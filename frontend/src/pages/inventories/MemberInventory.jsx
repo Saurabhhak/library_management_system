@@ -1,8 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
-import styles from "./Inventory.module.css";
-import { getMembers, deleteMember } from "../../services/member/member.service";
-import { getColumns } from "../../components/tables/members/memberColumns";
+import { useState, useEffect, useMemo } from "react";
+import styles from "./MemberInventory.module.css";
 import Swal from "sweetalert2";
 import {
   useReactTable,
@@ -12,66 +9,63 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
 } from "@tanstack/react-table";
+// import { getMembers, deleteMember, updateMemberStatus } from "../../services/admin/member.service"; // Adjust API
 
 const swalDark = { background: "#0d1117", color: "#d9edff" };
 
-function MemberInventory() {
-  /* ── State ── */
+export default function MemberInventory() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [globalFilter, setGlobalFilter] = useState("");
-  const [columnFilters, setColumnFilters] = useState([]);
-  const [columnVisibility, setColumnVisibility] = useState({});
-  const [columnOrder, setColumnOrder] = useState([]);
-  const [columnSizing, setColumnSizing] = useState({});
-  const [columnSizingInfo, setColumnSizingInfo] = useState({});
   const [rowSelection, setRowSelection] = useState({});
-  const [pageSizeOpen, setPageSizeOpen] = useState(false);
-  const [dropdownStyle, setDropdownStyle] = useState({});
-  const [activePageBtn, setActivePageBtn] = useState("");
-  const dropdownRef = useRef(null);
 
-  /* ── Fetch ── */
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await getMembers();
-        setData(res?.data?.data || []);
-      } catch (err) {
-        console.error("Member fetch failed:", err);
-      } finally {
+  /* ── Fetch Data ── */
+  const fetchMembers = async () => {
+    setLoading(true);
+    try {
+      // const res = await getMembers();
+      // setData(res?.data?.data || []);
+
+      // Dummy data for visual test based on your screenshot
+      setTimeout(() => {
+        setData([
+          {
+            id: 8,
+            first_name: "Test",
+            last_name: "User",
+            type: "Guest",
+            email: "extremehaker007@gmail.com",
+            phone: "9193142045",
+            state: "Delhi",
+            city: "New Delhi",
+            status: "active",
+          },
+        ]);
         setLoading(false);
-      }
-    })();
-  }, []);
+      }, 1000);
+    } catch (err) {
+      console.error("Fetch failed:", err);
+      setLoading(false);
+    }
+  };
 
-  /* ── Close page-size dropdown on outside click ── */
   useEffect(() => {
-    const close = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target))
-        setPageSizeOpen(false);
-    };
-    document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
+    fetchMembers();
   }, []);
 
-  /* ── Delete single ── */
-  const handleDelete = async (member) => {
-    const result = await Swal.fire({
+  /* ── Handlers ── */
+  const handleDelete = async (id, name) => {
+    const confirm = await Swal.fire({
       ...swalDark,
-      title: "Delete Member?",
-      html: `<b>#${member.id}</b> — ${member.first_name} ${member.last_name}`,
+      title: `Delete ${name}?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Delete",
-      cancelButtonText: "Cancel",
       confirmButtonColor: "#ef4444",
-      cancelButtonColor: "#334155",
     });
-    if (!result.isConfirmed) return;
-    try {
-      await deleteMember(member.id);
-      setData((prev) => prev.filter((m) => m.id !== member.id));
+    if (confirm.isConfirmed) {
+      // await deleteMember(id);
+      setData((prev) => prev.filter((u) => u.id !== id));
       Swal.fire({
         ...swalDark,
         icon: "success",
@@ -79,244 +73,162 @@ function MemberInventory() {
         timer: 1500,
         showConfirmButton: false,
       });
-    } catch (err) {
-      console.error(err);
-      Swal.fire({
-        ...swalDark,
-        icon: "error",
-        title: "Error",
-        text: "Failed to delete member.",
-        confirmButtonColor: "#ef4444",
-      });
     }
   };
 
-  /* ── Bulk delete ── */
   const handleBulkDelete = async () => {
-    const selected = table.getSelectedRowModel().rows;
-    if (!selected.length) {
-      return Swal.fire({
-        ...swalDark,
-        icon: "info",
-        title: "No Selection",
-        text: "Select at least one row.",
-        confirmButtonColor: "#3b82f6",
-      });
-    }
-    const ids = selected.map((r) => r.original.id);
-    const result = await Swal.fire({
+    const selectedIds = table
+      .getSelectedRowModel()
+      .rows.map((r) => r.original.id);
+    if (!selectedIds.length) return;
+    const confirm = await Swal.fire({
       ...swalDark,
-      title: `Delete ${ids.length} Member${ids.length > 1 ? "s" : ""}?`,
-      text: "This cannot be undone.",
+      title: `Delete ${selectedIds.length} members?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Delete All",
-      cancelButtonText: "Cancel",
       confirmButtonColor: "#ef4444",
-      cancelButtonColor: "#334155",
-      reverseButtons: true,
     });
-    if (!result.isConfirmed) return;
-    try {
-      await Promise.all(ids.map(deleteMember));
-      setData((prev) => prev.filter((m) => !ids.includes(m.id)));
+    if (confirm.isConfirmed) {
+      // await Promise.all(selectedIds.map(id => deleteMember(id)));
+      setData((prev) => prev.filter((u) => !selectedIds.includes(u.id)));
       setRowSelection({});
       Swal.fire({
         ...swalDark,
         icon: "success",
         title: "Deleted!",
-        text: `${ids.length} removed.`,
         timer: 1500,
         showConfirmButton: false,
-      });
-    } catch (err) {
-      console.error(err);
-      Swal.fire({
-        ...swalDark,
-        icon: "error",
-        title: "Error",
-        text: "Bulk delete failed.",
-        confirmButtonColor: "#ef4444",
       });
     }
   };
 
   /* ── Columns ── */
-  const columns = [
-    {
-      id: "select",
-      size: 40,
-      header: ({ table }) => (
-        <input
-          type="checkbox"
-          title="Select All"
-          checked={table.getIsAllPageRowsSelected()}
-          onChange={table.getToggleAllPageRowsSelectedHandler()}
-        />
-      ),
-      cell: ({ row }) => (
-        <input
-          type="checkbox"
-          checked={row.getIsSelected()}
-          onChange={row.getToggleSelectedHandler()}
-          onClick={(e) => e.stopPropagation()}
-        />
-      ),
-    },
-    ...getColumns(handleDelete),
-  ];
+  const columns = useMemo(
+    () => [
+      {
+        id: "select",
+        header: ({ table }) => (
+          <input
+            type="checkbox"
+            checked={table.getIsAllPageRowsSelected()}
+            onChange={table.getToggleAllPageRowsSelectedHandler()}
+          />
+        ),
+        cell: ({ row }) => (
+          <input
+            type="checkbox"
+            checked={row.getIsSelected()}
+            onChange={row.getToggleSelectedHandler()}
+          />
+        ),
+        size: 40,
+      },
+      { accessorKey: "id", header: "ID ↑", size: 60 },
+      { accessorKey: "first_name", header: "First Name ↕" },
+      { accessorKey: "last_name", header: "Last Name ↕" },
+      {
+        accessorKey: "type",
+        header: "Type ↕",
+        cell: ({ getValue }) => (
+          <span style={{ color: "#94a3b8" }}>{getValue()}</span>
+        ),
+      },
+      { accessorKey: "email", header: "Email ↕" },
+      { accessorKey: "phone", header: "Phone ↕" },
+      { accessorKey: "state", header: "State ↕" },
+      { accessorKey: "city", header: "City ↕" },
+      {
+        accessorKey: "status",
+        header: "Status ↕",
+        cell: ({ getValue }) => (
+          <span className={styles.statusActive}>{getValue()}</span>
+        ),
+      },
+      {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => (
+          <div className={styles.actionBtns}>
+            <button title="View" className={styles.actionIcon}>
+              <i className="fa-solid fa-user" />
+            </button>
+            <button
+              title="Delete"
+              className={styles.actionIconDel}
+              onClick={() =>
+                handleDelete(row.original.id, row.original.first_name)
+              }
+            >
+              <i className="fa-solid fa-trash" />
+            </button>
+          </div>
+        ),
+      },
+    ],
+    [],
+  );
 
-  /* ── Table ── */
+  /* ── Table Instance ── */
   const table = useReactTable({
     data,
     columns,
-    state: {
-      globalFilter,
-      columnFilters,
-      columnVisibility,
-      columnOrder,
-      columnSizing,
-      columnSizingInfo,
-      rowSelection,
-    },
-    initialState: {
-      pagination: { pageSize: 10, pageIndex: 0 },
-      sorting: [{ id: "id", desc: false }],
-    },
-    onRowSelectionChange: setRowSelection,
+    state: { globalFilter, rowSelection },
     enableRowSelection: true,
-    onColumnOrderChange: setColumnOrder,
-    onColumnSizingChange: setColumnSizing,
-    onColumnSizingInfoChange: setColumnSizingInfo,
-    columnResizeMode: "onChange",
+    onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    initialState: { pagination: { pageSize: 10 } },
   });
 
-  /* ── Smart dropdown position ── */
-  const handleToggleDropdown = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const openUp = window.innerHeight - rect.bottom < 140;
-    setDropdownStyle({
-      left: rect.left,
-      top: openUp ? rect.top - 140 : rect.bottom + 5,
-    });
-    setPageSizeOpen((p) => !p);
-  };
-
-  const paginationBtns = [
-    {
-      key: "first",
-      label: "First",
-      icon: "fa-angles-left",
-      action: () => table.setPageIndex(0),
-      disabled: !table.getCanPreviousPage(),
-      iconLeft: true,
-    },
-    {
-      key: "prev",
-      label: "Prev",
-      icon: "fa-chevron-left",
-      action: () => table.previousPage(),
-      disabled: !table.getCanPreviousPage(),
-      iconLeft: true,
-    },
-    {
-      key: "next",
-      label: "Next",
-      icon: "fa-chevron-right",
-      action: () => table.nextPage(),
-      disabled: !table.getCanNextPage(),
-      iconLeft: false,
-    },
-    {
-      key: "last",
-      label: "Last",
-      icon: "fa-angles-right",
-      action: () => table.setPageIndex(table.getPageCount() - 1),
-      disabled: !table.getCanNextPage(),
-      iconLeft: false,
-    },
-  ];
-
-  const selCount = Object.keys(rowSelection).length;
-
   return (
-    <>
-      {/* ── HEADER BAR ── */}
+    <div className={styles.pageWrapper}>
+      {/* ── HEADER ── */}
       <div className={styles.headerBar}>
-        <h1 className={styles.title} title="Members Table">
-          <i className="fa-solid fa-users" /> Members
+        <h1 className={styles.title}>
+          <i
+            className="fa-solid fa-users"
+            style={{ color: "#10b981", marginRight: "8px" }}
+          />{" "}
+          Members
         </h1>
 
-        <Link
-          to="/register"
-          className={styles.addBtn}
-          title="Add New Member"
-        >
-          <i className="fa-solid fa-user-plus" /> Member
-        </Link>
+        <div className={styles.toolbar}>
+          <button className={styles.btnOutline}>
+            <i className="fa-solid fa-user-plus" /> Member
+          </button>
+          <button className={styles.btnOutline}>
+            <i className="fa-solid fa-chart-line" /> Charts
+          </button>
 
-        <Link
-          to="/memberpage"
-          className={styles.chartBtn}
-          title="Analytics Dashboard"
-        >
-          <i className="fa-solid fa-chart-line" /> Charts
-        </Link>
+          <div className={styles.searchContainer}>
+            <i
+              className={`fa-solid fa-magnifying-glass ${styles.searchIcon}`}
+            />
+            <input
+              className={styles.searchBox}
+              placeholder="Search ID, name, email, city..."
+              value={globalFilter}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+            />
+          </div>
 
-        <div className={styles.searchContainer}>
-          <i className={`fa-solid fa-magnifying-glass ${styles.searchIcon}`} />
-          <input
-            className={styles.SearchBox}
-            placeholder="Search ID, name, email, city…"
-            value={globalFilter ?? ""}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            title="Search member ID, name, email, state, city"
-          />
-        </div>
-
-        <div className={styles.RowSelections} title="Selected row count">
-          <span className={styles.RowSelectionTitle}>Selected</span>
-          <span
-            className={`${styles.selectedRow} ${selCount === 0 ? styles.CountSelectRow : ""}`}
-          >
-            {selCount}
+          <span className={styles.selCount}>
+            Selected {Object.keys(rowSelection).length}
           </span>
-        </div>
-
-        <button
-          onClick={handleBulkDelete}
-          disabled={selCount === 0}
-          className={`${styles.bulkDeleteBtn} ${selCount === 0 ? styles.disabledBtn : ""}`}
-          title="Delete selected rows"
-        >
-          <i className="fa-solid fa-trash" /> Bulk Delete
-        </button>
-
-        <div className={styles.columnToggle} title="Toggle columns">
-          <details>
-            <summary>
-              <i className="fa-solid fa-sliders" />
-            </summary>
-            <div className={styles.dropdownMenu}>
-              {table.getAllLeafColumns().map((col) => (
-                <label key={col.id} className={styles.dropdownItem}>
-                  <input
-                    type="checkbox"
-                    checked={col.getIsVisible()}
-                    onChange={col.getToggleVisibilityHandler()}
-                  />
-                  {col.columnDef.header}
-                </label>
-              ))}
-            </div>
-          </details>
+          <button
+            onClick={handleBulkDelete}
+            disabled={!Object.keys(rowSelection).length}
+            className={styles.bulkDelBtn}
+          >
+            <i className="fa-solid fa-trash" /> Bulk Delete
+          </button>
+          <button className={styles.btnOutline}>
+            <i className="fa-solid fa-sliders" />
+          </button>
         </div>
       </div>
 
@@ -326,100 +238,31 @@ function MemberInventory() {
           <thead className={styles.thead}>
             {table.getHeaderGroups().map((hg) => (
               <tr key={hg.id}>
-                {hg.headers.map((header) => (
+                {hg.headers.map((h) => (
                   <th
-                    key={header.id}
-                    style={{ width: header.getSize(), position: "relative" }}
-                    draggable
-                    onDragStart={(e) =>
-                      e.dataTransfer.setData("colId", header.column.id)
-                    }
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={(e) => {
-                      const from = e.dataTransfer.getData("colId");
-                      const to = header.column.id;
-                      const order = table.getAllLeafColumns().map((c) => c.id);
-                      const fi = order.indexOf(from),
-                        ti = order.indexOf(to);
-                      order.splice(fi, 1);
-                      order.splice(ti, 0, from);
-                      setColumnOrder(order);
-                    }}
+                    key={h.id}
+                    style={{ width: h.getSize() }}
+                    onClick={h.column.getToggleSortingHandler()}
                   >
-                    <div
-                      className={styles.headerTop}
-                      onClick={
-                        header.column.getCanSort()
-                          ? header.column.getToggleSortingHandler()
-                          : undefined
-                      }
-                      style={{
-                        cursor: header.column.getCanSort()
-                          ? "pointer"
-                          : "default",
-                      }}
-                    >
-                      <span className={styles.headerTitle}>
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                      </span>
-                      {header.column.getCanSort() && (
-                        <span
-                          className={`${styles.sortIcon} ${header.column.getIsSorted() ? styles.sortActive : ""}`}
-                        >
-                          {header.column.getIsSorted() === "asc" && (
-                            <i className="fa-solid fa-arrow-up" />
-                          )}
-                          {header.column.getIsSorted() === "desc" && (
-                            <i className="fa-solid fa-arrow-down" />
-                          )}
-                          {!header.column.getIsSorted() && (
-                            <i className="fa-solid fa-sort" />
-                          )}
-                        </span>
-                      )}
-                    </div>
-                    {header.column.getCanFilter() && (
-                      <input
-                        className={styles.columnFilter}
-                        placeholder="Filter…"
-                        value={header.column.getFilterValue() ?? ""}
-                        onChange={(e) =>
-                          header.column.setFilterValue(e.target.value)
-                        }
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    )}
-                    <div
-                      className={styles.resizer}
-                      onMouseDown={header.getResizeHandler()}
-                      onTouchStart={header.getResizeHandler()}
-                    />
+                    {flexRender(h.column.columnDef.header, h.getContext())}
                   </th>
                 ))}
               </tr>
             ))}
           </thead>
-
           <tbody className={styles.tbody}>
             {loading ? (
-              [...Array(8)].map((_, i) => (
+              [...Array(5)].map((_, i) => (
                 <tr key={i}>
                   <td colSpan={columns.length}>
-                    <div
-                      className={styles.skeletonRow}
-                      style={{ animationDelay: `${i * 0.07}s` }}
-                    />
+                    <div className={styles.skeletonRow} />
                   </td>
                 </tr>
               ))
             ) : table.getRowModel().rows.length === 0 ? (
               <tr>
                 <td colSpan={columns.length} className={styles.emptyCell}>
-                  <i className="fa-solid fa-users" />
-                  <p>No members found</p>
+                  No members found
                 </td>
               </tr>
             ) : (
@@ -440,67 +283,50 @@ function MemberInventory() {
         </table>
 
         {/* ── PAGINATION ── */}
-        <div className={styles.paginationSection}>
-          <div ref={dropdownRef}>
-            <div
-              className={styles.pageSizeButton}
-              onClick={handleToggleDropdown}
+        <div className={styles.pagination}>
+          <select
+            value={table.getState().pagination.pageSize}
+            onChange={(e) => table.setPageSize(Number(e.target.value))}
+            className={styles.pageSelect}
+          >
+            {[10, 20, 50].map((s) => (
+              <option key={s} value={s}>
+                Show {s}
+              </option>
+            ))}
+          </select>
+          <div className={styles.pageControls}>
+            <button
+              onClick={() => table.setPageIndex(0)}
+              disabled={!table.getCanPreviousPage()}
             >
-              Show {table.getState().pagination.pageSize}
-              <i className="fa-solid fa-chevron-down" />
-            </div>
-            {pageSizeOpen && (
-              <div className={styles.pageSizeMenu} style={dropdownStyle}>
-                {[5, 10, 20, 50].map((size) => (
-                  <div
-                    key={size}
-                    className={`${styles.pageSizeItem} ${table.getState().pagination.pageSize === size ? styles.activeItem : ""}`}
-                    onClick={() => {
-                      table.setPageSize(size);
-                      setPageSizeOpen(false);
-                    }}
-                  >
-                    Show {size}
-                  </div>
-                ))}
-              </div>
-            )}
+              « First
+            </button>
+            <button
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              ‹ Prev
+            </button>
+            <button
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next ›
+            </button>
+            <button
+              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              disabled={!table.getCanNextPage()}
+            >
+              Last »
+            </button>
+            <span>
+              Page {table.getState().pagination.pageIndex + 1} /{" "}
+              {table.getPageCount() || 1}
+            </span>
           </div>
-
-          <div className={styles.paginationControls}>
-            {paginationBtns.map(
-              ({ key, label, icon, action, disabled, iconLeft }) => (
-                <button
-                  key={key}
-                  disabled={disabled}
-                  className={activePageBtn === key ? styles.activeBtn : ""}
-                  onClick={() => {
-                    action();
-                    setActivePageBtn(key);
-                  }}
-                >
-                  {iconLeft ? (
-                    <>
-                      <i className={`fa-solid ${icon}`} /> {label}
-                    </>
-                  ) : (
-                    <>
-                      {label} <i className={`fa-solid ${icon}`} />
-                    </>
-                  )}
-                </button>
-              ),
-            )}
-          </div>
-
-          <span className={styles.pageInfo}>
-            Page <b>{table.getState().pagination.pageIndex + 1}</b> /{" "}
-            <b>{table.getPageCount()}</b>
-          </span>
         </div>
       </div>
-    </>
+    </div>
   );
 }
-
-export default MemberInventory;

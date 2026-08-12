@@ -1,311 +1,192 @@
-:root {
-  --bg-page: #07090f;
-  --bg-card: #0f1117;
-  --bg-input: #07090f;
-  --bg-input-hover: #0d1120;
-  --border: rgba(77, 81, 96, 0.5);
-  --border-focus: #2563eb;
-  --border-error: #ef4444;
-  --border-success: #10b981;
-  --text: #dde6f8;
-  --text-sub: #6b7a9e;
-  --text-muted: #8f94a4;
-  --text-label: #8fa0c2;
-  --blue: #2563eb;
-  --blue-hover: #1d4fd8;
-  --green: #10b981;
-  --green-bg: rgba(16, 185, 129, 0.08);
-  --green-border: rgba(16, 185, 129, 0.32);
-  --red: #ef4444;
-  --red-glow: rgba(239, 68, 68, 0.12);
-  --accent-glow: rgba(37, 99, 235, 0.15);
-  --radius: 8px;
-  --ease: 170ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.page {
+.container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
-  background: var(--bg-page);
-  background-image:
-    linear-gradient(rgba(37, 99, 235, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(37, 99, 235, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background: #0b0e18;
+  padding: 2rem;
+  box-sizing: border-box;
 }
-
 .card {
+  display: flex;
   width: 100%;
-  max-width: 440px;
-  padding: 2.5rem 2.25rem;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.02) inset,
-    0 24px 60px rgba(0, 0, 0, 0.55);
+  max-width: 900px;
+  background: #161b22;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
-.brand {
+/* Left Side */
+.brandSide {
+  flex: 1;
+  background: linear-gradient(135deg, #0f172a, #0b253a);
+  padding: 3rem;
   display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 1.5rem;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
-.brandIcon {
-  width: 36px;
-  height: 36px;
+.brandTitle {
+  font-size: 1.8rem;
+  color: #fff;
+  margin: 0 0 0.5rem;
+}
+.brandSubtitle {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.brandGraphic {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  background: rgba(37, 99, 235, 0.15);
-  color: #60a5fa;
-  font-size: 1rem;
+  margin-top: 2rem;
 }
-.brandName {
-  font-size: 1.1rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: var(--text);
+.graphicBox {
+  width: 100%;
+  height: 200px;
+  background: rgba(16, 185, 129, 0.05);
+  border: 1px dashed rgba(16, 185, 129, 0.2);
+  border-radius: 12px;
 }
 
-.heading {
-  font-size: 1.4rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text);
-  margin: 0 0 0.3rem;
+/* Right Side */
+.formSide {
+  flex: 1;
+  padding: 3rem;
+  background: #161b22;
 }
-.sub {
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  margin: 0 0 1.75rem;
+.formHeader h2 {
+  font-size: 1.6rem;
+  color: #fff;
+  margin: 0 0 0.4rem;
+}
+.formHeader p {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0 0 2rem;
 }
 
 .form {
   display: flex;
   flex-direction: column;
+  gap: 1.25rem;
+}
+.row {
+  display: flex;
   gap: 1rem;
 }
-.row2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-.label {
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: var(--text-label);
-  user-select: none;
-}
-
-.input {
-  width: 100%;
-  height: 42px;
-  padding: 0 0.85rem;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  background: var(--bg-input);
-  color: var(--text);
-  font-size: 0.9rem;
-  font-family: inherit;
-  outline: none;
-  transition:
-    border-color var(--ease),
-    background var(--ease),
-    box-shadow var(--ease);
-}
-.input::placeholder {
-  color: var(--text-muted);
-}
-.input:hover:not(:disabled):not(.inputErr) {
-  border-color: #2a3045;
-  background: var(--bg-input-hover);
-}
-.input:focus:not(.inputErr) {
-  border-color: var(--border-focus);
-  background: var(--bg-input-hover);
-  box-shadow: 0 0 0 3px var(--accent-glow);
-}
-.input:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.inputErr {
-  border-color: var(--border-error) !important;
-  box-shadow: 0 0 0 3px var(--red-glow) !important;
-}
-.errMsg {
-  font-size: 0.72rem;
-  color: var(--red);
-}
-
-.pwWrap {
-  position: relative;
-}
-.pwInput {
-  padding-right: 2.6rem;
-}
-.eyeBtn {
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  transition: color var(--ease);
-}
-.eyeBtn:hover {
-  color: var(--text-sub);
-}
-
-.otpRow {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-.otpRow .input {
+.row .inputGroup {
   flex: 1;
-  min-width: 0;
 }
-.otpBox {
-  margin-top: 0.5rem;
+
+.inputGroup {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
 }
-.otpInputRow {
+.inputGroup label {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+.inputWrapper {
+  position: relative;
   display: flex;
-  gap: 0.5rem;
   align-items: center;
 }
-.timer {
-  font-size: 0.72rem;
-  color: var(--text-muted);
+.inputWrapper i {
+  position: absolute;
+  left: 1rem;
+  color: #475569;
+  font-size: 0.85rem;
 }
-.resendBtn {
+.inputWrapper input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  background: #0d1117;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  transition: border 0.2s;
+  box-sizing: border-box;
+}
+.inputWrapper input:focus {
+  outline: none;
+  border-color: #10b981;
+}
+
+.eyeBtn {
+  position: absolute;
+  right: 1rem;
   background: none;
   border: none;
-  padding: 0;
-  font-family: inherit;
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: var(--blue);
+  color: #64748b;
   cursor: pointer;
-  transition: color var(--ease);
-  text-align: left;
-}
-.resendBtn:hover {
-  color: #60a5fa;
-  text-decoration: underline;
-}
-
-.verifiedBadge {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 5px;
-  flex-shrink: 0;
-  height: 42px;
-  padding: 0 0.85rem;
-  border-radius: var(--radius);
-  border: 1px solid var(--green-border);
-  background: var(--green-bg);
-  color: var(--green);
-  font-size: 0.78rem;
-  font-weight: 500;
-  white-space: nowrap;
+  padding: 0;
+}
+.eyeBtn:hover {
+  color: #e2e8f0;
 }
 
-.btnInline {
-  height: 42px;
-  padding: 0 0.95rem;
-  flex-shrink: 0;
+.submitBtn {
+  margin-top: 1rem;
+  padding: 0.8rem;
+  background: #10b981;
+  color: #000;
   border: none;
-  border-radius: var(--radius);
-  background: var(--blue);
-  color: #fff;
-  font-family: inherit;
-  font-size: 0.82rem;
+  border-radius: 8px;
   font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition:
-    background var(--ease),
-    opacity var(--ease);
-}
-.btnInline:hover:not(:disabled) {
-  background: var(--blue-hover);
-}
-.btnInline:disabled {
-  opacity: 0.42;
-  cursor: not-allowed;
-}
-
-.btnSubmit {
-  width: 100%;
-  height: 44px;
-  margin-top: 0.25rem;
-  border: none;
-  border-radius: var(--radius);
-  background: var(--blue);
-  color: #fff;
-  font-family: inherit;
   font-size: 0.95rem;
-  font-weight: 600;
   cursor: pointer;
-  transition:
-    background var(--ease),
-    transform var(--ease);
+  transition: background 0.2s;
 }
-.btnSubmit:hover:not(:disabled) {
-  background: var(--green);
-  transform: translateY(-1px);
+.submitBtn:hover:not(:disabled) {
+  background: #0ea5e9;
+  color: #fff;
 }
-.btnSubmit:disabled {
-  opacity: 0.44;
+.submitBtn:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-.footer {
-  margin-top: 1.5rem;
+.loginText {
   text-align: center;
-  font-size: 0.82rem;
-  color: var(--text-muted);
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
+  color: #64748b;
 }
-.registerLink {
-  color: var(--blue);
-  font-weight: 500;
+.loginText a {
+  color: #10b981;
   text-decoration: none;
-  transition: color var(--ease);
+  font-weight: 600;
 }
-.registerLink:hover {
-  color: #60a5fa;
+.loginText a:hover {
   text-decoration: underline;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .card {
-    padding: 2rem 1.5rem;
+    flex-direction: column;
   }
-  .heading {
-    font-size: 1.25rem;
+  .brandSide {
+    padding: 2rem;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
-  .row2 {
-    grid-template-columns: 1fr;
+  .formSide {
+    padding: 2rem;
+  }
+  .row {
+    flex-direction: column;
+  }
+  .graphicBox {
+    display: none;
   }
 }

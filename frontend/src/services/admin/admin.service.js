@@ -11,6 +11,16 @@ export const getAdminById = (id) => API.get(`/admin/${id}`);
 export const updateAdmin = (id, data) => API.put(`/admin/${id}`, data);
 export const deleteAdmin = (id) => API.delete(`/admin/${id}`);
 
+// Fetch deleted admins
+export const getDeletedAdmins = async () => {
+  return await API.get("/admin/deleted");
+};
+
+// Restore admin by ID
+export const restoreAdmin = async (id) => {
+  return await API.patch(`/admin/restore/${id}`);
+};
+
 // ─── Meta ─────────────────────────────────────────────────
 export const getStates = () => API.get("/meta/states");
 export const getCitiesByState = (stateId) => API.get(`/meta/cities/${stateId}`);

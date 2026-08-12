@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, CheckCircle, Mail } from "lucide-react";
 import styles from "./AdminForm.module.css";
 
-/* max DOB = today − 18 years (enforced natively + validated on submit) */
+/* ── Max DOB = Today - 18 years ── */
 const getMaxDob = () => {
   const d = new Date();
   d.setFullYear(d.getFullYear() - 18);
   return d.toISOString().split("T")[0];
 };
 
-function AdminForm({
+export default function AdminForm({
   title,
   userinfo,
   handleChange,
@@ -20,8 +20,9 @@ function AdminForm({
   cities = [],
   errors = {},
   isEdit = false,
-  loading = false,
-  /* OTP (create only) */
+  isSubmitting = false,
+  isSendingOtp = false,
+  isVerifyingOtp = false,
   handleSendOtp,
   handleVerifyOtp,
   otp,
@@ -36,7 +37,7 @@ function AdminForm({
   const navigate = useNavigate();
   const maxDob = useMemo(getMaxDob, []);
 
-  /* Spread common attributes onto every controlled input / select */
+  /* ── Helper for input binding ── */
   const bind = (name, extra = {}) => ({
     name,
     value: userinfo[name] ?? "",
@@ -45,17 +46,15 @@ function AdminForm({
     ...extra,
   });
 
-  /* Inline error line */
   const Err = ({ name }) =>
     errors[name] ? <p className={styles.errMsg}>{errors[name]}</p> : null;
 
   return (
     <div className={styles.page}>
       <form onSubmit={handleSubmit} className={styles.form} noValidate>
-        {/* ── Title ─────────────────────────────────── */}
         <h1 className={styles.title}>{title}</h1>
 
-        {/* _______ PERSONAL INFO _______ */}
+        {/* ── PERSONAL INFO ── */}
         <p className={styles.divider}>Personal Info</p>
 
         <div className={styles.field}>
@@ -82,7 +81,6 @@ function AdminForm({
           <Err name="phone" />
         </div>
 
-        {/* DOB — browser picker limited to ≥ 18 yrs ago */}
         <div className={styles.field}>
           <label className={styles.label}>
             Date of Birth <sup>*</sup>
@@ -91,39 +89,32 @@ function AdminForm({
           <Err name="dob" />
         </div>
 
-        {/* _______ EMAIL + OTP (create only) _______ */}
+        {/* ── EMAIL + OTP (Create Only) ── */}
         {!isEdit && (
           <div className={`${styles.field} ${styles.span2}`}>
             <label className={styles.label}>
               Email Address <sup>*</sup>
             </label>
-
             <div className={styles.otpRow}>
               <input
-                name="email"
-                value={userinfo.email}
-                onChange={handleChange}
-                disabled={otpVerified}
+                {...bind("email", { disabled: otpVerified })}
                 inputMode="email"
                 autoComplete="email"
-                className={`${styles.input} ${errors.email ? styles.inputErr : ""}`}
               />
               {otpVerified ? (
                 <div className={styles.verifiedBadge}>
-                  <CheckCircle size={14} strokeWidth={2.5} />
-                  Verified
+                  <CheckCircle size={14} strokeWidth={2.5} /> Verified
                 </div>
               ) : (
                 <button
                   type="button"
                   onClick={handleSendOtp}
-                  disabled={loading || (otpSent && resendDisabled)}
+                  disabled={isSendingOtp || (otpSent && resendDisabled)}
                   className={styles.btnInline}
                 >
-                  {loading ? (
+                  {isSendingOtp ? (
                     <span className={styles.spinner}>
-                      <i className="fa-solid fa-spinner fa-spin" />
-                      Sending…
+                      <i className="fa-solid fa-spinner fa-spin" /> Sending…
                     </span>
                   ) : otpSent ? (
                     "Resend OTP"
@@ -135,7 +126,7 @@ function AdminForm({
             </div>
             <Err name="email" />
 
-            {/* OTP verify row */}
+            {/* OTP Verification Input */}
             {otpSent && !otpVerified && (
               <div className={styles.otpBox}>
                 <div className={styles.otpInputRow}>
@@ -151,11 +142,16 @@ function AdminForm({
                   <button
                     type="button"
                     onClick={handleVerifyOtp}
-                    disabled={otp.length < 6}
+                    disabled={otp.length < 6 || isVerifyingOtp}
                     className={styles.btnInline}
                   >
-                    <Mail size={13} />
-                    Verify
+                    {isVerifyingOtp ? (
+                      "Verifying..."
+                    ) : (
+                      <>
+                        <Mail size={13} /> Verify
+                      </>
+                    )}
                   </button>
                 </div>
 
@@ -165,6 +161,7 @@ function AdminForm({
                   <button
                     type="button"
                     onClick={handleSendOtp}
+                    disabled={isSendingOtp}
                     className={styles.resendBtn}
                   >
                     Resend OTP
@@ -175,7 +172,7 @@ function AdminForm({
           </div>
         )}
 
-        {/* _______ ACCOUNT SETTINGS _______ */}
+        {/* ── ACCOUNT SETTINGS ── */}
         <p className={styles.divider}>Account Settings</p>
 
         <div className={styles.field}>
@@ -184,6 +181,7 @@ function AdminForm({
           </label>
           <select {...bind("role")}>
             <option value="">Select role</option>
+            <option value="superadmin">Super Admin</option>
             <option value="admin">Admin</option>
             <option value="librarian">Librarian</option>
             <option value="staff">Staff</option>
@@ -203,7 +201,7 @@ function AdminForm({
           <Err name="is_active" />
         </div>
 
-        {/* _______ LOCATION _______ */}
+        {/* ── LOCATION ── */}
         <p className={styles.divider}>Location</p>
 
         <div className={styles.field}>
@@ -236,12 +234,10 @@ function AdminForm({
           <Err name="city_id" />
         </div>
 
-        {/* _______ SECURITY — create only _______ */}
+        {/* ── SECURITY (Create Only) ── */}
         {!isEdit && (
           <>
             <p className={styles.divider}>Security</p>
-
-            {/* Password */}
             <div className={styles.pwField}>
               <label className={styles.label}>
                 Password <sup>*</sup>
@@ -256,15 +252,13 @@ function AdminForm({
               <button
                 type="button"
                 className={styles.eyeBtn}
-                onClick={() => setShowPw((v) => !v)}
-                aria-label={showPw ? "Hide password" : "Show password"}
+                onClick={() => setShowPw(!showPw)}
               >
                 {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
               <Err name="password" />
             </div>
 
-            {/* Confirm Password */}
             <div className={styles.pwField}>
               <label className={styles.label}>
                 Confirm Password <sup>*</sup>
@@ -279,8 +273,7 @@ function AdminForm({
               <button
                 type="button"
                 className={styles.eyeBtn}
-                onClick={() => setShowConfirm((v) => !v)}
-                aria-label={showConfirm ? "Hide password" : "Show password"}
+                onClick={() => setShowConfirm(!showConfirm)}
               >
                 {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -289,43 +282,31 @@ function AdminForm({
           </>
         )}
 
-        {/* _______ ACTIONS _______ */}
+        {/* ── ACTIONS ── */}
         <div className={styles.actions}>
-          {isEdit ? (
-            <button
-              type="button"
-              onClick={() => navigate("/admininventory")}
-              className={styles.btnGhost}
-            >
-              Cancel
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleReset}
-              className={styles.btnGhost}
-            >
-              Reset
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={isEdit ? () => navigate("/admininventory") : handleReset}
+            className={styles.btnGhost}
+          >
+            {isEdit ? "Cancel" : "Reset"}
+          </button>
 
           <button
             type="submit"
             className={styles.btnPrimary}
-            disabled={loading}
+            disabled={isSubmitting}
           >
-            {loading
+            {isSubmitting
               ? isEdit
-                ? "Updating…"
-                : "Creating…"
+                ? "Updating..."
+                : "Creating..."
               : isEdit
-                ? "Update Admin"
-                : "Create Admin"}
+                ? "Update Account"
+                : "Create Account"}
           </button>
         </div>
       </form>
     </div>
   );
 }
-
-export default AdminForm;

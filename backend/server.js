@@ -9,7 +9,8 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
-
+const cron = require("node-cron");
+const pool = require("./config/db");
 const app = express();
 
 const PORT = process.env.PORT || 5000;
@@ -87,7 +88,25 @@ const server = app.listen(PORT, () => {
   console.log(`Mode: ${ENV}`);
   console.log(`Frontend: ${FRONTEND_URL}`);
 });
+// ── AUTOMATIC PERMANENT DELETE (Every midnight) ──
+cron.schedule("0 0 * * *", async () => {
+  try {
+    // Permanently delete admins & members soft-deleted 15+ days ago
+    // (Aapke existing code me soft delete ke waqt updated_at=NOW() set hota hai, hum usi ka use karenge)
+    const adminRes = await pool.query(
+      `DELETE FROM admin WHERE is_deleted = true AND updated_at <= NOW() - INTERVAL '15 days'`,
+    );
+    const memberRes = await pool.query(
+      `DELETE FROM members WHERE is_deleted = true AND updated_at <= NOW() - INTERVAL '15 days'`,
+    );
 
+    console.log(
+      `[Cron Job] Purged ${adminRes.rowCount} admins and ${memberRes.rowCount} members permanently.`,
+    );
+  } catch (error) {
+    console.error("[Cron Job Error]:", error.message);
+  }
+});
 process.on("SIGTERM", () => {
   console.log("SIGTERM received, shutting down gracefully");
   server.close(() => process.exit(0));

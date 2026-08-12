@@ -1,0 +1,251 @@
+.pageWrapper {
+  width: 100%;
+  max-width: 1400px;
+  margin: 2rem auto;
+  box-sizing: border-box;
+  margin-bottom: 30rem;
+}
+
+/* ── HEADER & TOOLBAR ── */
+.headerBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: #161b22;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px 14px 0 0;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 4rem;
+}
+.title {
+  font-size: 1.3rem;
+  color: #fff;
+  margin: 0;
+  font-weight: 700;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.btnOutline {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: 0.2s;
+}
+.btnOutline:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.searchContainer {
+  position: relative;
+  width: 280px;
+}
+.searchIcon {
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  font-size: 0.85rem;
+}
+.searchBox {
+  width: 100%;
+  padding: 0.5rem 1rem 0.5rem 2.2rem;
+  background: #0d1117;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #e2e8f0;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+}
+.searchBox:focus {
+  outline: none;
+  border-color: #10b981;
+}
+
+.selCount {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+.bulkDelBtn {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  gap: 0.4rem;
+  transition: 0.2s;
+}
+.bulkDelBtn:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.2);
+}
+.bulkDelBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── TABLE ── */
+.tableWrapper {
+  background: #0d1117;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 0 0 14px 14px;
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.thead th {
+  background: #161b22;
+  color: #64748b;
+  padding: 0.9rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  transition: background 0.15s;
+}
+.tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+.tbody td {
+  padding: 0.9rem 1rem;
+  color: #cbd5e1;
+}
+
+.statusActive {
+  color: #10b981;
+}
+
+/* ── ACTIONS ── */
+.actionBtns {
+  display: flex;
+  gap: 0.5rem;
+}
+.actionIcon {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.2s;
+}
+.actionIcon:hover {
+  color: #fff;
+}
+.actionIconDel {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.2s;
+}
+.actionIconDel:hover {
+  color: #dc2626;
+}
+
+/* ── SHIMMER & EMPTY ── */
+.skeletonRow {
+  height: 20px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #161b22 25%, #1c2333 50%, #161b22 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+.emptyCell {
+  text-align: center;
+  padding: 3rem !important;
+  color: #64748b;
+}
+
+/* ── PAGINATION ── */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: #161b22;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 0 0 14px 14px;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.pageSelect {
+  background: #0d1117;
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  outline: none;
+}
+.pageControls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.pageControls button {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.5rem;
+  transition: 0.2s;
+}
+.pageControls button:hover:not(:disabled) {
+  color: #fff;
+}
+.pageControls button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.pageControls span {
+  color: #64748b;
+  font-size: 0.85rem;
+  margin-left: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .headerBar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .toolbar {
+    width: 100%;
+  }
+  .searchContainer {
+    width: 100%;
+  }
+}
