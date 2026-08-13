@@ -300,24 +300,73 @@ exports.profile = async (req, res) => {
 
 /* ════════════════════════════════════════════════════════════════
    POST /api/auth/check-email
-   Public endpoint to verify if an email is already registered.
+   Universal check across BOTH Admin and Members tables.
 ════════════════════════════════════════════════════════════════ */
 exports.checkEmail = async (req, res) => {
-  const { email, role } = req.body;
+  const { email } = req.body;
 
-  if (!email || !["admin", "member"].includes(role))
+  if (!email) {
     return res
       .status(400)
-      .json({ success: false, message: "Email and valid role are required" });
+      .json({ success: false, message: "Email is required" });
+  }
 
   try {
-    const table = role === "admin" ? "admin" : "members";
-    const { rows } = await pool.query(
-      `SELECT id FROM ${table} WHERE LOWER(email) = $1 AND is_deleted = false`,
-      [email.toLowerCase()],
+    const lEmail = email.toLowerCase();
+
+    // 1. Check Admin Table
+    const { rows: adminRows } = await pool.query(
+      `SELECT id, is_deleted, updated_at FROM admin WHERE LOWER(email) = $1`,
+      [lEmail],
     );
 
-    return res.json({ success: true, exists: rows.length > 0 });
+    if (adminRows.length > 0) {
+      if (adminRows[0].is_deleted) {
+        return res.status(403).json({
+          success: false,
+          message:
+            "This email is currently in the Admin Recycle Bin. Please contact SuperAdmin to restore it.",
+        });
+      }
+      return res.json({
+        success: true,
+        exists: true,
+        message: "Email already registered as Admin.",
+      });
+    }
+
+    // 2. Check Members Table
+    const { rows: memberRows } = await pool.query(
+      `SELECT id, is_deleted, updated_at FROM members WHERE LOWER(email) = $1`,
+      [lEmail],
+    );
+
+    if (memberRows.length > 0) {
+      if (memberRows[0].is_deleted) {
+        const deletedAt = new Date(memberRows[0].updated_at);
+        const permDeleteDate = new Date(
+          deletedAt.getTime() + 15 * 24 * 60 * 60 * 1000,
+        );
+        const formattedDate = permDeleteDate.toLocaleDateString("en-IN", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        });
+
+        return res.status(403).json({
+          success: false,
+          message: `Account is in a 15-day recovery period until ${formattedDate}. Please contact Support to restore.`,
+        });
+      }
+      return res.json({
+        success: true,
+        exists: true,
+        message: "Email already registered as Member.",
+      });
+    }
+
+    // 3. Email is completely fresh
+    return res.json({ success: true, exists: false });
   } catch (err) {
     console.error("[auth:checkEmail]", err.message);
     return res.status(500).json({ success: false, message: "Server error" });

@@ -8,6 +8,9 @@ const toBoolean = (val) => val === "active" || val === true;
 // Allow superadmin creation/updating for future scaling
 const ALLOWED_ROLES = ["superadmin", "admin", "librarian", "staff"];
 
+/* ════════════════════════════════════════════════════════════════
+   Create Admin (SuperAdmin Only)
+════════════════════════════════════════════════════════════════ */
 const createAdmin = async (req, res) => {
   const {
     first_name,
@@ -52,6 +55,44 @@ const createAdmin = async (req, res) => {
   }
 
   try {
+    const lEmail = email.toLowerCase();
+
+    // 1. Cross-Table Check: Verify it doesn't belong to an active Member
+    const { rows: memberRows } = await pool.query(
+      "SELECT id FROM members WHERE LOWER(email) = $1 AND is_deleted = false",
+      [lEmail],
+    );
+    if (memberRows.length > 0) {
+      return res
+        .status(409)
+        .json({
+          success: false,
+          message: "This email is already registered as a Library Member.",
+        });
+    }
+
+    // 2. Check Admin Table for Existing or Ghost records
+    const { rows: existing } = await pool.query(
+      "SELECT id, is_deleted FROM admin WHERE LOWER(email) = $1",
+      [lEmail],
+    );
+
+    if (existing.length > 0) {
+      if (existing[0].is_deleted === false) {
+        return res
+          .status(409)
+          .json({ success: false, message: "Email already exists." });
+      } else {
+        // Smart popup for SuperAdmin
+        return res.status(409).json({
+          success: false,
+          message:
+            "This user is currently in the Recycle Bin. Please go to 'Restore Delete Accounts' to restore them.",
+        });
+      }
+    }
+
+    // 3. Insert New Admin
     const hashedPassword = await bcrypt.hash(password, 10);
     const { rows } = await pool.query(
       `INSERT INTO admin 
@@ -62,7 +103,7 @@ const createAdmin = async (req, res) => {
         first_name,
         last_name,
         dob,
-        email.toLowerCase(),
+        lEmail,
         hashedPassword,
         phone,
         state_id,
@@ -70,6 +111,12 @@ const createAdmin = async (req, res) => {
         role,
         toBoolean(is_active),
       ],
+    );
+
+    // Delete used OTP
+    await pool.query(
+      "DELETE FROM otp_verifications WHERE LOWER(email)=$1 AND role='admin' AND purpose='registration'",
+      [lEmail],
     );
 
     return res
@@ -155,12 +202,10 @@ const updateAdmin = async (req, res) => {
   } = req.body;
 
   if (role && !ALLOWED_ROLES.includes(role)) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: `Role must be one of: ${ALLOWED_ROLES.join(", ")}`,
-      });
+    return res.status(400).json({
+      success: false,
+      message: `Role must be one of: ${ALLOWED_ROLES.join(", ")}`,
+    });
   }
 
   try {
@@ -219,12 +264,10 @@ const updateAdmin = async (req, res) => {
       const duplicateField = err.detail.includes("email")
         ? "Email"
         : "Phone number";
-      return res
-        .status(409)
-        .json({
-          success: false,
-          message: `${duplicateField} is already used by another account`,
-        });
+      return res.status(409).json({
+        success: false,
+        message: `${duplicateField} is already used by another account`,
+      });
     }
     console.error("[updateAdmin error]:", err);
     return res

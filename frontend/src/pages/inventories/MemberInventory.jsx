@@ -9,9 +9,14 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
 } from "@tanstack/react-table";
-// import { getMembers, deleteMember, updateMemberStatus } from "../../services/admin/member.service"; // Adjust API
+//  API Calls Activated
+import { getMembers, deleteMember } from "../../services/member/member.service";
 
-const swalDark = { background: "#0d1117", color: "#d9edff" };
+const swalDark = {
+  background: "#0d1117",
+  color: "#d9edff",
+  confirmButtonColor: "#ef4444",
+};
 
 export default function MemberInventory() {
   const [data, setData] = useState([]);
@@ -19,32 +24,21 @@ export default function MemberInventory() {
   const [globalFilter, setGlobalFilter] = useState("");
   const [rowSelection, setRowSelection] = useState({});
 
-  /* ── Fetch Data ── */
+  /* ── Fetch Real Data from DB ── */
   const fetchMembers = async () => {
     setLoading(true);
     try {
-      // const res = await getMembers();
-      // setData(res?.data?.data || []);
-
-      // Dummy data for visual test based on your screenshot
-      setTimeout(() => {
-        setData([
-          {
-            id: 8,
-            first_name: "Test",
-            last_name: "User",
-            type: "Guest",
-            email: "extremehaker007@gmail.com",
-            phone: "9193142045",
-            state: "Delhi",
-            city: "New Delhi",
-            status: "active",
-          },
-        ]);
-        setLoading(false);
-      }, 1000);
+      const res = await getMembers();
+      setData(res?.data?.data || []);
     } catch (err) {
       console.error("Fetch failed:", err);
+      Swal.fire({
+        ...swalDark,
+        icon: "error",
+        title: "Error",
+        text: "Failed to load members.",
+      });
+    } finally {
       setLoading(false);
     }
   };
@@ -58,21 +52,31 @@ export default function MemberInventory() {
     const confirm = await Swal.fire({
       ...swalDark,
       title: `Delete ${name}?`,
+      text: "This user will be soft-deleted.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Delete",
-      confirmButtonColor: "#ef4444",
+      confirmButtonText: "Yes, Delete",
     });
+
     if (confirm.isConfirmed) {
-      // await deleteMember(id);
-      setData((prev) => prev.filter((u) => u.id !== id));
-      Swal.fire({
-        ...swalDark,
-        icon: "success",
-        title: "Deleted!",
-        timer: 1500,
-        showConfirmButton: false,
-      });
+      try {
+        await deleteMember(id); // Hit DB API
+        setData((prev) => prev.filter((u) => u.id !== id)); // Remove from UI
+        Swal.fire({
+          ...swalDark,
+          icon: "success",
+          title: "Deleted!",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      } catch (err) {
+        Swal.fire({
+          ...swalDark,
+          icon: "error",
+          title: "Error",
+          text: "Could not delete.",
+        });
+      }
     }
   };
 
@@ -81,29 +85,39 @@ export default function MemberInventory() {
       .getSelectedRowModel()
       .rows.map((r) => r.original.id);
     if (!selectedIds.length) return;
+
     const confirm = await Swal.fire({
       ...swalDark,
       title: `Delete ${selectedIds.length} members?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Delete All",
-      confirmButtonColor: "#ef4444",
     });
+
     if (confirm.isConfirmed) {
-      // await Promise.all(selectedIds.map(id => deleteMember(id)));
-      setData((prev) => prev.filter((u) => !selectedIds.includes(u.id)));
-      setRowSelection({});
-      Swal.fire({
-        ...swalDark,
-        icon: "success",
-        title: "Deleted!",
-        timer: 1500,
-        showConfirmButton: false,
-      });
+      try {
+        await Promise.all(selectedIds.map((id) => deleteMember(id))); // Hit DB APIs
+        setData((prev) => prev.filter((u) => !selectedIds.includes(u.id))); // Remove from UI
+        setRowSelection({});
+        Swal.fire({
+          ...swalDark,
+          icon: "success",
+          title: "Deleted!",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      } catch (err) {
+        Swal.fire({
+          ...swalDark,
+          icon: "error",
+          title: "Error",
+          text: "Could not bulk delete.",
+        });
+      }
     }
   };
 
-  /* ── Columns ── */
+  /* ── Table Configuration (Same as before) ── */
   const columns = useMemo(
     () => [
       {
@@ -128,10 +142,12 @@ export default function MemberInventory() {
       { accessorKey: "first_name", header: "First Name ↕" },
       { accessorKey: "last_name", header: "Last Name ↕" },
       {
-        accessorKey: "type",
+        accessorKey: "member_type",
         header: "Type ↕",
         cell: ({ getValue }) => (
-          <span style={{ color: "#94a3b8" }}>{getValue()}</span>
+          <span style={{ color: "#94a3b8", textTransform: "capitalize" }}>
+            {getValue()}
+          </span>
         ),
       },
       { accessorKey: "email", header: "Email ↕" },
@@ -150,9 +166,6 @@ export default function MemberInventory() {
         header: "Actions",
         cell: ({ row }) => (
           <div className={styles.actionBtns}>
-            <button title="View" className={styles.actionIcon}>
-              <i className="fa-solid fa-user" />
-            </button>
             <button
               title="Delete"
               className={styles.actionIconDel}
@@ -169,7 +182,6 @@ export default function MemberInventory() {
     [],
   );
 
-  /* ── Table Instance ── */
   const table = useReactTable({
     data,
     columns,

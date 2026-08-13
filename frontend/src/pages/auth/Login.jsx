@@ -4,30 +4,27 @@ import { Eye, EyeOff } from "lucide-react";
 import Swal from "sweetalert2";
 import { login as loginApi } from "../../services/auth/login.service";
 import { useAuth } from "../../context/AuthContext";
-import styles from "./Login.module.css";
+import styles from "../../styles/Auth.module.css";
 
 const Toast = Swal.mixin({
   toast: true,
   position: "top-end",
   showConfirmButton: false,
-  timer: 3000,
+  timer: 3500,
   timerProgressBar: true,
-  background: "#0b0e18",
-  color: "#dde6f8",
-  iconColor: "#10b981",
+  background: "#0f1117",
+  color: "#e2e8f0",
 });
-const toast = (icon, title) => Toast.fire({ icon, title });
+const toast = (icon, title) =>
+  Toast.fire({
+    icon,
+    title,
+    iconColor: icon === "success" ? "#10b981" : "#ef4444",
+  });
 
-/**
- * Login — the ONLY login page in the app.
- * No "admin" or "member" anywhere in the UI. The backend figures out
- * which account type matched and returns `user.role` — AuthContext
- * uses that to redirect to the right dashboard.
- */
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
-
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [showPw, setShowPw] = useState(false);
@@ -45,137 +42,121 @@ export default function Login() {
     return err;
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   const errs = validate();
-  //   if (Object.keys(errs).length) {
-  //     setErrors(errs);
-  //     return;
-  //   }
-
-  //   try {
-  //     setLoading(true);
-  //     const { data } = await loginApi(form);
-  //     login(data.accessToken, data.user);
-  //     toast("success", `Welcome back, ${data.user.first_name}!`);
-
-  //     const destination =
-  //       data.user.role === "member" ? "/member/dashboard" : "/home";
-  //     setTimeout(() => navigate(destination, { replace: true }), 600);
-  //   } catch (err) {
-  //     const msg =
-  //       err?.response?.data?.message || "Login failed. Please try again.";
-  //     if (err?.response?.status === 403) toast("error", msg);
-  //     else setErrors({ password: msg });
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errs = validate();
-    if (Object.keys(errs).length) {
-      setErrors(errs);
-      return;
-    }
+    if (Object.keys(errs).length) return setErrors(errs);
 
     try {
       setLoading(true);
       const { data } = await loginApi(form);
-      const { accessToken, refreshToken, user } = data.data; // ← nested "data" object
+      const { accessToken, refreshToken, user } = data.data;
 
-      login(accessToken, refreshToken, user); // ← 3 args ab AuthContext expect karta hai
+      login(accessToken, refreshToken, user);
       toast("success", `Welcome back, ${user.first_name}!`);
 
       const destination =
         user.role === "member" ? "/member/dashboard" : "/home";
       setTimeout(() => navigate(destination, { replace: true }), 600);
     } catch (err) {
-      const msg =
-        err?.response?.data?.message || "Login failed. Please try again.";
-      if (err?.response?.status === 403) toast("error", msg);
-      else setErrors({ password: msg });
+      toast(
+        "error",
+        err?.response?.data?.message || "Invalid email or password.",
+      );
+      setForm((prev) => ({ ...prev, password: "" })); // Clear password on fail
     } finally {
       setLoading(false);
     }
   };
+
   const Err = ({ name }) =>
     errors[name] ? <p className={styles.errMsg}>{errors[name]}</p> : null;
 
   return (
-    <div className={styles.page}>
+    <div className={styles.container}>
       <div className={styles.card}>
-        <div className={styles.brand}>
-          <span className={styles.brandIcon}>
-            <i className="fa-solid fa-book-open-reader" />
-          </span>
-          <h1 className={styles.brandName}>LMS</h1>
+        <div className={styles.brandSide}>
+          <h1 className={styles.brandTitle}>
+            <i className="fa-solid fa-book-open-reader" /> LibraryMS
+          </h1>
+          <p className={styles.brandSubtitle}>
+            Access your dashboard, manage your books, and explore resources
+            seamlessly.
+          </p>
         </div>
 
-        <h2 className={styles.heading}>LMS Login</h2>
-        <p className={styles.sub}>Sign in to your account</p>
-
-        <form onSubmit={handleSubmit} className={styles.form} noValidate>
-          <div className={styles.field}>
-            <label className={styles.label}>Email Address</label>
-            <input
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="you@example.com"
-              autoComplete="email"
-              className={`${styles.input} ${errors.email ? styles.inputErr : ""}`}
-            />
-            <Err name="email" />
+        <div className={styles.formSideLogin}>
+          <div className={styles.formHeader}>
+            <h2>Welcome Back</h2>
+            <p>Sign in to continue to your account.</p>
           </div>
 
-          <div className={styles.field}>
-            <div className={styles.labelRow}>
-              <label className={styles.label}>Password</label>
-              <Link to="/forgot-password" className={styles.forgotLink}>
-                Forgot password?
-              </Link>
+          <form onSubmit={handleSubmit} className={styles.form} noValidate>
+            <div className={styles.inputGroup}>
+              <label>Email Address</label>
+              <div className={styles.inputWrapper}>
+                <i className="fa-solid fa-envelope" />
+                <input
+                  name="email"
+                  type="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  placeholder="you@university.edu"
+                  autoComplete="email"
+                  className={errors.email ? styles.inputErr : ""}
+                />
+              </div>
+              <Err name="email" />
             </div>
-            <div className={styles.pwWrap}>
-              <input
-                name="password"
-                type={showPw ? "text" : "password"}
-                value={form.password}
-                onChange={handleChange}
-                placeholder="••••••••"
-                autoComplete="current-password"
-                className={`${styles.input} ${styles.pwInput} ${errors.password ? styles.inputErr : ""}`}
-              />
-              <button
-                type="button"
-                className={styles.eyeBtn}
-                onClick={() => setShowPw((v) => !v)}
-                aria-label={showPw ? "Hide password" : "Show password"}
-              >
-                {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
+
+            <div className={styles.inputGroup}>
+              <div className={styles.labelRow}>
+                <label>Password</label>
+                <Link to="/forgot-password" className={styles.forgotLink}>
+                  Forgot password?
+                </Link>
+              </div>
+              <div className={styles.inputWrapper}>
+                <i className="fa-solid fa-lock" />
+                <input
+                  name="password"
+                  type={showPw ? "text" : "password"}
+                  value={form.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                  className={errors.password ? styles.inputErr : ""}
+                />
+                <button
+                  type="button"
+                  className={styles.eyeBtn}
+                  onClick={() => setShowPw(!showPw)}
+                >
+                  {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              <Err name="password" />
             </div>
-            <Err name="password" />
-          </div>
 
-          <button type="submit" className={styles.btnSubmit} disabled={loading}>
-            {loading ? (
-              <>
-                <i className="fa-solid fa-spinner fa-spin" /> Signing in…
-              </>
-            ) : (
-              "Sign In"
-            )}
-          </button>
-        </form>
+            <button
+              type="submit"
+              className={styles.submitBtn}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <i className="fa-solid fa-spinner fa-spin" /> Signing in…
+                </>
+              ) : (
+                "Sign In"
+              )}
+            </button>
+          </form>
 
-        <p className={styles.footer}>
-          Not registered yet?{" "}
-          <Link to="/register" className={styles.registerLink}>
-            Create an account
-          </Link>
-        </p>
+          <p className={styles.loginText}>
+            Don't have an account? <Link to="/register">Create one now</Link>
+          </p>
+        </div>
       </div>
     </div>
   );

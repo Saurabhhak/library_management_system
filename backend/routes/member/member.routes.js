@@ -5,7 +5,8 @@ const auth = require("../../middleware/auth.middleware");
 const role = require("../../middleware/role.middleware");
 
 const {
-  createMember,
+  publicRegister,
+  createMemberByAdmin,
   getMembers,
   getMemberById,
   updateMember,
@@ -14,14 +15,15 @@ const {
 
 const authCtrl = require("../../controllers/auth/auth.controller");
 
-/* ── Public — member self-registration (no auth required) ── */
-router.post("/", createMember);
+/* ── Public — Guest self-registration (OTP gated) ── */
+router.post("/register", publicRegister);
 
-/* ── Own profile / security — before "/:id" (same ordering reason) ── */
+/* ── Own profile updates ── */
 router.put("/profile", auth, role("member"), authCtrl.updateProfile);
 router.put("/change-password", auth, role("member"), authCtrl.changePassword);
 
-/* ── Admin-only — full member CRUD ── */
+/* ── Admin-only — Full University CRUD ── */
+router.post("/", auth, role("admin", "superadmin"), createMemberByAdmin);
 router.get("/", auth, role("admin", "superadmin"), getMembers);
 router.get("/:id", auth, role("admin", "superadmin"), getMemberById);
 router.put("/:id", auth, role("admin", "superadmin"), updateMember);
