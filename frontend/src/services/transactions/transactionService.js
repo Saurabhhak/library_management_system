@@ -1,24 +1,35 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  transactionService.js   →  src/services/transactionService.js
-//
-//  Pure API layer — no Swal, no UI logic. Pages call these functions and
-//  handle success/error themselves using src/utils/swalAlert.js.
-//
-//  Assumes an axios instance at src/utils/axiosInstance.js that already
-//  attaches the Authorization header. Adjust the import path if different.
-// ─────────────────────────────────────────────────────────────────────────────
-import axiosInstance from "../../api/axiosInstance";
+import API from "../../api/axiosInstance";
 
 const BASE = "/transactions";
 
 export const issueBookAPI = (payload) =>
-  axiosInstance.post(`${BASE}/issue`, payload).then((res) => res.data);
+  API.post(`${BASE}/issue`, payload).then((res) => res.data);
 
 export const returnBookAPI = (issue_id) =>
-  axiosInstance.post(`${BASE}/return`, { issue_id }).then((res) => res.data);
+  API.post(`${BASE}/return`, { issue_id }).then((res) => res.data);
 
-export const getTransactionsAPI = (params = {}) =>
-  axiosInstance.get(BASE, { params }).then((res) => res.data);
+export const getTransactionsAPI = async (params = {}) => {
+  const res = await API.get(BASE, { params });
+  return res.data; // Returns { success, transactions, pagination }
+};
 
-export const getTransactionStatsAPI = () =>
-  axiosInstance.get(`${BASE}/stats`).then((res) => res.data);
+export const getTransactionStatsAPI = async () => {
+  const res = await API.get(`${BASE}/stats`);
+  return res.data.data || res.data;
+};
+
+export const getMonthlyStatsAPI = async (year) => {
+  const res = await API.get(`${BASE}/monthly-stats`, { params: { year } });
+  return res.data.data || res.data;
+};
+
+/* ── MEMBER PERSONAL APIs (Clean unwrapped data) ── */
+export const getMyTransactions = async (params = {}) => {
+  const res = await API.get(`${BASE}/my-history`, { params });
+  return res.data.data || res.data || [];
+};
+
+export const getMyStats = async () => {
+  const res = await API.get(`${BASE}/my-stats`);
+  return res.data.data || res.data || { active_issues: 0, total_read: 0, overdue: 0, total_fine: 0 };
+};

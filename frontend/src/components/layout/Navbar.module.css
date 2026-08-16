@@ -55,11 +55,6 @@ button {
 }
 
 /* ── ICON ACCENT WRAPPER ─────────────────────────────────── */
-/*
-  .iconColor wraps only the <i> tag.
-  Parent (.navlink / .hoverDropDown / .adminMainBtn) on :hover
-  triggers color change on BOTH the label text AND .iconColor child.
-*/
 .iconColor {
   display: inline-flex;
   align-items: center;
@@ -141,8 +136,6 @@ button {
 .dropdown {
   position: relative;
 }
-
-/* hover bridge — prevents flicker between trigger and menu */
 .dropdown::after {
   content: "";
   position: absolute;
@@ -174,7 +167,6 @@ button {
   z-index: 999;
 }
 
-/* CSS hover + JS-controlled class both supported */
 .dropdown:hover > .dropdownMenu,
 .dropdown:focus-within > .dropdownMenu,
 .dropdownOpen {
@@ -198,7 +190,6 @@ button {
     color var(--speed);
 }
 
-/* Icon + label both turn accent on row hover */
 .hoverDropDown:hover {
   background: var(--bg-hover);
   color: var(--accent);
@@ -275,7 +266,6 @@ button {
   font-size: 0.9rem;
 }
 
-/* Sub-menu accordion */
 .subMenu {
   overflow: hidden;
   max-height: 0;
@@ -326,9 +316,7 @@ button {
 }
 
 /* ── MOBILE MENU BUTTON ──────────────────────────────────── */
-.menuBtn {
-  display: none;
-}
+.menuBtn,
 .mobileArrow {
   display: none;
 }
@@ -353,19 +341,14 @@ button {
   .activeMenu {
     right: 0;
   }
-
   .navlink {
     height: auto;
     padding: 0.55rem 0.75rem;
   }
-
-  .menuBtn {
+  .menuBtn,
+  .mobileArrow {
     display: flex;
   }
-  .mobileArrow {
-    display: inline-block;
-  }
-
   .dropdownMenu {
     position: static;
     opacity: 1 !important;
@@ -376,7 +359,6 @@ button {
     box-shadow: none;
     padding: 0 0 0 0.5rem;
   }
-
   .adminSidebar {
     width: 220px;
   }
@@ -385,7 +367,6 @@ button {
   }
 }
 
-/* ── REDUCED MOTION ──────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .iconColor,
   .navlink,

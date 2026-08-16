@@ -152,10 +152,6 @@ export default function Login() {
               )}
             </button>
           </form>
-
-          <p className={styles.loginText}>
-            Don't have an account? <Link to="/register">Create one now</Link>
-          </p>
         </div>
       </div>
     </div>

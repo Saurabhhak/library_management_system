@@ -3,36 +3,35 @@ const PHONE_RE = /^[6-9]\d{9}$/; // 10-digit Indian mobile
 
 export function validateMemberForm(data, mode = "create") {
   const err = {};
+
+  // Helper to cleanly check required fields
   const req = (field, msg) => {
     if (!String(data[field] ?? "").trim()) err[field] = msg;
   };
 
+  /* ---------- COMMON VALIDATIONS ---------- */
   req("first_name", "First name is required.");
-  req("phone", "Phone number is required.");
-  req("state_id", "State is required.");
-  req("city_id", "City is required.");
+  req("last_name", "Last name is required.");
 
-  /* Phone format */
-  if (data.phone && !PHONE_RE.test(data.phone))
+  if (data.phone && !PHONE_RE.test(data.phone)) {
     err.phone = "Enter a valid 10-digit mobile number.";
-
-  /* Email — only on create */
-  if (mode === "create") {
-    if (!data.email) err.email = "Email is required.";
-    else if (!EMAIL_RE.test(data.email))
-      err.email = "Enter a valid email address.";
   }
 
-  /* Password — only on create */
+  /* ---------- CREATE-ONLY VALIDATIONS ---------- */
   if (mode === "create") {
-    if (!data.password) err.password = "Password is required.";
-    else if (data.password.length < 8)
-      err.password = "Password must be at least 8 characters.";
+    req("email", "Email is required.");
+    if (data.email && !EMAIL_RE.test(data.email)) {
+      err.email = "Enter a valid email address.";
+    }
+    req("member_type", "Please select a member role.");
+  }
 
-    if (!data.confirm_password)
-      err.confirm_password = "Please confirm your password.";
-    else if (data.password !== data.confirm_password)
-      err.confirm_password = "Passwords do not match.";
+  /* ---------- UPDATE-ONLY VALIDATIONS ---------- */
+  if (mode === "update") {
+    req("status", "Account status is required.");
+    if (data.max_books_allowed === "" || Number(data.max_books_allowed) < 1) {
+      err.max_books_allowed = "Must allow at least 1 book.";
+    }
   }
 
   return err;

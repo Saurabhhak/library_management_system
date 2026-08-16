@@ -30,7 +30,6 @@ import Landing from "./pages/home/Landing";
 import Login from "./pages/auth/Login";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
-import RegisterMember from "./pages/members/RegisterMember";
 
 /* ── Dashboards ── */
 import AdminDashboard from "./components/dashboard/AdminDashboard";
@@ -58,6 +57,7 @@ import Settings from "./settings/Settings";
 import DeletedAccountsInventory from "./pages/inventories/DeletedAccountsInventory";
 import Home from "./pages/home/Home";
 import History from "./pages/history/History";
+// import MyBorrowings from "./pages/members/MyBorrowings";
 
 /* ── Library Management ── */
 import CreateBook from "./pages/library/books/CreateBook";
@@ -67,6 +67,8 @@ import AddCategory from "./pages/library/categories/AddCategory";
 import UpdateCategory from "./pages/library/categories/UpdateCategory";
 import BooksLib from "./pages/library/library/Bookslib";
 import Authors from "./pages/library/library/Authors";
+import CreateMember from "./pages/members/CreateMember";
+import UpdateMember from "./pages/members/UpdateMember";
 
 /* ── Resources & Legal ── */
 import Documentation from "./pages/resources/Documentation";
@@ -110,7 +112,6 @@ function AppShell() {
             <Route path="/login" element={<Login />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/register" element={<RegisterMember />} />
           </Route>
 
           {/* ── Protected Routes (Requires Login) ── */}
@@ -123,14 +124,8 @@ function AppShell() {
               <Route path="/history" element={<History />} />
 
               {/* Redirections for deprecated or alternate paths */}
-              <Route
-                path="/bookslib"
-                element={<Navigate to="/library" replace />}
-              />
-              <Route
-                path="/hightRatingBooks"
-                element={<Navigate to="/library?filter=trending" replace />}
-              />
+              <Route path="/bookslib" element={<Navigate to="/library" replace />}/>
+              <Route path="/hightRatingBooks" element={<Navigate to="/library?filter=trending" replace />}/>
 
               {/* ── Member Only Routes ── */}
               <Route element={<MemberRoute />}>
@@ -145,23 +140,18 @@ function AppShell() {
                 <Route path="/createbook" element={<CreateBook />} />
                 <Route path="/updatebook/:id" element={<UpdateBook />} />
                 <Route path="/bookchartpage" element={<BookChartPage />} />
-                <Route
-                  path="/categoryinventory"
-                  element={<CategoryInventory />}
-                />
+                <Route path="/categoryinventory" element={<CategoryInventory />}/>
                 <Route path="/addcategory" element={<AddCategory />} />
-                <Route
-                  path="/updatecategory/:id"
-                  element={<UpdateCategory />}
-                />
+                <Route path="/updatecategory/:id" element={<UpdateCategory />}/>
                 <Route path="/categorypage" element={<CategoryPage />} />
                 <Route path="/memberinventory" element={<MemberInventory />} />
                 <Route path="/memberpage" element={<MemberPage />} />
+                <Route path="/createmember" element={<CreateMember />} />
+                <Route path="/updatemember/:id" element={<UpdateMember />} />
+                {/* <Route path="/my-borrowings" element={<MyBorrowings />} /> */}
+
                 <Route path="/issuebook" element={<IssueBook />} />
-                <Route
-                  path="/feedbackinventory"
-                  element={<FeedbackInventory />}
-                />
+                <Route path="/feedbackinventory" element={<FeedbackInventory />}/>
                 <Route path="/feedback-page" element={<FeedbackPage />} />
 
                 {/* Resources */}

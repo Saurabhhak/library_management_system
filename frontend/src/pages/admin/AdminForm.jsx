@@ -184,7 +184,6 @@ export default function AdminForm({
             <option value="superadmin">Super Admin</option>
             <option value="admin">Admin</option>
             <option value="librarian">Librarian</option>
-            <option value="staff">Staff</option>
           </select>
           <Err name="role" />
         </div>

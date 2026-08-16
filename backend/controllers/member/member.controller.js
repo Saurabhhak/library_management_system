@@ -2,149 +2,101 @@
 
 const pool = require("../../config/db");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 
-const VALID_MEMBER_TYPES = [
-  "student",
-  "teacher",
-  "professor",
-  "staff",
-  "guest",
-];
+// Purely B2B Institutional Types (No public/guest/staff allowed here)
+const VALID_MEMBER_TYPES = ["student", "teacher", "professor"];
 
-/* ════════════════════════════════════════════════════════════════
-   1. PUBLIC REGISTRATION (For Guests - Requires OTP)
-════════════════════════════════════════════════════════════════ */
-const publicRegister = async (req, res) => {
-  try {
-    const { first_name, last_name, email, password } = req.body;
-    if (!first_name || !last_name || !email || !password) {
-      return res
-        .status(400)
-        .json({ success: false, message: "All fields are required" });
-    }
-
-    const lEmail = email.toLowerCase();
-
-    // 1. Verify OTP first
-    const { rows: otpRows } = await pool.query(
-      `SELECT id FROM otp_verifications WHERE LOWER(email) = $1 AND role = 'member' AND purpose = 'registration' AND is_verified = true ORDER BY id DESC LIMIT 1`,
-      [lEmail],
-    );
-    if (!otpRows.length)
-      return res
-        .status(400)
-        .json({ success: false, message: "Please verify OTP first" });
-
-    // 2. Extra Security Check (in case user bypasses CheckEmail API)
-    const { rows: existing } = await pool.query(
-      "SELECT id, is_deleted, updated_at FROM members WHERE LOWER(email) = $1",
-      [lEmail],
-    );
-
-    if (existing.length > 0) {
-      if (existing[0].is_deleted === false) {
-        return res
-          .status(409)
-          .json({ success: false, message: "Email already exists" });
-      } else {
-        const deletedAt = new Date(existing[0].updated_at);
-        const permDeleteDate = new Date(
-          deletedAt.getTime() + 15 * 24 * 60 * 60 * 1000,
-        );
-        const formattedDate = permDeleteDate.toLocaleDateString("en-IN", {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-        });
-
-        return res.status(403).json({
-          success: false,
-          message: `Account is pending deletion on ${formattedDate}. Please contact Support.`,
-        });
-      }
-    }
-
-    // 3. New User -> Insert safely
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const { rows } = await pool.query(
-      `INSERT INTO members (first_name, last_name, email, password, member_type, max_books_allowed, email_verified)
-       VALUES ($1, $2, $3, $4, 'guest', 1, true) RETURNING id, first_name, email, member_type`,
-      [first_name, last_name, lEmail, hashedPassword],
-    );
-
-    // 4. Clear used OTP
-    await pool.query(
-      "DELETE FROM otp_verifications WHERE LOWER(email)=$1 AND role='member' AND purpose='registration'",
-      [lEmail],
-    );
-
-    return res.status(201).json({
-      success: true,
-      message: "Registered successfully",
-      data: rows[0],
-    });
-  } catch (error) {
-    console.error("[publicRegister]", error.message);
-    return res.status(500).json({ success: false, message: "Server error" });
-  }
+/* ── HELPER: Auto Generate Institutional ID ── */
+const generateInstitutionalId = (type) => {
+  const prefix = type === "student" ? "STU" : "FAC";
+  const year = new Date().getFullYear();
+  const randomStr = crypto.randomBytes(2).toString("hex").toUpperCase();
+  return `${prefix}-${year}-${randomStr}`;
 };
 
-/* ════════════════════════════════════════════════════════════════
-   2. ADMIN CREATES MEMBER (For Students/Professors - NO OTP)
-════════════════════════════════════════════════════════════════ */
-const createMemberByAdmin = async (req, res) => {
+/* ── 1. ENROLL INSTITUTIONAL MEMBER (Admin Only) ── */
+const enrollInstitutionalMember = async (req, res) => {
   try {
     const {
       first_name,
       last_name,
       email,
-      password,
       phone,
       member_type,
-      enrollment_no,
+      institutional_id,
+      course,
+      batch_year,
+      designation,
       department,
-      max_books_allowed,
     } = req.body;
+
+    if (!first_name || !last_name || !email || !member_type) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Required fields are missing." });
+    }
 
     if (!VALID_MEMBER_TYPES.includes(member_type)) {
       return res
         .status(400)
-        .json({ success: false, message: `Invalid member type` });
+        .json({
+          success: false,
+          message: `Invalid member type. Allowed: ${VALID_MEMBER_TYPES.join(", ")}`,
+        });
     }
 
     const lEmail = email.toLowerCase();
 
-    // Check if account already exists or is in recycle bin
-    const { rows: existing } = await pool.query(
+    // Check if email already exists or is in recycle bin
+    const { rows: existingEmail } = await pool.query(
       "SELECT id, is_deleted FROM members WHERE LOWER(email) = $1",
       [lEmail],
     );
 
-    if (existing.length > 0) {
-      if (existing[0].is_deleted === false) {
+    if (existingEmail.length > 0) {
+      if (!existingEmail[0].is_deleted)
         return res
           .status(409)
-          .json({ success: false, message: "Email already exists" });
-      } else {
-        // Admin ke liye Smart Message
-        return res.status(409).json({
-          success: false,
-          message:
-            "This user is currently in the Recycle Bin. Please go to 'Restore Delete Accounts' page to restore them.",
-        });
-      }
+          .json({
+            success: false,
+            message: "This email is already registered.",
+          });
+      else
+        return res
+          .status(409)
+          .json({
+            success: false,
+            message:
+              "This email is currently in the Recycle Bin. Please restore it.",
+          });
     }
 
-    const booksLimit =
-      max_books_allowed || (member_type === "professor" ? 10 : 3);
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Determine Institutional ID (Use provided, or auto-generate if blank)
+    const finalInstId =
+      institutional_id && institutional_id.trim() !== ""
+        ? institutional_id.trim()
+        : generateInstitutionalId(member_type);
 
-    // Completely New User -> Insert
+    // Set Book Limits
+    const booksLimit =
+      member_type === "professor" || member_type === "teacher" ? 10 : 3;
+
+    // Default Password Logic (Phone last 4 digits or 12345)
+    const defaultRawPassword = phone
+      ? `Lib@${String(phone).slice(-4)}`
+      : "Lib@12345";
+    const hashedPassword = await bcrypt.hash(defaultRawPassword, 10);
+
     try {
       const { rows } = await pool.query(
-        `INSERT INTO members (first_name, last_name, email, password, phone, member_type, enrollment_no, department, max_books_allowed, email_verified)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, true)
-         RETURNING id, first_name, email, member_type, enrollment_no`,
+        `INSERT INTO members (
+          first_name, last_name, email, password, phone, member_type, 
+          institutional_id, course, batch_year, designation, department, 
+          max_books_allowed, email_verified
+        )
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, true)
+         RETURNING id, first_name, email, member_type, institutional_id`,
         [
           first_name,
           last_name,
@@ -152,67 +104,169 @@ const createMemberByAdmin = async (req, res) => {
           hashedPassword,
           phone || null,
           member_type,
-          enrollment_no || null,
+          finalInstId,
+          course || null,
+          batch_year || null,
+          designation || null,
           department || null,
           booksLimit,
         ],
       );
+
       return res.status(201).json({
         success: true,
-        message: "Member added successfully",
-        data: rows[0],
+        message: "Institutional Member enrolled successfully.",
+        data: { ...rows[0], generated_password: defaultRawPassword },
       });
     } catch (err) {
-      if (err.code === "23505") {
-        const field = err.detail.includes("email")
-          ? "Email"
-          : "Enrollment Number";
+      if (err.code === "23505")
         return res
           .status(409)
-          .json({ success: false, message: `${field} already exists.` });
-      }
+          .json({
+            success: false,
+            message: "Institutional ID already exists.",
+          });
       throw err;
     }
   } catch (error) {
-    console.error("[createMemberByAdmin]", error.message);
-    return res.status(500).json({ success: false, message: "Server error" });
+    console.error("[enrollInstitutionalMember Error]:", error.message);
+    return res.status(500).json({ success: false, message: "Server error." });
   }
 };
 
-/* ════════════════════════════════════════════════════════════════
-   3. GET ALL MEMBERS (Admin View)
-════════════════════════════════════════════════════════════════ */
+/* ── 2. GET ALL MEMBERS (Admin Inventory) ── */
 const getMembers = async (req, res) => {
   try {
     const { rows } = await pool.query(`
-      SELECT m.id, m.first_name, m.last_name, m.email, m.phone, m.member_type, m.status,
-             m.enrollment_no, m.department, s.name AS state, c.name AS city
-      FROM members m
-      LEFT JOIN states s ON m.state_id = s.id
-      LEFT JOIN cities c ON m.city_id = c.id
-      WHERE m.is_deleted = false ORDER BY m.id DESC
+      SELECT 
+        id, first_name, last_name, email, phone, member_type, status,
+        institutional_id, course, batch_year, designation, department
+      FROM members
+      WHERE is_deleted = false 
+      ORDER BY id DESC
     `);
-    return res.json({ success: true, data: rows });
+    return res.status(200).json({ success: true, data: rows });
   } catch (error) {
-    console.error("[getMembers]", error.message);
-    return res.status(500).json({ success: false, message: "Fetch error" });
+    console.error("[getMembers Error]:", error.message);
+    return res
+      .status(500)
+      .json({
+        success: false,
+        message: "Database error while fetching members.",
+      });
   }
 };
 
-/* Keep your existing getMemberById, updateMember, deleteMember here */
+/* ── 3. GET SINGLE MEMBER (Cleaned: No old columns) ── */
 const getMemberById = async (req, res) => {
-  /* Your old code */
+  try {
+    const { id } = req.params;
+    const { rows } = await pool.query(
+      `SELECT 
+          id, first_name, last_name, email, phone, member_type, status,
+          institutional_id, course, batch_year, designation, department,
+          max_books_allowed
+       FROM members 
+       WHERE id = $1 AND is_deleted = false`,
+      [id],
+    );
+
+    if (!rows.length)
+      return res
+        .status(404)
+        .json({ success: false, message: "Member not found" });
+    return res.json({ success: true, data: rows[0] });
+  } catch (error) {
+    console.error("[getMemberById Error]:", error.message);
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch member details" });
+  }
 };
+
+/* ── 4. UPDATE MEMBER (Cleaned: Synchronized with B2B Schema) ── */
 const updateMember = async (req, res) => {
-  /* Your old code, just add enrollment_no & department in SQL */
+  try {
+    const { id } = req.params;
+    let {
+      first_name,
+      last_name,
+      phone,
+      status,
+      max_books_allowed,
+      institutional_id,
+      course,
+      batch_year,
+      designation,
+      department,
+    } = req.body;
+
+    const { rows } = await pool.query(
+      `UPDATE members SET
+        first_name = $1, 
+        last_name = $2, 
+        phone = $3, 
+        status = $4, 
+        max_books_allowed = $5,
+        institutional_id = $6, 
+        course = $7, 
+        batch_year = $8, 
+        designation = $9, 
+        department = $10, 
+        updated_at = NOW()
+       WHERE id = $11 AND is_deleted = false
+       RETURNING id, first_name, last_name, institutional_id`,
+      [
+        first_name,
+        last_name,
+        phone || null,
+        status,
+        Number(max_books_allowed) || 3,
+        institutional_id || null,
+        course || null,
+        batch_year || null,
+        designation || null,
+        department || null,
+        id,
+      ],
+    );
+
+    if (!rows.length)
+      return res
+        .status(404)
+        .json({ success: false, message: "Member not found" });
+    return res.json({
+      success: true,
+      message: "Member updated successfully",
+      data: rows[0],
+    });
+  } catch (error) {
+    console.error("[updateMember Error]:", error.message);
+    return res.status(500).json({ success: false, message: "Update error" });
+  }
 };
+
+/* ── 5. SOFT DELETE MEMBER ── */
 const deleteMember = async (req, res) => {
-  /* Your old code */
+  try {
+    const { id } = req.params;
+    const { rows } = await pool.query(
+      `UPDATE members SET is_deleted=true, updated_at=NOW() WHERE id=$1 AND is_deleted=false RETURNING id`,
+      [id],
+    );
+    if (!rows.length)
+      return res
+        .status(404)
+        .json({ success: false, message: "Member not found" });
+    return res.json({ success: true, message: "Member moved to recycle bin" });
+  } catch (error) {
+    console.error("[deleteMember Error]:", error.message);
+    return res.status(500).json({ success: false, message: "Delete error" });
+  }
 };
 
 module.exports = {
-  publicRegister,
-  createMemberByAdmin,
+  enrollInstitutionalMember,
   getMembers,
   getMemberById,
   updateMember,

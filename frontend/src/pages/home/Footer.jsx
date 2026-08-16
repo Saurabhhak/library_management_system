@@ -1,12 +1,7 @@
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import styles from "./Footer.module.css";
+import { useAuth } from "../../context/AuthContext"; // Imported useAuth
 
-/* --------------------------------------
-   NAV CONFIG — single source of truth
-   filter: ""     = /library (browse)
-   filter: string = /library?filter=X
-   filter: null   = match pathname only
--------------------------------------- */
 const NAV = {
   Library: [
     { label: "Browse Books", to: "/library", filter: "" },
@@ -38,7 +33,6 @@ const NAV = {
     { label: "API Reference", to: "/api-reference" },
     { label: "Changelog", to: "/changelog" },
     { label: "Help Center", to: "/help" },
-    { label: "Status Page", to: "/status" },
     { label: "Feedback", to: "/feedback-page" },
     { label: "Contact Us", to: "/contact-us" },
   ],
@@ -73,40 +67,22 @@ const LEGAL = [
   { label: "Cookies", to: "/cookies" },
 ];
 
-/* -------------------------
-   SUB-COMPONENTS
--------------------------- */
-
 const Dot = () => <span className={styles.bottomDot}>·</span>;
 
-/**
- * Smart footer link.
- * - Library section: matches both pathname AND ?filter= param.
- * - All other sections: standard pathname match.
- */
 function FooterLink({ label, to, filter }) {
   const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
   const currentFilter = searchParams.get("filter") ?? "";
 
   let isActive = false;
-  if (filter === undefined) {
-    // Non-library links: simple pathname match
-    isActive = pathname === to;
-  } else if (filter === null) {
-    // Authors-style: pathname only
-    isActive = pathname === to;
-  } else {
-    // Library filter links: must match both pathname and filter value
-    isActive = pathname === "/library" && currentFilter === filter;
-  }
+  if (filter === undefined || filter === null) isActive = pathname === to;
+  else isActive = pathname === "/library" && currentFilter === filter;
 
   return (
     <li>
       <Link
         to={to}
         className={`${styles.footerLink} ${isActive ? styles.footerLinkActive : ""}`}
-        aria-current={isActive ? "page" : undefined}
       >
         {label}
       </Link>
@@ -114,7 +90,6 @@ function FooterLink({ label, to, filter }) {
   );
 }
 
-/** One column of nav links */
 function LinkColumn({ heading, links }) {
   return (
     <div className={styles.linkCol}>
@@ -128,17 +103,20 @@ function LinkColumn({ heading, links }) {
   );
 }
 
-/* --------------------------------
-   FOOTER
----------------------------------*/
 function Footer() {
   const year = new Date().getFullYear();
+  const { isStaff } = useAuth(); // 🔥 Get user role
+
+  // 🔥 Smart Filtering: Admin column sirf tabhi dikhega jab user staff/admin ho
+  const filteredNav = Object.entries(NAV).filter(([heading]) => {
+    if (heading === "Admin" && !isStaff) return false;
+    return true;
+  });
 
   return (
     <footer className={styles.footer}>
       <div className={styles.topGlow} />
 
-      {/* ── CTA Strip ── */}
       <div className={styles.ctaStrip}>
         <div className={styles.ctaStripInner}>
           <div>
@@ -151,32 +129,23 @@ function Footer() {
                 Browse Books <i className="fa-solid fa-arrow-right" />
               </button>
             </Link>
-            <Link to="/members">
-              <button className={styles.ctaOutlineBtn}>Join as Member</button>
-            </Link>
           </div>
         </div>
       </div>
 
-      {/* ── Main Grid ── */}
       <div className={styles.footerMain}>
-        {/* Brand column */}
         <div className={styles.brandCol}>
           <div className={styles.brandLogo}>
-            <i className="fa-solid fa-book-open-reader" />
+            <i className="fa-solid fa-book-open-reader" />{" "}
             <span>LibraryMS</span>
           </div>
-
           <p className={styles.brandDesc}>
             A modern, full-featured Library Management System for seamless book
-            management, member tracking, and digital circulation.
+            management and digital circulation.
           </p>
-
           <div className={styles.statusBadge}>
-            <span className={styles.statusDot} />
-            All systems operational
+            <span className={styles.statusDot} /> All systems operational
           </div>
-
           <div className={styles.socialRow}>
             {SOCIALS.map(({ icon, href, label }) => (
               <a
@@ -185,8 +154,6 @@ function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.socialIcon}
-                aria-label={label}
-                title={label}
               >
                 <i className={icon} />
               </a>
@@ -194,19 +161,18 @@ function Footer() {
           </div>
         </div>
 
-        {/* Nav columns */}
-        {Object.entries(NAV).map(([heading, links]) => (
+        {/* Render dynamically filtered links */}
+        {filteredNav.map(([heading, links]) => (
           <LinkColumn key={heading} heading={heading} links={links} />
         ))}
       </div>
 
-      {/* ── Bottom Bar ── */}
       <div className={styles.footerBottom}>
         <div className={styles.footerBottomInner}>
           <div className={styles.bottomLeft}>
             <span>
               © {year} <strong>LibraryMS</strong>. All rights reserved.
-            </span>
+            </span>{" "}
             <Dot />
             <span>
               Built by{" "}
@@ -218,15 +184,14 @@ function Footer() {
               >
                 Saurabh
               </a>
-            </span>
+            </span>{" "}
             <Dot />
             <span className={styles.versionTag}>Feb 2026</span>
           </div>
-
           <div className={styles.bottomRight}>
             {LEGAL.map(({ label, to }, i) => (
               <span key={label} className={styles.legalItem}>
-                {i > 0 && <Dot />}
+                {i > 0 && <Dot />}{" "}
                 <Link to={to} className={styles.legalLink}>
                   {label}
                 </Link>

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -9,11 +10,9 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-
 import { Bar, Doughnut } from "react-chartjs-2";
-import styles from "./MemberCharts.module.css";
+import styles from "../admin/AdminChart.module.css"; // 🔥 Reusing Admin CSS for exact same Premium UI!
 
-/* ───── REGISTER ───── */
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -25,90 +24,125 @@ ChartJS.register(
   Legend,
 );
 
-/*__________________ COLOR SYSTEM (LIKE CATEGORY CHARTS) */
+/* ───── PREMIUM STATUS PALETTE ───── */
 const STATUS_COLORS = {
-  active: "#2a79c2",
-  inactive: "#d9b319",
+  active: "#10b981", // Emerald Green
+  inactive: "#ef4444", // Red
 };
+const DEFAULT_PALETTE = ["#3b82f6", "#f59e0b"];
 
-const DEFAULT_PALETTE = ["#d99307", "#06b6d4"];
-
-/* resolve color */
 const getColor = (label, i) =>
   STATUS_COLORS[label.toLowerCase()] || DEFAULT_PALETTE[i % 2];
 
-/* __________________ COMMON OPTIONS */
+/* ───── COMMON OPTIONS ───── */
 const COMMON_OPTIONS = {
   responsive: true,
   maintainAspectRatio: false,
+  animation: { duration: 1500, easing: "easeOutQuart" },
   plugins: {
     legend: {
       display: true,
       position: "bottom",
       labels: {
-        boxWidth: 12,
-        font: { size: 11 },
+        color: "#94a3b8",
+        usePointStyle: true,
+        padding: 20,
+        font: { size: 12, family: "Inter" },
       },
+    },
+    tooltip: {
+      backgroundColor: "rgba(15, 23, 42, 0.9)",
+      titleColor: "#f8fafc",
+      bodyColor: "#cbd5e1",
+      borderColor: "rgba(255,255,255,0.1)",
+      borderWidth: 1,
+      padding: 12,
+      cornerRadius: 8,
     },
   },
 };
 
-/* _________________ DATA BUILDERS (CLEAN & SEPARATED) */
-/* _________________ DONUT → single dataset */
+const barOptions = {
+  ...COMMON_OPTIONS,
+  plugins: { ...COMMON_OPTIONS.plugins, legend: { display: false } },
+  scales: {
+    y: {
+      beginAtZero: true,
+      grid: { color: "rgba(255,255,255,0.05)" },
+      ticks: { color: "#64748b", stepSize: 1 },
+    },
+    x: { grid: { display: false }, ticks: { color: "#94a3b8" } },
+  },
+};
+
 const buildDonutData = (labels, values) => ({
   labels,
   datasets: [
     {
       data: values,
       backgroundColor: labels.map(getColor),
-      borderWidth: 0,
+      borderColor: "#0d1117",
+      borderWidth: 3,
+      hoverOffset: 8,
     },
   ],
 });
 
-/* _______________ BAR → separate dataset (for legend buttons) */
 const buildBarData = (labels, values) => ({
-  labels: ["Members"],
+  labels: ["Member Status"],
   datasets: labels.map((label, i) => ({
     label,
     data: [values[i]],
     backgroundColor: getColor(label, i),
-    borderColor: getColor(label, i),
-    borderWidth: 1,
+    borderRadius: 6,
+    barPercentage: 0.6,
   })),
 });
 
-/* ________________________ COMPONENT ___________________________ */
-function MemberCharts({
+export default function MemberCharts({
   chartData = {},
-  type = "bar" /* ---- doughnut , bar ---- */,
+  type = "bar",
   title = "",
+  icon = "fa-chart-pie",
+  badgeText = "Status",
 }) {
   const { labels = [], values = [] } = chartData;
+  const [isVisible, setIsVisible] = useState(false);
 
-  /* _______________ EMPTY STATE */
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
   if (!labels.length) {
     return (
-      <div className={styles.card}>
-        <h3 className={styles.title}>{title}</h3>
-        <p className={styles.empty}>No data</p>
+      <div className={`${styles.card} ${isVisible ? styles.fadeIn : ""}`}>
+        <div className={styles.cardHeader}>
+          <h3 className={styles.title}>
+            <i className={`fa-solid ${icon}`} /> {title}
+          </h3>
+        </div>
+        <div className={styles.empty}>
+          <i className="fa-solid fa-chart-simple" />
+          <p>Not enough data to display.</p>
+        </div>
       </div>
     );
   }
-  /* ______ SELECT DATA BASED ON TYPE */
-  let data;
-  let options = COMMON_OPTIONS;
-  if (type === "doughnut") {
-    data = buildDonutData(labels, values);
-  } else {
-    data = buildBarData(labels, values);
-  }
 
-  /* ______ RENDER */
+  const data =
+    type === "doughnut"
+      ? buildDonutData(labels, values)
+      : buildBarData(labels, values);
+  const options = type === "doughnut" ? COMMON_OPTIONS : barOptions;
+
   return (
-    <div className={styles.card}>
-      <h3 className={styles.title}>{title}</h3>
-
+    <div className={`${styles.card} ${isVisible ? styles.fadeIn : ""}`}>
+      <div className={styles.cardHeader}>
+        <h3 className={styles.title}>
+          <i className={`fa-solid ${icon}`} /> {title}
+        </h3>
+        <span className={styles.chartBadge}>{badgeText}</span>
+      </div>
       <div className={styles.chartWrapper}>
         {type === "doughnut" && <Doughnut data={data} options={options} />}
         {type === "bar" && <Bar data={data} options={options} />}
@@ -116,4 +150,3 @@ function MemberCharts({
     </div>
   );
 }
-export default MemberCharts;

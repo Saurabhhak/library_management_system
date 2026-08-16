@@ -1,19 +1,11 @@
 import API from "../../api/axiosInstance";
 
 /* ════════════════════════════════════════════════════════════════
-   PUBLIC ROUTES (No Token Required)
+   ADMIN/LIBRARIAN PROTECTED ROUTES
 ════════════════════════════════════════════════════════════════ */
 
-// Self-registration for guests (Requires OTP verified first)
-export const registerPublicMember = (data) =>
-  API.post("/members/register", data);
-
-/* ════════════════════════════════════════════════════════════════
-   ADMIN PROTECTED ROUTES (Requires Admin/Superadmin Token)
-════════════════════════════════════════════════════════════════ */
-
-// Admin creating a Student, Professor, or Staff (No OTP required)
-export const createMemberByAdmin = (data) => API.post("/members", data);
+// Admin enrolling a Student, Teacher, or Professor
+export const enrollInstitutionalMember = (data) => API.post("/members", data);
 
 // Fetch all members for Inventory
 export const getMembers = () => API.get("/members");

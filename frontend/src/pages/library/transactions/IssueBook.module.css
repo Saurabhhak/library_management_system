@@ -193,3 +193,38 @@
   text-align: center;
   color: #8b949e;
 }
+.page {
+  padding: 2rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: #0d1117;
+  color: #c9d1d9;
+  min-height: 85vh;
+  margin-top: 3.5rem;
+  opacity: 0;
+  animation: fadeInPage 0.5s ease-out forwards;
+}
+
+@keyframes fadeInPage {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Medium sized Issue Button */
+.btnIssue {
+  background: #2ee6a6;
+  color: #0d1117;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btnIssue:hover:not(:disabled) {
+  background: #20c88e;
+  transform: translateY(-1px);
+}

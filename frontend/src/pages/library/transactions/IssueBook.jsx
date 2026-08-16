@@ -1,8 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
 //  IssueBook.jsx   →  src/pages/library/transactions/IssueBook.jsx
-//
-//  Issue a book to a member. Uses the shared swalAlert utility for every
-//  success / error / confirm popup — no inline Swal.fire() calls.
 // ─────────────────────────────────────────────────────────────────────────────
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +20,6 @@ import {
 import axiosInstance from "../../../api/axiosInstance";
 import styles from "./IssueBook.module.css";
 
-// ── helpers ───────────────────────────────────────────────────────────────────
 const fmtDate = (d) =>
   d
     ? new Date(d).toLocaleDateString("en-IN", {
@@ -45,11 +41,9 @@ const tomorrowStr = () => {
   return d.toISOString().split("T")[0];
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
 export default function IssueBook() {
   const navigate = useNavigate();
 
-  // ── form state ────────────────────────────────────────────────────────────
   const [members, setMembers] = useState([]);
   const [books, setBooks] = useState([]);
   const [memberId, setMemberId] = useState("");
@@ -57,36 +51,38 @@ export default function IssueBook() {
   const [dueDate, setDueDate] = useState(defaultDueDate());
   const [submitting, setSubmitting] = useState(false);
 
-  // ── active issues ─────────────────────────────────────────────────────────
   const [issues, setIssues] = useState([]);
   const [loadingIssues, setLoadingIssues] = useState(false);
   const [returningId, setReturningId] = useState(null);
 
-  // ── load dropdown options once ───────────────────────────────────────────
+  // ── Load Dropdowns securely ───────────────────────────────────────────────
   useEffect(() => {
+    // Fetch Members
     axiosInstance
-      .get("/members?limit=200&status=active")
+      .get("/members")
       .then((res) => {
-        setMembers(res.data.members || res.data.data || []);
+        const list = res.data.data || res.data.members || res.data || [];
+        setMembers(list);
       })
-      .catch(() => {});
+      .catch((err) => console.error("Failed to load members", err));
 
+    // Fetch Books
     axiosInstance
-      .get("/books?limit=200")
+      .get("/books")
       .then((res) => {
-        setBooks(res.data.books || res.data.data || []);
+        const list = res.data.data || res.data.books || res.data || [];
+        setBooks(list);
       })
-      .catch(() => {});
+      .catch((err) => console.error("Failed to load books", err));
   }, []);
 
-  // ── load active issues ────────────────────────────────────────────────────
   const loadIssues = async () => {
     setLoadingIssues(true);
     try {
       const result = await getTransactionsAPI({ status: "issued", limit: 10 });
-      setIssues(result.transactions || []);
+      setIssues(result.transactions || result.data || []);
     } catch {
-      // non-critical — silent fail, table just stays empty
+      setIssues([]);
     } finally {
       setLoadingIssues(false);
     }
@@ -96,20 +92,32 @@ export default function IssueBook() {
     loadIssues();
   }, []);
 
-  // ── submit issue ──────────────────────────────────────────────────────────
   const handleIssue = async () => {
     if (!memberId)
-      return warningAlert("Select Member", "Please choose a member.");
-    if (!bookId) return warningAlert("Select Book", "Please choose a book.");
+      return warningAlert(
+        "Select Member",
+        "Please choose a member from the dropdown.",
+      );
+    if (!bookId)
+      return warningAlert(
+        "Select Book",
+        "Please choose a book from the dropdown.",
+      );
     if (!dueDate)
       return warningAlert("Set Due Date", "Please choose a due date.");
 
     const member = members.find((m) => String(m.id) === String(memberId));
     const book = books.find((b) => String(b.id) === String(bookId));
 
+    const memberName = member
+      ? `${member.first_name || ""} ${member.last_name || ""}`.trim() ||
+        member.name
+      : "Member";
+    const bookTitle = book ? book.title : "Book";
+
     const ok = await confirmAlert(
       "Confirm Issue",
-      `Issue <b>${book?.title}</b> to <b>${member?.name}</b><br/>due on <b>${fmtDate(dueDate)}</b>?`,
+      `Issue <b>${bookTitle}</b> to <b>${memberName}</b><br/>due on <b>${fmtDate(dueDate)}</b>?`,
       "Yes, Issue",
     );
     if (!ok) return;
@@ -117,11 +125,11 @@ export default function IssueBook() {
     setSubmitting(true);
     try {
       const res = await issueBookAPI({
-        book_id: bookId,
-        member_id: memberId,
+        book_id: parseInt(bookId, 10),
+        member_id: parseInt(memberId, 10),
         due_date: dueDate,
       });
-      successAlert("Book Issued!", res.message);
+      successAlert("Book Issued!", res.message || "Book issued successfully.");
       setMemberId("");
       setBookId("");
       setDueDate(defaultDueDate());
@@ -133,7 +141,6 @@ export default function IssueBook() {
     }
   };
 
-  // ── return book ───────────────────────────────────────────────────────────
   const handleReturn = async (row) => {
     const fineMsg = row.is_overdue
       ? `<br/><span style="color:#f85149">Overdue by ${row.overdue_days} day(s) — Fine: ₹${row.current_fine}</span>`
@@ -151,9 +158,9 @@ export default function IssueBook() {
       const res = await returnBookAPI(row.id);
       successAlert(
         "Returned!",
-        res.data.fine > 0
+        res.data?.fine > 0
           ? `Fine collected: ₹${res.data.fine}`
-          : "No fine applied.",
+          : "Book returned successfully.",
       );
       loadIssues();
     } catch (err) {
@@ -163,7 +170,6 @@ export default function IssueBook() {
     }
   };
 
-  // ─────────────────────────────────────────────────────────────────────────
   return (
     <div className={styles.page}>
       <div className={styles.pageHeader}>
@@ -171,7 +177,9 @@ export default function IssueBook() {
           <h1 className={styles.pageTitle}>
             <i className="fa-solid fa-book-bookmark" /> Issue Book
           </h1>
-          <p className={styles.pageSubtitle}>Assign a book to a member</p>
+          <p className={styles.pageSubtitle}>
+            Assign a book to an institutional member
+          </p>
         </div>
         <button
           className={styles.btnGhost}
@@ -181,7 +189,6 @@ export default function IssueBook() {
         </button>
       </div>
 
-      {/* ── Issue form ──────────────────────────────────────────────────── */}
       <div className={styles.card}>
         <h2 className={styles.cardTitle}>New Issue</h2>
 
@@ -194,11 +201,18 @@ export default function IssueBook() {
               onChange={(e) => setMemberId(e.target.value)}
             >
               <option value="">Select member…</option>
-              {members.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.name} ({m.email})
-                </option>
-              ))}
+              {members.map((m) => {
+                const displayName =
+                  `${m.first_name || ""} ${m.last_name || ""}`.trim() ||
+                  m.name ||
+                  m.email;
+                return (
+                  <option key={m.id} value={m.id}>
+                    {displayName} (
+                    {m.institutional_id || m.email || `ID: ${m.id}`})
+                  </option>
+                );
+              })}
             </select>
           </div>
 
@@ -210,18 +224,15 @@ export default function IssueBook() {
               onChange={(e) => setBookId(e.target.value)}
             >
               <option value="">Select book…</option>
-              {books.map((b) => (
-                <option
-                  key={b.id}
-                  value={b.id}
-                  disabled={b.available_copies <= 0}
-                >
-                  {b.title}{" "}
-                  {b.available_copies <= 0
-                    ? "(unavailable)"
-                    : `(${b.available_copies} avail.)`}
-                </option>
-              ))}
+              {books.map((b) => {
+                const copies = b.available_copies ?? b.copies ?? 1;
+                return (
+                  <option key={b.id} value={b.id} disabled={copies <= 0}>
+                    {b.title}{" "}
+                    {copies <= 0 ? "(unavailable)" : `(${copies} avail.)`}
+                  </option>
+                );
+              })}
             </select>
           </div>
 
@@ -248,15 +259,13 @@ export default function IssueBook() {
         </div>
       </div>
 
-      {/* ── Active issues ───────────────────────────────────────────────── */}
       <div className={styles.card}>
         <h2 className={styles.cardTitle}>Currently Issued</h2>
-
         <div className={styles.tableWrap}>
           {loadingIssues ? (
             <p className={styles.loading}>Loading…</p>
           ) : issues.length === 0 ? (
-            <p className={styles.empty}>No active issues</p>
+            <p className={styles.empty}>No active issues found</p>
           ) : (
             <table className={styles.table}>
               <thead>

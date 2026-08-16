@@ -13,12 +13,22 @@ import {
   returnBookAPI,
 } from "../../services/transactions/transactionService";
 
-import { successAlert, confirmAlert, apiErrorAlert } from "../../utils/swalAlert";
+import {
+  successAlert,
+  confirmAlert,
+  apiErrorAlert,
+} from "../../utils/swalAlert";
 
 import styles from "./History.module.css";
 
 const fmtDate = (d) =>
-  d ? new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "—";
+  d
+    ? new Date(d).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    : "—";
 
 const TABS = [
   { key: "all", label: "All" },
@@ -30,7 +40,7 @@ const TABS = [
 export default function History() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get("tab") || "all";
-  const page = parseInt(searchParams.get("page") || "1");
+  const page = parseInt(searchParams.get("page") || "1", 10);
 
   const [transactions, setTransactions] = useState([]);
   const [pagination, setPagination] = useState({});
@@ -39,15 +49,31 @@ export default function History() {
   const [loading, setLoading] = useState(false);
   const [returningId, setReturningId] = useState(null);
 
-  useEffect(() => {
-    getTransactionStatsAPI().then((r) => setStats(r.data)).catch(() => {});
+  // ── Load Stats ────────────────────────────────────────────────────────────
+  const loadStats = useCallback(async () => {
+    try {
+      const statsData = await getTransactionStatsAPI();
+      setStats(statsData);
+    } catch (err) {
+      console.error("Failed to load transaction stats", err);
+    }
   }, []);
 
-  const load = useCallback(async () => {
+  useEffect(() => {
+    loadStats();
+  }, [loadStats]);
+
+  // ── Load Transactions ─────────────────────────────────────────────────────
+  const loadTransactions = useCallback(async () => {
     setLoading(true);
     try {
-      const result = await getTransactionsAPI({ status: activeTab, search, page, limit: 10 });
-      setTransactions(result.transactions || []);
+      const result = await getTransactionsAPI({
+        status: activeTab,
+        search,
+        page,
+        limit: 10,
+      });
+      setTransactions(result.transactions || result.data || []);
       setPagination(result.pagination || {});
     } catch (err) {
       apiErrorAlert(err, "Failed to load history");
@@ -56,11 +82,20 @@ export default function History() {
     }
   }, [activeTab, search, page]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    loadTransactions();
+  }, [loadTransactions]);
 
-  const switchTab = (key) => { setSearchParams({ tab: key, page: "1" }); setSearch(""); };
-  const goToPage = (p) => setSearchParams({ tab: activeTab, page: String(p) });
+  const switchTab = (key) => {
+    setSearchParams({ tab: key, page: "1" });
+    setSearch("");
+  };
 
+  const goToPage = (p) => {
+    setSearchParams({ tab: activeTab, page: String(p) });
+  };
+
+  // ── Handle Book Return ────────────────────────────────────────────────────
   const handleReturn = async (row) => {
     const fineMsg = row.is_overdue
       ? `<br/><span style="color:#f85149">Overdue ${row.overdue_days}d — Fine: ₹${row.current_fine}</span>`
@@ -69,16 +104,25 @@ export default function History() {
     const ok = await confirmAlert(
       "Confirm Return",
       `Return <b>${row.book_title}</b> from <b>${row.member_name}</b>?${fineMsg}`,
-      "Return"
+      "Return",
     );
     if (!ok) return;
 
     setReturningId(row.id);
     try {
       const res = await returnBookAPI(row.id);
-      successAlert("Returned!", res.data.fine > 0 ? `Fine collected: ₹${res.data.fine}` : "No fine.");
-      getTransactionStatsAPI().then((r) => setStats(r.data)).catch(() => {});
-      load();
+      const collectedFine = res.data?.fine || res.fine || 0;
+
+      successAlert(
+        "Returned!",
+        collectedFine > 0
+          ? `Fine collected: ₹${collectedFine}`
+          : "No fine applied.",
+      );
+
+      // Refresh stats & table
+      loadStats();
+      loadTransactions();
     } catch (err) {
       apiErrorAlert(err, "Return Failed");
     } finally {
@@ -88,21 +132,38 @@ export default function History() {
 
   return (
     <div className={styles.page}>
-
       <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}><i className="fa-solid fa-clock-rotate-left" /> Transaction History</h1>
+        <h1 className={styles.pageTitle}>
+          <i className="fa-solid fa-clock-rotate-left" /> Transaction History
+        </h1>
       </div>
 
-      {/* ── Stats ──────────────────────────────────────────────────────── */}
+      {/* ── Stats Grid ─────────────────────────────────────────────────── */}
       <div className={styles.statsGrid}>
         <Stat label="Issued" value={stats?.total_issued} color="blue" />
         <Stat label="Returned" value={stats?.total_returned} color="green" />
         <Stat label="Overdue" value={stats?.total_overdue} color="red" />
-        <Stat label="Fines Collected" value={stats && `₹${stats.total_fines_collected}`} color="orange" />
-        <Stat label="Pending Fines" value={stats && `₹${stats.pending_fines}`} color="purple" />
+        <Stat
+          label="Fines Collected"
+          value={
+            stats?.total_fines_collected !== undefined
+              ? `₹${stats.total_fines_collected}`
+              : null
+          }
+          color="orange"
+        />
+        <Stat
+          label="Pending Fines"
+          value={
+            stats?.pending_fines !== undefined
+              ? `₹${stats.pending_fines}`
+              : null
+          }
+          color="purple"
+        />
       </div>
 
-      {/* ── Tabs ───────────────────────────────────────────────────────── */}
+      {/* ── Tabs Bar ───────────────────────────────────────────────────── */}
       <div className={styles.tabBar}>
         {TABS.map((t) => (
           <button
@@ -115,16 +176,16 @@ export default function History() {
         ))}
       </div>
 
-      {/* ── Search ─────────────────────────────────────────────────────── */}
+      {/* ── Search Input ───────────────────────────────────────────────── */}
       <input
         className={styles.searchInput}
         placeholder="Search member or book…"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && load()}
+        onKeyDown={(e) => e.key === "Enter" && loadTransactions()}
       />
 
-      {/* ── Table ──────────────────────────────────────────────────────── */}
+      {/* ── Table View ─────────────────────────────────────────────────── */}
       <div className={styles.tableWrap}>
         {loading ? (
           <p className={styles.loading}>Loading…</p>
@@ -134,30 +195,54 @@ export default function History() {
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>Member</th><th>Book</th><th>Issue Date</th><th>Due Date</th>
-                <th>Return Date</th><th>Status</th><th>Fine</th>
+                <th>Member</th>
+                <th>Book</th>
+                <th>Issue Date</th>
+                <th>Due Date</th>
+                <th>Return Date</th>
+                <th>Status</th>
+                <th>Fine</th>
                 {activeTab !== "returned" && <th>Action</th>}
               </tr>
             </thead>
             <tbody>
               {transactions.map((row) => (
-                <tr key={row.id} className={row.is_overdue ? styles.rowOverdue : ""}>
+                <tr
+                  key={row.id}
+                  className={row.is_overdue ? styles.rowOverdue : ""}
+                >
                   <td>{row.member_name}</td>
                   <td>{row.book_title}</td>
                   <td>{fmtDate(row.issue_date)}</td>
-                  <td className={row.is_overdue ? styles.overdueDate : ""}>{fmtDate(row.due_date)}</td>
+                  <td className={row.is_overdue ? styles.overdueDate : ""}>
+                    {fmtDate(row.due_date)}
+                  </td>
                   <td>{fmtDate(row.return_date)}</td>
                   <td>
-                    <span className={`${styles.badge} ${
-                      row.status === "returned" ? styles.returned : row.is_overdue ? styles.overdue : styles.issued
-                    }`}>
-                      {row.status === "returned" ? "Returned" : row.is_overdue ? "Overdue" : "Issued"}
+                    <span
+                      className={`${styles.badge} ${
+                        row.status === "returned"
+                          ? styles.returned
+                          : row.is_overdue
+                            ? styles.overdue
+                            : styles.issued
+                      }`}
+                    >
+                      {row.status === "returned"
+                        ? "Returned"
+                        : row.is_overdue
+                          ? "Overdue"
+                          : "Issued"}
                     </span>
                   </td>
                   <td>
                     {row.status === "returned"
-                      ? (row.fine_amount > 0 ? `₹${row.fine_amount}` : "—")
-                      : (row.current_fine > 0 ? `₹${row.current_fine}` : "—")}
+                      ? row.fine_amount > 0
+                        ? `₹${row.fine_amount}`
+                        : "—"
+                      : row.current_fine > 0
+                        ? `₹${row.current_fine}`
+                        : "—"}
                   </td>
                   {activeTab !== "returned" && (
                     <td>
@@ -182,15 +267,17 @@ export default function History() {
       {/* ── Pagination ─────────────────────────────────────────────────── */}
       {pagination.totalPages > 1 && (
         <div className={styles.pagination}>
-          {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((p) => (
-            <button
-              key={p}
-              className={`${styles.pageBtn} ${p === page ? styles.pageBtnActive : ""}`}
-              onClick={() => goToPage(p)}
-            >
-              {p}
-            </button>
-          ))}
+          {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map(
+            (p) => (
+              <button
+                key={p}
+                className={`${styles.pageBtn} ${p === page ? styles.pageBtnActive : ""}`}
+                onClick={() => goToPage(p)}
+              >
+                {p}
+              </button>
+            ),
+          )}
         </div>
       )}
     </div>

@@ -1,37 +1,77 @@
-/* ───────── CARD ───────── */
 .card {
-  border: 1px solid #1d2839dd;
-  border-radius: 0.5rem;
-  padding: 16px;
-  height: 30rem;
+  background: #0d1117; /* Deep dark matching image */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 1.5rem;
+  height: 22rem;
   display: flex;
   flex-direction: column;
+  opacity: 0;
+  transform: translateY(15px);
+  transition:
+    opacity 0.6s ease-out,
+    transform 0.6s ease-out,
+    box-shadow 0.3s ease;
+}
+.card:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.fadeIn {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-/* ───────── TITLE ───────── */
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
 .title {
-  font-size: 0.95rem;
-  font-weight: 500;
-  letter-spacing: 0.05rem;
-  color: #bebebe;
-  background: #131519;
-  text-align: center;
-  width: fit-content;
-  padding: 6px 12px;
-  border-radius: 0.35rem;
-  margin: 0 auto 2rem auto;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f8fafc;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.title i {
+  color: #10b981;
+  font-size: 1.1rem;
 }
 
-/* ───────── CHART ───────── */
+.chartBadge {
+  background: rgba(255, 255, 255, 0.04);
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.75rem;
+  font-family: "JetBrains Mono", monospace;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
 .chartWrapper {
   flex: 1;
   position: relative;
+  width: 100%;
+  min-height: 0;
 }
-
-/* ───────── EMPTY ───────── */
 .empty {
-  font-size: 13px;
-  color: #8b949e;
-  text-align: center;
-  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #64748b;
+  font-size: 0.9rem;
+  gap: 8px;
+}
+.empty i {
+  font-size: 2rem;
+  opacity: 0.5;
+}
+.empty p {
+  margin: 0;
 }

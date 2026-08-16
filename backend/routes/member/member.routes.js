@@ -4,9 +4,9 @@ const router = require("express").Router();
 const auth = require("../../middleware/auth.middleware");
 const role = require("../../middleware/role.middleware");
 
+// Import newly named controllers
 const {
-  publicRegister,
-  createMemberByAdmin,
+  enrollInstitutionalMember,
   getMembers,
   getMemberById,
   updateMember,
@@ -15,18 +15,34 @@ const {
 
 const authCtrl = require("../../controllers/auth/auth.controller");
 
-/* ── Public — Guest self-registration (OTP gated) ── */
-router.post("/register", publicRegister);
+// ── GLOBAL AUTH MIDDLEWARE ──
+// Ensuring every route below is protected
+router.use(auth);
 
-/* ── Own profile updates ── */
-router.put("/profile", auth, role("member"), authCtrl.updateProfile);
-router.put("/change-password", auth, role("member"), authCtrl.changePassword);
+/* ════════════════════════════════════════════════════════════════
+   PERSONAL PROFILE ROUTES (For Members)
+════════════════════════════════════════════════════════════════ */
+router.put("/profile", role("member"), authCtrl.updateProfile);
+router.put("/change-password", role("member"), authCtrl.changePassword);
 
-/* ── Admin-only — Full University CRUD ── */
-router.post("/", auth, role("admin", "superadmin"), createMemberByAdmin);
-router.get("/", auth, role("admin", "superadmin"), getMembers);
-router.get("/:id", auth, role("admin", "superadmin"), getMemberById);
-router.put("/:id", auth, role("admin", "superadmin"), updateMember);
-router.delete("/:id", auth, role("admin", "superadmin"), deleteMember);
+/* ════════════════════════════════════════════════════════════════
+   ADMIN / LIBRARIAN ROUTES
+════════════════════════════════════════════════════════════════ */
+const staffRoles = role("admin", "superadmin", "librarian");
+
+// Enroll new member
+router.post("/", staffRoles, enrollInstitutionalMember);
+
+// Fetch all members
+router.get("/", staffRoles, getMembers);
+
+// Fetch single member by ID
+router.get("/:id", staffRoles, getMemberById);
+
+// Update member
+router.put("/:id", staffRoles, updateMember);
+
+// Soft delete member
+router.delete("/:id", staffRoles, deleteMember);
 
 module.exports = router;

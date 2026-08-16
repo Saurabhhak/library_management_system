@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import styles from "./WelcomeNotification.module.css";
+import styles from "./Welcomenotification.module.css";
 
 /**
  * WelcomeNotification Component

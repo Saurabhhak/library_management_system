@@ -1,7 +1,7 @@
-// columns.js
-import RowActions from "./RowActions";
+import AdminRowActions from "./AdminRowActions";
 import styles from "./columns.module.css";
 import { getRoleInfo } from "../../../utils/roleLabels";
+
 const ONLINE_THRESHOLD_SECONDS = 90;
 
 const timeAgo = (ts) => {
@@ -18,7 +18,7 @@ const isOnline = (last_seen) => {
   return (Date.now() - new Date(last_seen)) / 1000 <= ONLINE_THRESHOLD_SECONDS;
 };
 
-/* ── Badge ────────────────────────────────────────────────────────── */
+/* ── Badge ── */
 const Badge = ({ label, color }) => (
   <span
     style={{
@@ -34,10 +34,9 @@ const Badge = ({ label, color }) => (
   </span>
 );
 
-/* ── Online Status ────────────────────────────────────────────────── */
+/* ── Online Status ── */
 const OnlineStatus = ({ last_seen }) => {
   const online = isOnline(last_seen);
-
   return (
     <div
       className={`${styles.statusBadge} ${online ? styles.online : styles.offline}`}
@@ -52,8 +51,8 @@ const OnlineStatus = ({ last_seen }) => {
   );
 };
 
-/* ── Columns ──────────────────────────────────────────────────────── */
-export const getColumns = (handleDelete) => [
+/* ── Function Renamed to getAdminColumns ── */
+export const getAdminColumns = (handleDelete) => [
   { header: "ID", accessorKey: "id", size: 70 },
   {
     header: "First Name",
@@ -71,11 +70,10 @@ export const getColumns = (handleDelete) => [
     header: "DOB",
     accessorKey: "dob",
     size: 80,
-    cell: ({ row }) => {
-      const dob = row.original.dob;
-      if (!dob) return "-";
-      return new Date(dob).toLocaleDateString("en-GB");
-    },
+    cell: ({ row }) =>
+      row.original.dob
+        ? new Date(row.original.dob).toLocaleDateString("en-GB")
+        : "-",
   },
   {
     header: "Email",
@@ -121,7 +119,7 @@ export const getColumns = (handleDelete) => [
     enableSorting: false,
     enableColumnFilter: false,
     cell: ({ row }) => (
-      <RowActions admin={row.original} onDelete={handleDelete} />
+      <AdminRowActions admin={row.original} onDelete={handleDelete} />
     ),
   },
 ];

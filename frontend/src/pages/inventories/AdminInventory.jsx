@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import styles from "./Inventory.module.css";
 import { getAdmins, deleteAdmin } from "../../services/admin/admin.service";
-import { getColumns } from "../../components/tables/admin/columns";
+import { getAdminColumns } from "../../components/tables/admin/adminColumns";
 import Swal from "sweetalert2";
 import {
   useReactTable,
@@ -170,7 +170,7 @@ function DisplayAdmin() {
         />
       ),
     },
-    ...getColumns(handleDelete),
+    ...getAdminColumns(handleDelete),
   ];
 
   /* ── Table ── */

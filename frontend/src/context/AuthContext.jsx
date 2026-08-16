@@ -104,17 +104,22 @@ export function AuthProvider({ children }) {
     setUser((prev) => (prev ? { ...prev, ...partial } : prev));
   }
 
-  const role = user?.role;
+  const role = user?.role; // 'admin' table or 'member' table distinction
 
   const value = {
     user,
     loading,
     isAuthenticated: !!user,
+
+    // Admin Side Roles (librarian added to staff array logically)
     isSuperAdmin: role === "superadmin",
     isAdmin: role === "admin" || role === "superadmin",
     isLibrarian: role === "librarian",
-    isStaff: ["admin", "superadmin", "librarian", "staff"].includes(role),
-    isMember: role === "member",
+    isStaff: ["admin", "superadmin", "librarian"].includes(role),
+
+    // Member Side Roles
+    isMember: role === "member", // Pure Student/Teacher/Professor
+
     login,
     logout,
     updateUser,

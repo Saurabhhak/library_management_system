@@ -1,36 +1,16 @@
-import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./MemberForm.module.css";
+import styles from "../../pages/admin/AdminForm.module.css"; // Reuse styling!
 
-const getMaxDob = () => {
-  const d = new Date();
-  d.setFullYear(d.getFullYear() - 18);
-  return d.toISOString().split("T")[0];
-};
-
-/**
- * MemberForm — EDIT ONLY.
- *
- * Registration (create) now goes through RegisterMember.jsx, which is a
- * separate, simplified, OTP-gated public form. This component used to
- * handle both create + edit with a large set of conditional branches
- * (isEdit ? ... : ...) — that dead "create" code (email+OTP fields,
- * password/confirm fields, Reset button) has been removed since
- * UpdateMember.jsx is the only remaining consumer.
- */
-function MemberForm({
-  title = "Update Member",
+export default function MemberForm({
+  title,
   userinfo,
   handleChange,
   handleSubmit,
-  states = [],
-  cities = [],
-  errors = {},
-  loading = false,
+  errors,
+  isEdit,
+  isSubmitting,
 }) {
   const navigate = useNavigate();
-  const maxDob = useMemo(getMaxDob, []);
-
   const bind = (name, extra = {}) => ({
     name,
     value: userinfo[name] ?? "",
@@ -42,110 +22,123 @@ function MemberForm({
   const Err = ({ name }) =>
     errors[name] ? <p className={styles.errMsg}>{errors[name]}</p> : null;
 
+  // Smart Check for Dynamic Fields
+  const isStudent = userinfo.member_type === "student";
+  const isFaculty =
+    userinfo.member_type === "teacher" || userinfo.member_type === "professor";
+
   return (
     <div className={styles.page}>
       <form onSubmit={handleSubmit} className={styles.form} noValidate>
         <h1 className={styles.title}>{title}</h1>
 
-        {/* ── Personal Info ── */}
-        <p className={styles.divider}>Personal Info</p>
+        <p className={styles.divider}>Institutional Identity</p>
+        <div className={styles.field}>
+          <label className={styles.label}>
+            Member Type <sup>*</sup>
+          </label>
+          <select {...bind("member_type", { disabled: isEdit })}>
+            <option value="">Select Role</option>
+            <option value="student">Student</option>
+            <option value="teacher">Teacher</option>
+            <option value="professor">Professor</option>
+          </select>
+          <Err name="member_type" />
+        </div>
 
+        <div className={styles.field}>
+          <label className={styles.label}>
+            Institutional ID (Roll No / Emp ID)
+          </label>
+          <input
+            {...bind("institutional_id")}
+            placeholder="Leave blank to auto-generate"
+            disabled={isEdit}
+          />
+          <Err name="institutional_id" />
+        </div>
+
+        {/* ── DYNAMIC FIELDS BASED ON ROLE ── */}
+        {isStudent && (
+          <>
+            <div className={styles.field}>
+              <label className={styles.label}>Course</label>
+              <input
+                {...bind("course")}
+                placeholder="e.g. B.Tech Computer Science"
+              />
+            </div>
+            <div className={styles.field}>
+              <label className={styles.label}>Batch Year</label>
+              <input {...bind("batch_year")} placeholder="e.g. 2024-2028" />
+            </div>
+          </>
+        )}
+        {isFaculty && (
+          <>
+            <div className={styles.field}>
+              <label className={styles.label}>Department</label>
+              <input {...bind("department")} placeholder="e.g. Physics Dept" />
+            </div>
+            <div className={styles.field}>
+              <label className={styles.label}>Designation</label>
+              <input
+                {...bind("designation")}
+                placeholder="e.g. Head of Department"
+              />
+            </div>
+          </>
+        )}
+
+        <p className={styles.divider}>Personal Details</p>
         <div className={styles.field}>
           <label className={styles.label}>
             First Name <sup>*</sup>
           </label>
-          <input {...bind("first_name")} placeholder="John" />
-          <Err name="first_name" />
+          <input {...bind("first_name")} /> <Err name="first_name" />
         </div>
-
-        <div className={styles.field}>
-          <label className={styles.label}>Last Name</label>
-          <input {...bind("last_name")} placeholder="Doe" />
-          <Err name="last_name" />
-        </div>
-
         <div className={styles.field}>
           <label className={styles.label}>
-            Phone <sup>*</sup>
+            Last Name <sup>*</sup>
           </label>
-          <input {...bind("phone")} inputMode="tel" placeholder="9876543210" />
-          <Err name="phone" />
+          <input {...bind("last_name")} /> <Err name="last_name" />
         </div>
-
-        <div className={styles.field}>
-          <label className={styles.label}>Date of Birth</label>
-          <input type="date" max={maxDob} {...bind("date_of_birth")} />
-          <Err name="date_of_birth" />
-        </div>
-
-        {/* ── Location ── */}
-        <p className={styles.divider}>Location</p>
-
         <div className={styles.field}>
           <label className={styles.label}>
-            State <sup>*</sup>
+            Email Address <sup>*</sup>
           </label>
-          <select {...bind("state_id")}>
-            <option value="">Select state</option>
-            {states.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-          <Err name="state_id" />
+          <input type="email" {...bind("email")} disabled={isEdit} />{" "}
+          <Err name="email" />
         </div>
-
         <div className={styles.field}>
-          <label className={styles.label}>
-            City <sup>*</sup>
-          </label>
-          <select {...bind("city_id")}>
-            <option value="">Select city</option>
-            {cities.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-          <Err name="city_id" />
+          <label className={styles.label}>Phone Number</label>
+          <input {...bind("phone")} maxLength={10} /> <Err name="phone" />
         </div>
 
-        {/* ── Membership (admin-controlled fields) ── */}
-        <p className={styles.divider}>Membership</p>
+        {isEdit && (
+          <>
+            <p className={styles.divider}>Library Access</p>
+            <div className={styles.field}>
+              <label className={styles.label}>
+                Status <sup>*</sup>
+              </label>
+              <select {...bind("status")}>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive / Suspended</option>
+              </select>
+            </div>
+            <div className={styles.field}>
+              <label className={styles.label}>Max Books Allowed</label>
+              <input
+                type="number"
+                {...bind("max_books_allowed")}
+                min="1"
+                max="15"
+              />
+            </div>
+          </>
+        )}
 
-        <div className={styles.field}>
-          <label className={styles.label}>Membership End</label>
-          <input type="date" {...bind("membership_end")} />
-          <Err name="membership_end" />
-        </div>
-
-        <div className={styles.field}>
-          <label className={styles.label}>Max Books Allowed</label>
-          <input
-            type="number"
-            min="1"
-            max="10"
-            {...bind("max_books_allowed")}
-            placeholder="3"
-          />
-          <Err name="max_books_allowed" />
-        </div>
-
-        <div className={styles.field}>
-          <label className={styles.label}>
-            Account Status <sup>*</sup>
-          </label>
-          <select {...bind("status")}>
-            <option value="">Select status</option>
-            <option value="active">Active — can borrow</option>
-            <option value="inactive">Inactive — access blocked</option>
-            <option value="suspended">Suspended</option>
-          </select>
-          <Err name="status" />
-        </div>
-
-        {/* ── Actions ── */}
         <div className={styles.actions}>
           <button
             type="button"
@@ -157,14 +150,16 @@ function MemberForm({
           <button
             type="submit"
             className={styles.btnPrimary}
-            disabled={loading}
+            disabled={isSubmitting}
           >
-            {loading ? "Updating…" : "Update Member"}
+            {isSubmitting
+              ? "Saving..."
+              : isEdit
+                ? "Update Member"
+                : "Enroll Member"}
           </button>
         </div>
       </form>
     </div>
   );
 }
-
-export default MemberForm;

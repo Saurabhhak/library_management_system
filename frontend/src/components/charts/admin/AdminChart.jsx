@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -8,8 +9,8 @@ import {
   PointElement,
   Tooltip,
   Legend,
+  Filler,
 } from "chart.js";
-
 import { Bar, Doughnut } from "react-chartjs-2";
 import styles from "./AdminChart.module.css";
 
@@ -23,91 +24,143 @@ ChartJS.register(
   PointElement,
   Tooltip,
   Legend,
+  Filler,
 );
 
-/* COLOR SYSTEM (ADMIN ROLES) */
+/* ───── PREMIUM PALETTE (Matching Your Image) ───── */
 const ROLE_COLORS = {
-  superadmin: "#22c55e", // green
-  admin: "#3b82f6", // blue
+  "super admin": "#22c55e", // Green
+  admin: "#3b82f6", // Blue
+  librarian: "#f59e0b", // Orange
 };
-
-const DEFAULT_PALETTE = ["#22c55e", "#3b82f6"];
-
-/* resolve color */
+const DEFAULT_PALETTE = [
+  "#6366f1",
+  "#10b981",
+  "#f59e0b",
+  "#ef4444",
+  "#06b6d4",
+  "#a855f7",
+];
 const getColor = (label, i) =>
-  ROLE_COLORS[label.toLowerCase()] || DEFAULT_PALETTE[i % 2];
+  ROLE_COLORS[label.toLowerCase()] ||
+  DEFAULT_PALETTE[i % DEFAULT_PALETTE.length];
 
-/* COMMON OPTIONS */
+/* ───── COMMON OPTIONS ───── */
 const COMMON_OPTIONS = {
   responsive: true,
   maintainAspectRatio: false,
+  animation: { duration: 1200, easing: "easeOutQuart" },
   plugins: {
     legend: {
       display: true,
-      position: "bottom",
+      position: "right", // Default right for Doughnut
       labels: {
-        boxWidth: 10,
-        font: { size: 13 },
+        color: "#94a3b8",
+        usePointStyle: true,
+        boxWidth: 8,
+        font: { size: 11, family: "Inter" },
+        padding: 15,
       },
+    },
+    tooltip: {
+      backgroundColor: "#161b22",
+      titleColor: "#f8fafc",
+      bodyColor: "#cbd5e1",
+      borderColor: "#30363d",
+      borderWidth: 1,
+      padding: 12,
+      cornerRadius: 8,
     },
   },
 };
 
-/* DONUT DATA */
+const barOptions = {
+  ...COMMON_OPTIONS,
+  plugins: { ...COMMON_OPTIONS.plugins, legend: { display: false } }, // Hide legend for bar
+  scales: {
+    y: {
+      beginAtZero: true,
+      grid: { color: "rgba(255,255,255,0.05)" },
+      ticks: { color: "#64748b", stepSize: 1, font: { size: 10 } },
+    },
+    x: {
+      grid: { display: false },
+      ticks: { color: "#94a3b8", font: { size: 10 } },
+    },
+  },
+};
+
+/* ───── DATA BUILDERS ───── */
 const buildDonutData = (labels, values) => ({
   labels,
   datasets: [
     {
       data: values,
       backgroundColor: labels.map(getColor),
-      borderWidth: 0,
+      borderColor: "#0d1117",
+      borderWidth: 4,
+      hoverOffset: 6,
     },
   ],
 });
 
-/* BAR DATA */
 const buildBarData = (labels, values) => ({
-  labels: ["Admins"],
-  datasets: labels.map((label, i) => ({
-    label,
-    data: [values[i]],
-    backgroundColor: getColor(label, i),
-    borderColor: getColor(label, i),
-    borderWidth: 1,
-  })),
+  labels,
+  datasets: [
+    {
+      data: values,
+      backgroundColor: labels.map((l, i) => getColor(l, i)),
+      borderRadius: 6,
+      barPercentage: 0.6,
+    },
+  ],
 });
 
 /* ___________________________ COMPONENT _____________________________ */
-function AdminChart({
+export default function AdminChart({
   chartData = {},
-  type = "bar", // doughnut | bar
+  type = "bar",
   title = "",
+  icon = "fa-chart-pie",
+  badgeText = "Overview",
 }) {
   const { labels = [], values = [] } = chartData;
+  const [isVisible, setIsVisible] = useState(false);
 
-  /* EMPTY */
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
   if (!labels.length) {
     return (
-      <div className={styles.card}>
-        <h3 className={styles.title}>{title}</h3>
-        <p className={styles.empty}>No data</p>
+      <div className={`${styles.card} ${isVisible ? styles.fadeIn : ""}`}>
+        <div className={styles.cardHeader}>
+          <h3 className={styles.title}>
+            <i className={`fa-solid ${icon}`} /> {title}
+          </h3>
+        </div>
+        <div className={styles.empty}>
+          <i className="fa-solid fa-chart-simple" />
+          <p>No data to display</p>
+        </div>
       </div>
     );
   }
 
-  let data;
-  let options = COMMON_OPTIONS;
-
-  if (type === "doughnut") {
-    data = buildDonutData(labels, values);
-  } else {
-    data = buildBarData(labels, values);
-  }
+  const data =
+    type === "doughnut"
+      ? buildDonutData(labels, values)
+      : buildBarData(labels, values);
+  const options = type === "doughnut" ? COMMON_OPTIONS : barOptions;
 
   return (
-    <div className={styles.card}>
-      <h3 className={styles.title}>{title}</h3>
-
+    <div className={`${styles.card} ${isVisible ? styles.fadeIn : ""}`}>
+      <div className={styles.cardHeader}>
+        <h3 className={styles.title}>
+          <i className={`fa-solid ${icon}`} /> {title}
+        </h3>
+        <span className={styles.chartBadge}>{badgeText}</span>
+      </div>
       <div className={styles.chartWrapper}>
         {type === "doughnut" && <Doughnut data={data} options={options} />}
         {type === "bar" && <Bar data={data} options={options} />}
@@ -115,5 +168,3 @@ function AdminChart({
     </div>
   );
 }
-
-export default AdminChart;
