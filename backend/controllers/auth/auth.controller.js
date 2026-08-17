@@ -13,8 +13,10 @@ const {
    PRIVATE HELPERS
 ════════════════════════════════════════════════════════════════ */
 
-// Fetch user details (Admin or Member) by email
-const findUserByEmail = async (email) => {
+// Fetch user details (Admin by Email ONLY | Member by Email OR ID)
+const findUserByIdentifier = async (identifier) => {
+  const lowerId = identifier.toLowerCase();
+
   const { rows: adminRows } = await pool.query(
     `SELECT id, first_name, last_name, email,
             password_hash AS pwd,
@@ -22,18 +24,18 @@ const findUserByEmail = async (email) => {
             role
      FROM admin
      WHERE LOWER(email) = $1 AND is_deleted = false`,
-    [email],
+    [lowerId],
   );
   if (adminRows.length) return { ...adminRows[0], userType: "admin" };
 
   const { rows: memberRows } = await pool.query(
-    `SELECT id, first_name, last_name, email,
+    `SELECT id, first_name, last_name, email, institutional_id, member_type, 
             password AS pwd,
             status   AS active_flag,
             'member' AS role
      FROM members
-     WHERE LOWER(email) = $1 AND is_deleted = false`,
-    [email],
+     WHERE (LOWER(email) = $1 OR LOWER(institutional_id) = $1) AND is_deleted = false`,
+    [lowerId],
   );
   if (memberRows.length) return { ...memberRows[0], userType: "member" };
 
@@ -61,43 +63,42 @@ const saveRefreshToken = (userId, userType, rawToken, req) =>
    Authenticates user, generates tokens, and saves session.
 ════════════════════════════════════════════════════════════════ */
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
+  // Frontend se "email" key me ID ya Email dono aa sakte hain
+  const identifier = req.body.email || req.body.identifier;
+  const { password } = req.body;
 
-  if (!email || !password)
+  if (!identifier || !password)
     return res
       .status(400)
-      .json({ success: false, message: "Email and password are required" });
+      .json({ success: false, message: "Email/ID and password are required" });
 
   try {
-    const user = await findUserByEmail(email.toLowerCase());
+    const user = await findUserByIdentifier(identifier);
 
-    // Validate user existence and password match
     if (!user || !(await bcrypt.compare(password, user.pwd)))
       return res
         .status(401)
         .json({ success: false, message: "Invalid credentials" });
 
-    // Ensure account is active
     if (user.active_flag !== "active")
       return res.status(403).json({
         success: false,
         message: "Account inactive. Contact support.",
       });
 
-    // Update admin activity status
     if (user.userType === "admin")
       await pool.query(
         "UPDATE admin SET last_seen = NOW(), is_online = true WHERE id = $1",
         [user.id],
       );
 
-    // Generate tokens
     const tokenPayload = {
       id: user.id,
       email: user.email,
       role: user.role,
-      userType: user.userType, // Used by AuthContext for decoding
+      userType: user.userType,
     };
+
     const accessToken = signAccessToken(tokenPayload);
     const refreshToken = generateRefreshToken();
 
@@ -115,6 +116,8 @@ exports.login = async (req, res) => {
           last_name: user.last_name,
           email: user.email,
           role: user.role,
+          institutional_id: user.institutional_id || null,
+          member_type: user.member_type || null, 
         },
       },
     });
@@ -262,6 +265,7 @@ exports.profile = async (req, res) => {
     if (req.user.role === "member") {
       const { rows } = await pool.query(
         `SELECT m.id, m.first_name, m.last_name, m.email, m.phone,
+                m.institutional_id, m.member_type,
                 m.date_of_birth, s.name AS state, c.name AS city,
                 m.membership_start, m.membership_end,
                 m.max_books_allowed, m.status, 'member' AS role
@@ -273,6 +277,7 @@ exports.profile = async (req, res) => {
       );
       user = rows[0];
     } else {
+      // ... Admin logic remains same ...
       const { rows } = await pool.query(
         `SELECT a.id, a.first_name, a.last_name, a.email, a.phone,
                 s.name AS state, c.name AS city,

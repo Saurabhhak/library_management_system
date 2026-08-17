@@ -15,6 +15,7 @@ const Toast = Swal.mixin({
   background: "#0f1117",
   color: "#e2e8f0",
 });
+
 const toast = (icon, title) =>
   Toast.fire({
     icon,
@@ -37,7 +38,28 @@ export default function Login() {
 
   const validate = () => {
     const err = {};
-    if (!form.email) err.email = "Email is required.";
+    const identifier = form.email.trim(); // "form.email" state object ki key hai
+
+    if (!identifier) {
+      err.email = "Email or Institutional ID is required.";
+    } else {
+      // 1. Agar '@' hai, toh Email validation rule lagao
+      if (identifier.includes("@")) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(identifier)) {
+          err.email = "Please enter a valid email address.";
+        }
+      }
+      // 2. Agar '@' nahi hai, toh Institutional ID validation rule lagao
+      else {
+        // Regex format: Starts with STU- or FAC-, exactly 4 digit year, followed by dash and alphanumeric code
+        const idRegex = /^(STU|FAC)-\d{4}-[A-Za-z0-9]+$/i;
+        if (!idRegex.test(identifier)) {
+          err.email = "Invalid ID format. Use STU-2026-XXXX or FAC-2026-XXXX.";
+        }
+      }
+    }
+
     if (!form.password) err.password = "Password is required.";
     return err;
   };
@@ -75,6 +97,7 @@ export default function Login() {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
+        {/* BRAND SIDE */}
         <div className={styles.brandSide}>
           <h1 className={styles.brandTitle}>
             <i className="fa-solid fa-book-open-reader" /> LibraryMS
@@ -85,6 +108,7 @@ export default function Login() {
           </p>
         </div>
 
+        {/* FORM SIDE */}
         <div className={styles.formSideLogin}>
           <div className={styles.formHeader}>
             <h2>Welcome Back</h2>
@@ -93,29 +117,47 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className={styles.form} noValidate>
             <div className={styles.inputGroup}>
-              <label>Email Address</label>
+              <label>Email or Institutional ID</label>
               <div className={styles.inputWrapper}>
-                <i className="fa-solid fa-envelope" />
+                <i className="fa-solid fa-user" />{" "}
                 <input
                   name="email"
-                  type="email"
+                  type="text"
                   value={form.email}
                   onChange={handleChange}
-                  placeholder="you@university.edu"
-                  autoComplete="email"
+                  placeholder="you@university.edu or STU-2026-XXXX"
+                  autoComplete="username"
                   className={errors.email ? styles.inputErr : ""}
                 />
               </div>
               <Err name="email" />
             </div>
 
+            {/* PASSWORD INPUT & RECOVERY LINKS */}
             <div className={styles.inputGroup}>
               <div className={styles.labelRow}>
                 <label>Password</label>
-                <Link to="/forgot-password" className={styles.forgotLink}>
-                  Forgot password?
-                </Link>
+
+                {/* ── THE FIX: Tab-based Recovery Links ── */}
+                <div className={styles.recoveryLinks}>
+                  <Link
+                    to="/forgot-password"
+                    state={{ tab: "password" }}
+                    className={styles.forgotLink}
+                  >
+                    Forgot password?
+                  </Link>
+                  <span className={styles.linkDivider}>|</span>
+                  <Link
+                    to="/forgot-password"
+                    state={{ tab: "id" }}
+                    className={styles.forgotLink}
+                  >
+                    Forgot ID?
+                  </Link>
+                </div>
               </div>
+
               <div className={styles.inputWrapper}>
                 <i className="fa-solid fa-lock" />
                 <input
@@ -138,6 +180,7 @@ export default function Login() {
               <Err name="password" />
             </div>
 
+            {/* SUBMIT BUTTON */}
             <button
               type="submit"
               className={styles.submitBtn}

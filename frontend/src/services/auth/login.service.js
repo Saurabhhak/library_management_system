@@ -2,14 +2,20 @@ import API from "../../api/axiosInstance";
 
 /**
  * Unified login — NO role param. Backend auto-detects admin vs member
- * by checking both tables. Response includes `user.role` so the
- * frontend knows where to redirect after login.
+ * by checking both tables. Evaluates both Email OR Institutional ID.
  */
-export const login = ({ email, password }) =>
-  API.post("/auth/login", { email, password });
+export const login = ({ email, password }) => {
+  return API.post("/auth/login", { email, password });
+};
 
-export const logout = () => API.post("/auth/logout");
+export const logout = () => {
+  return API.post("/auth/logout");
+};
 
-export const getProfile = () => API.get("/auth/profile");
+export const getProfile = () => {
+  return API.get("/auth/profile");
+};
 
-export const refreshAccessToken = () => API.post("/auth/refresh");
+export const refreshAccessToken = () => {
+  return API.post("/auth/refresh");
+};

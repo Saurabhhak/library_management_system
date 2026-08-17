@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axiosInstance from "../api/axiosInstance";
@@ -8,7 +8,7 @@ import styles from "./Settings.module.css";
 const TABS = [
   { id: "profile", label: "Profile", icon: "fa-solid fa-user-circle" },
   { id: "security", label: "Security", icon: "fa-solid fa-shield-halved" },
-  { id: "delete", label: "Delete Account", icon: "fa-solid fa-trash-can" }, // <-- New Tab
+  { id: "delete", label: "Delete Account", icon: "fa-solid fa-trash-can" },
 ];
 
 const ROLE_LABELS = {
@@ -19,14 +19,23 @@ const ROLE_LABELS = {
   member: { label: "Member", color: "badge--member" },
 };
 
-/* ── Profile Tab ── */
-// ... (Your exact same ProfileTab code goes here, no changes needed) ...
+/* ── 1. Profile Tab ── */
 function ProfileTab({ profile, onUpdated }) {
   const role = profile?.role ?? "member";
   const roleInfo = ROLE_LABELS[role] ?? { label: role, color: "badge--member" };
   const initials = (profile?.first_name ??
     profile?.email ??
     "?")[0].toUpperCase();
+
+  // 🔥 Fetch exact designation (Student, Professor, etc.)
+  let displayLabel = roleInfo.label;
+  if (role === "member") {
+    const specificRole = profile?.member_type;
+    if (specificRole) {
+      displayLabel =
+        specificRole.charAt(0).toUpperCase() + specificRole.slice(1);
+    }
+  }
 
   const [form, setForm] = useState({
     first_name: profile?.first_name ?? "",
@@ -77,33 +86,57 @@ function ProfileTab({ profile, onUpdated }) {
       <div className={styles.avatarRow}>
         <div className={styles.avatar}>{initials}</div>
         <div className={styles.avatarInfo}>
-          <span className={`${styles.badge} ${styles[roleInfo.color]}`}>
-            <i className="fa-solid fa-circle-check" /> {roleInfo.label}
-          </span>
+          <div className={styles.badgeRow}>
+            <span className={`${styles.badge} ${styles[roleInfo.color]}`}>
+              <i className="fa-solid fa-circle-check" /> {displayLabel}
+            </span>
+            {role === "member" && profile?.institutional_id && (
+              <span className={styles.instIdBadge}>
+                <i className="fa-solid fa-id-badge" />{" "}
+                {profile.institutional_id}
+              </span>
+            )}
+          </div>
           <p className={styles.avatarEmail}>{profile?.email ?? "—"}</p>
         </div>
       </div>
+
       <form onSubmit={handleSave} className={styles.form}>
-        <div className={styles.fieldGroup}>
-          <label className={styles.label}>First Name</label>
-          <input
-            className={styles.input}
-            name="first_name"
-            value={form.first_name}
-            onChange={handleChange}
-            required
-          />
+        {role === "member" && profile?.institutional_id && (
+          <div className={styles.fieldGroup}>
+            <label className={styles.label}>Institutional ID</label>
+            <input
+              className={`${styles.input} ${styles.inputReadonly}`}
+              value={profile.institutional_id}
+              readOnly
+              title="ID cannot be changed"
+            />
+          </div>
+        )}
+
+        <div className={styles.formGrid}>
+          <div className={styles.fieldGroup}>
+            <label className={styles.label}>First Name</label>
+            <input
+              className={styles.input}
+              name="first_name"
+              value={form.first_name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className={styles.fieldGroup}>
+            <label className={styles.label}>Last Name</label>
+            <input
+              className={styles.input}
+              name="last_name"
+              value={form.last_name}
+              onChange={handleChange}
+              required
+            />
+          </div>
         </div>
-        <div className={styles.fieldGroup}>
-          <label className={styles.label}>Last Name</label>
-          <input
-            className={styles.input}
-            name="last_name"
-            value={form.last_name}
-            onChange={handleChange}
-            required
-          />
-        </div>
+
         <div className={styles.fieldGroup}>
           <label className={styles.label}>Email Address</label>
           <input
@@ -117,6 +150,7 @@ function ProfileTab({ profile, onUpdated }) {
             your email
           </p>
         </div>
+
         <div className={styles.fieldGroup}>
           <label className={styles.label}>Phone Number</label>
           <input
@@ -127,14 +161,16 @@ function ProfileTab({ profile, onUpdated }) {
             type="tel"
           />
         </div>
+
         <div className={styles.fieldGroup}>
-          <label className={styles.label}>Role</label>
+          <label className={styles.label}>Role / Designation</label>
           <input
             className={`${styles.input} ${styles.inputReadonly}`}
-            value={roleInfo.label}
+            value={displayLabel}
             readOnly
           />
         </div>
+
         <button type="submit" className={styles.saveBtn} disabled={saving}>
           {saving ? (
             <>
@@ -151,8 +187,7 @@ function ProfileTab({ profile, onUpdated }) {
   );
 }
 
-/* ── Security Tab ── */
-// ... (Your exact same SecurityTab code goes here, no changes needed) ...
+/* ── 2. Security Tab ── */
 function SecurityTab({ role }) {
   const [form, setForm] = useState({
     currentPassword: "",
@@ -172,6 +207,7 @@ function SecurityTab({ role }) {
   function toggleShow(field) {
     setShow((p) => ({ ...p, [field]: !p[field] }));
   }
+
   function strength(pw) {
     let score = 0;
     if (pw.length >= 8) score++;
@@ -192,20 +228,22 @@ function SecurityTab({ role }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (form.newPassword !== form.confirmPassword)
+    if (form.newPassword !== form.confirmPassword) {
       return Swal.fire({
         icon: "warning",
         title: "Passwords do not match",
         background: "#0f172a",
         color: "#e5e7eb",
       });
-    if (pwStrength < 2)
+    }
+    if (pwStrength < 2) {
       return Swal.fire({
         icon: "warning",
         title: "Password too weak",
         background: "#0f172a",
         color: "#e5e7eb",
       });
+    }
 
     setSaving(true);
     try {
@@ -348,7 +386,7 @@ function SecurityTab({ role }) {
   );
 }
 
-/* ── NEW: Delete Account Tab (Matching the Reference Image) ── */
+/* ── 3. Delete Account Tab ── */
 function DeleteAccountTab() {
   const { logout } = useAuth();
   const navigate = useNavigate();
@@ -356,22 +394,22 @@ function DeleteAccountTab() {
   const [isChecked, setIsChecked] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  // Generate date 15 days from now
-  const deleteDate = new Date();
-  deleteDate.setDate(deleteDate.getDate() + 15);
-  const formattedDate = deleteDate.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  // 🔥 THE FIX: Dynamically calculate 15 days ahead based on exact current time using useMemo for performance
+  const formattedDate = useMemo(() => {
+    const dateObj = new Date();
+    dateObj.setDate(dateObj.getDate() + 15);
+    return dateObj.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  }, []);
 
   async function handleDelete() {
     if (!isChecked) return;
-
     setDeleting(true);
     try {
-      await axiosInstance.delete("/auth/profile/delete"); // Call API
-
+      await axiosInstance.delete("/auth/profile/delete");
       await Swal.fire({
         icon: "success",
         title: "Account Scheduled for Deletion",
@@ -380,14 +418,13 @@ function DeleteAccountTab() {
         color: "#e5e7eb",
         confirmButtonColor: "#ef4444",
       });
-
-      await logout(); // Clear context and tokens
-      navigate("/login"); // Redirect
+      await logout();
+      navigate("/login");
     } catch (err) {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Could not schedule account deletion. Please try again.",
+        text: "Could not schedule account deletion.",
         background: "#0f172a",
         color: "#e5e7eb",
       });
@@ -399,28 +436,18 @@ function DeleteAccountTab() {
     <div className={styles.tabContent}>
       <h3 className={styles.deleteMainTitle}>Delete Account</h3>
       <hr className={styles.deleteDivider} />
-
       <div className={styles.deleteCardBox}>
         <h2 className={styles.deleteCardTitle}>Confirm Account Deletion</h2>
-
         <p className={styles.deleteText}>
           Your account deletion will be scheduled for{" "}
           <strong>{formattedDate}</strong>. Your account will immediately enter
-          a "Soft Deleted" state, meaning you will lose access and your profile
-          will be hidden from the system.
+          a "Soft Deleted" state, meaning you will lose access.
         </p>
-
         <p className={styles.deleteText}>
           You will <strong>not</strong> have access to your account during this
-          period. If you wish to cancel this deletion request, you must contact
-          the system administrators before <strong>{formattedDate}</strong>.
+          period. Contact administrators before <strong>{formattedDate}</strong>{" "}
+          to cancel.
         </p>
-
-        <p className={styles.deleteText}>
-          After 15 days, your account and all associated personal data will be
-          permanently removed and cannot be recovered.
-        </p>
-
         <label className={styles.checkboxLabel}>
           <input
             type="checkbox"
@@ -433,7 +460,6 @@ function DeleteAccountTab() {
             {formattedDate} and cannot be restored.
           </span>
         </label>
-
         <button
           onClick={handleDelete}
           disabled={!isChecked || deleting}
@@ -447,7 +473,8 @@ function DeleteAccountTab() {
 }
 
 /* ── Main Settings Component ── */
-function Settings() {
+export default function Settings() {
+  const { user: authUser } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -455,10 +482,12 @@ function Settings() {
   useEffect(() => {
     axiosInstance
       .get("/auth/profile")
-      .then((res) => setProfile(res.data.user))
-      .catch(() => setProfile(null))
+      .then((res) => {
+        setProfile({ ...authUser, ...res.data.user });
+      })
+      .catch(() => setProfile(authUser))
       .finally(() => setLoading(false));
-  }, []);
+  }, [authUser]);
 
   return (
     <div className={styles.page}>
@@ -488,8 +517,11 @@ function Settings() {
 
         <main className={styles.main}>
           {loading ? (
-            <div className={styles.tabContent}>
-              <i className="fa-solid fa-spinner fa-spin" /> Loading…
+            <div
+              className={styles.tabContent}
+              style={{ textAlign: "center", color: "#64748b" }}
+            >
+              <i className="fa-solid fa-spinner fa-spin fa-2x" />
             </div>
           ) : (
             <>
@@ -507,5 +539,3 @@ function Settings() {
     </div>
   );
 }
-
-export default Settings;

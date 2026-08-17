@@ -5,11 +5,11 @@ import {
   resetPassword,
   forgotPassword,
 } from "../../services/auth/password.service";
-import styles from "./ForgotPassword.module.css";
+import { Eye, EyeOff } from "lucide-react";
+import styles from "./ForgotPassword.module.css"; // Reuse the EXACT SAME CSS file for consistency
 
 const PASSWORD_REGEX =
   /^(?=(.*[A-Za-z]){3,})(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
 const OTP_RESEND_DELAY = 120;
 
 const toast = Swal.mixin({
@@ -18,12 +18,10 @@ const toast = Swal.mixin({
   showConfirmButton: false,
   timer: 3000,
   timerProgressBar: true,
+  background: "#0f1117",
+  color: "#e2e8f0",
 });
 
-/**
- * ResetPassword — the ONLY reset-password page. Reads { email } from
- * location.state (set by ForgotPassword). No role needed.
- */
 export default function ResetPassword() {
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -37,7 +35,7 @@ export default function ResetPassword() {
   const [canResend, setCanResend] = useState(false);
 
   useEffect(() => {
-    if (!email) navigate("/forgot-password", { replace: true });
+    if (!email) navigate("/login", { replace: true });
   }, [email, navigate]);
 
   useEffect(() => {
@@ -56,12 +54,11 @@ export default function ResetPassword() {
 
   const validate = () => {
     const errs = {};
-    if (!/^\d{6}$/.test(fields.otp)) errs.otp = "OTP must be 6 digits";
+    if (!/^\d{6}$/.test(fields.otp)) errs.otp = "OTP must be exactly 6 digits";
     if (!fields.password) {
       errs.password = "Password is required";
     } else if (!PASSWORD_REGEX.test(fields.password)) {
-      errs.password =
-        "Min 8 chars, 1 uppercase, 1 number, 1 special character & at least 3 letters";
+      errs.password = "Min 8 chars, 1 uppercase, 1 number, 1 special char";
     }
     if (fields.password !== fields.confirm)
       errs.confirm = "Passwords do not match";
@@ -81,13 +78,10 @@ export default function ResetPassword() {
         otp: fields.otp,
         password: fields.password,
       });
-      toast.fire({ icon: "success", title: "Password updated successfully" });
+      toast.fire({ icon: "success", title: "Password updated successfully!" });
       setTimeout(() => navigate("/login", { replace: true }), 1500);
     } catch (err) {
-      const message =
-        err.response?.data?.message ||
-        (err.request ? "Server not responding" : err.message) ||
-        "Something went wrong";
+      const message = err.response?.data?.message || "Something went wrong";
       toast.fire({ icon: "error", title: message });
     } finally {
       setLoading(false);
@@ -97,16 +91,12 @@ export default function ResetPassword() {
   const handleResend = async () => {
     try {
       setLoading(true);
-      await forgotPassword({ email });
+      await forgotPassword({ email }); // Will trigger OTP resend
       toast.fire({ icon: "success", title: "OTP resent to your email" });
       setTimer(OTP_RESEND_DELAY);
       setCanResend(false);
     } catch (err) {
-      const message =
-        err.response?.data?.message ||
-        (err.request ? "Server not responding" : err.message) ||
-        "Something went wrong";
-      toast.fire({ icon: "error", title: message });
+      toast.fire({ icon: "error", title: "Failed to resend OTP" });
     } finally {
       setLoading(false);
     }
@@ -123,72 +113,112 @@ export default function ResetPassword() {
         </div>
       </header>
 
-      <form onSubmit={handleSubmit} className={styles.formSection}>
-        <h2>Reset Password</h2>
+      <div className={styles.formContainer} style={{ marginTop: "7rem" }}>
+        <form onSubmit={handleSubmit} className={styles.formSection}>
+          <h2>Secure Reset</h2>
+          <p className={styles.subText}>
+            Enter the 6-digit OTP sent to <b>{email}</b>
+          </p>
 
-        <input
-          type="text"
-          placeholder="Enter OTP"
-          value={fields.otp}
-          maxLength={6}
-          onChange={(e) => setField("otp", e.target.value)}
-          className={`${styles.formInput} ${errors.otp ? styles.inputError : ""}`}
-        />
-        {errors.otp && <p className={styles.errorMsg}>{errors.otp}</p>}
-
-        <div className={styles.password_wrapper}>
           <input
-            type={show.password ? "text" : "password"}
-            placeholder="New Password"
-            value={fields.password}
-            onChange={(e) => setField("password", e.target.value)}
-            className={`${styles.formInput} ${errors.password ? styles.inputError : ""}`}
+            type="text"
+            placeholder="Enter 6-Digit OTP"
+            value={fields.otp}
+            maxLength={6}
+            onChange={(e) => setField("otp", e.target.value.replace(/\D/g, ""))}
+            className={`${styles.formInput} ${errors.otp ? styles.inputError : ""}`}
+            style={{
+              letterSpacing: "4px",
+              fontSize: "16px",
+              textAlign: "center",
+            }}
           />
-          <span
-            className={styles.eye_icon}
-            onClick={() => setShow((s) => ({ ...s, password: !s.password }))}
-          >
-            <i
-              className={`fa-solid ${show.password ? "fa-eye-slash" : "fa-eye"}`}
+          {errors.otp && <p className={styles.errorMsg}>{errors.otp}</p>}
+
+          <div style={{ position: "relative" }}>
+            <input
+              type={show.password ? "text" : "password"}
+              placeholder="New Strong Password"
+              value={fields.password}
+              onChange={(e) => setField("password", e.target.value)}
+              className={`${styles.formInput} ${errors.password ? styles.inputError : ""}`}
             />
-          </span>
-        </div>
-        {errors.password && (
-          <p className={styles.errorMsg}>{errors.password}</p>
-        )}
+            <button
+              type="button"
+              className={styles.eyeBtn}
+              style={{
+                position: "absolute",
+                right: "12px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "none",
+                border: "none",
+                color: "#8f94a4",
+                cursor: "pointer",
+              }}
+              onClick={() => setShow((s) => ({ ...s, password: !s.password }))}
+            >
+              {show.password ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+          {errors.password && (
+            <p className={styles.errorMsg}>{errors.password}</p>
+          )}
 
-        <div className={styles.password_wrapper}>
-          <input
-            type={show.confirm ? "text" : "password"}
-            placeholder="Confirm Password"
-            value={fields.confirm}
-            onChange={(e) => setField("confirm", e.target.value)}
-            className={`${styles.formInput} ${errors.confirm ? styles.inputError : ""}`}
-          />
-          <span
-            className={styles.eye_icon}
-            onClick={() => setShow((s) => ({ ...s, confirm: !s.confirm }))}
-          >
-            <i
-              className={`fa-solid ${show.confirm ? "fa-eye-slash" : "fa-eye"}`}
+          <div style={{ position: "relative" }}>
+            <input
+              type={show.confirm ? "text" : "password"}
+              placeholder="Confirm New Password"
+              value={fields.confirm}
+              onChange={(e) => setField("confirm", e.target.value)}
+              className={`${styles.formInput} ${errors.confirm ? styles.inputError : ""}`}
             />
-          </span>
-        </div>
-        {errors.confirm && <p className={styles.errorMsg}>{errors.confirm}</p>}
+            <button
+              type="button"
+              className={styles.eyeBtn}
+              style={{
+                position: "absolute",
+                right: "12px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "none",
+                border: "none",
+                color: "#8f94a4",
+                cursor: "pointer",
+              }}
+              onClick={() => setShow((s) => ({ ...s, confirm: !s.confirm }))}
+            >
+              {show.confirm ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+          {errors.confirm && (
+            <p className={styles.errorMsg}>{errors.confirm}</p>
+          )}
 
-        <button type="submit" disabled={loading} className={styles.btnFeature}>
-          {loading ? "Updating..." : "Update Password"}
-        </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className={styles.btnFeature}
+          >
+            {loading ? "Updating..." : "Set New Password"}
+          </button>
 
-        <button
-          type="button"
-          disabled={!canResend || loading}
-          onClick={handleResend}
-          className={`${styles.btnFeature} ${styles.resendBtn}`}
-        >
-          {canResend ? "Resend OTP" : `Resend OTP (${timer}s)`}
-        </button>
-      </form>
+          <button
+            type="button"
+            disabled={!canResend || loading}
+            onClick={handleResend}
+            className={styles.btnFeature}
+            style={{
+              background: "transparent",
+              border: "1px solid #30363d",
+              color: "#8f94a4",
+              marginTop: "-10px",
+            }}
+          >
+            {canResend ? "Resend OTP" : `Resend OTP (${timer}s)`}
+          </button>
+        </form>
+      </div>
     </>
   );
 }

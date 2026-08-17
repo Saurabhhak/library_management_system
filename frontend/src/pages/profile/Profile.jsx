@@ -2,15 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./Profile.module.css";
 import Swal from "sweetalert2";
-/**
- * Profile — dropdown panel shown from the Navbar.
- *
- * Reads `user` directly from AuthContext (already fetched once at app
- * bootstrap and kept in sync after login) — zero extra API calls. This
- * also means it's safe for Navbar to render this unconditionally, since
- * it renders nothing (`return null`) when nobody is logged in.
- */
-function Profile({ closeAll , profile}) {
+
+function Profile({ closeAll }) {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
@@ -21,13 +14,9 @@ function Profile({ closeAll , profile}) {
 
   const handleLogout = async () => {
     closeAll();
-
     const result = await Swal.fire({
       title: "Are you sure you want to logout?",
-      html: `
-        <b>Role:</b> ${user?.role} <br/>
-        <b>Name:</b> ${user?.first_name} ${user?.last_name}
-      `,
+      html: `<b>Name:</b> ${user?.first_name} ${user?.last_name}`,
       icon: "question",
       showCancelButton: true,
       background: "#0f172a",
@@ -41,7 +30,7 @@ function Profile({ closeAll , profile}) {
     });
 
     if (result.isConfirmed) {
-      await logout(); // AuthContext — clears in-memory token + revokes refresh cookie
+      await logout();
       await Swal.fire({
         icon: "success",
         title: "Logged Out!",
@@ -57,19 +46,32 @@ function Profile({ closeAll , profile}) {
 
   if (!user) return null;
 
-  const initials = (user?.first_name ??
-    user?.email ??
-    "?")[0].toUpperCase();
+  const initials = (user?.first_name ?? user?.email ?? "?")[0].toUpperCase();
+
+  // THE FIX: Resolve correct Display Role for Navbar
+  let displayRole = "Member";
+  if (user.role === "member" && user.member_type) {
+    displayRole =
+      user.member_type.charAt(0).toUpperCase() + user.member_type.slice(1);
+  } else if (user.role !== "member") {
+    displayRole =
+      user.role === "superadmin"
+        ? "Super Admin"
+        : user.role.charAt(0).toUpperCase() + user.role.slice(1);
+  }
 
   return (
     <div className={styles.profileContainer}>
-        <div className={styles.avatar}>{initials}</div>
+      <div className={styles.avatar}>{initials}</div>
       <div className={styles.profileCard}>
+        {/* Name */}
         <p>
-          <span>
+          <span className={styles.userName}>
             {user.first_name} {user.last_name}
           </span>
         </p>
+
+        {/* Dynamic Role (Student, Professor, Admin, etc.) */}
         <p>
           <span
             className={
@@ -78,16 +80,29 @@ function Profile({ closeAll , profile}) {
                 : styles.member_role
             }
           >
-            {user.role}
+            {displayRole}
           </span>
         </p>
+
+        {/* Institutional ID (Only for Members) */}
+        {user.role === "member" && user.institutional_id && (
+          <p>
+            <span className={styles.instId}>
+              <i className="fa-solid fa-id-badge" /> {user.institutional_id}
+            </span>
+          </p>
+        )}
+
+        {/* Email */}
         <p>
-          <span>{user.email}</span>
+          <span className={styles.userEmail}>{user.email}</span>
         </p>
       </div>
+
       <div className={styles.actionBtns} onClick={handleSetting}>
         <button className={styles.logoutBtn}>
-          <i className={`fa-solid fa-gear ${styles.settingsIcon}`}></i> Manage Account
+          <i className={`fa-solid fa-gear ${styles.settingsIcon}`}></i> Manage
+          Account
         </button>
       </div>
       <div className={styles.actionBtns}>
@@ -98,4 +113,5 @@ function Profile({ closeAll , profile}) {
     </div>
   );
 }
+
 export default Profile;

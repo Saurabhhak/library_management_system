@@ -1,10 +1,10 @@
 .profileContainer {
   width: 18rem;
-  height: 55vh;
+  height: auto; /* Changed to auto so it adjusts based on content */
+  min-height: 55vh;
   padding: 1.2rem;
   border-radius: 0.7rem;
   background: #161b22;
-
   backdrop-filter: blur(12px);
   box-shadow:
     0 10px 25px rgba(0, 0, 0, 0.4),
@@ -41,29 +41,22 @@
   opacity: 1;
   transform: rotate(90deg) scale(1.1);
 }
-.avatarRow {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid #1e293b;
-}
 
 .avatar {
-  width: 55px;
-  height: 55px;
+  font-size: 1.75rem;
+  margin: 1rem 0;
+  padding: 0.6rem;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #1e3a5f, #0f4c3a);
-  border: 2px solid #2ee6a6;
-  color: #2ee6a6;
-  font-size: 1.5rem;
-  font-weight: 700;
+  color: #ccc;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  box-shadow: inset 0 0 0.5rem rgba(89, 89, 89, 0.701);
+  background: linear-gradient(135deg, #1e293b, #0f172a);
 }
+
 .profileCard {
   font-size: 0.86rem;
   padding: 1rem;
@@ -79,11 +72,11 @@
 .profileCard p {
   display: flex;
   justify-content: center;
-  /* justify-content: space-between; */
   align-items: center;
-  padding: 0.45rem 0;
+  padding: 0.65rem 0;
   color: #b9c0c7;
   position: relative;
+  margin: 0;
 }
 
 /* Divider line (clean modern style) */
@@ -110,19 +103,40 @@
 }
 
 .profileCard p span {
-  /* border: 1px solid rgb(103, 255, 1); */
   display: flex;
-  align-self: self-end;
-  text-align: start;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.userName {
+  font-weight: 600;
+  color: #f8fafc;
+  letter-spacing: 0.5px;
+}
+
+.userEmail {
+  font-size: 0.8rem;
+  color: #8b949e;
+}
+
+/* Institutional ID specific style */
+.instId {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #60a5fa;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
 .profileCard .admins_role {
   position: relative;
-  color: #00a778;
+  color: #10b981;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.11rem;
-  line-clamp: calc(0.5rem);
 }
 
 .profileCard .admins_role::after {
@@ -132,25 +146,20 @@
   bottom: -5px;
   width: 100%;
   height: 1px;
-  /* background: #005acf; */
   background: linear-gradient(190deg, #10b981, #6366f1);
-  /* box-shadow: 0 0 8px rgba(88, 166, 255, 0.6); */
   transform: translateX(-50%) scaleX(0);
   transform-origin: center;
-
   animation: underlineExpand 3s ease-in-out infinite;
 }
-.Roles {
-  background: linear-gradient(190deg, #10b981, #6366f1);
-}
+
 .profileCard .member_role {
   position: relative;
   color: #6366f1;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.11rem;
-  line-clamp: calc(0.5rem);
 }
+
 .profileCard .member_role::after {
   content: "";
   position: absolute;
@@ -158,13 +167,12 @@
   bottom: -5px;
   width: 100%;
   height: 1px;
-  /* background: #005acf; */
   background: linear-gradient(190deg, #a0a2ff);
-  /* box-shadow: 0 0 8px rgba(88, 166, 255, 0.6); */
   transform: translateX(-50%) scaleX(0);
   transform-origin: center;
   animation: underlineExpand 3s ease-in-out infinite;
 }
+
 /* Keyframes */
 @keyframes underlineExpand {
   0% {
@@ -177,41 +185,26 @@
     transform: translateX(-50%) scaleX(0);
   }
 }
-.avatar {
-  font-size: 1.75rem;
-  margin: 1rem 0;
-  padding: 0.6rem;
-  border-radius: 50%;
-  /* background: #151515; */
-  color: #ccc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: inset 0 0 0.5rem rgba(89, 89, 89, 0.701);
-}
 
 .actionBtns {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   width: 100%;
   display: flex;
   gap: 0.5rem;
-  /* clean spacing */
 }
 
 .logoutBtn,
 .deleteBtn {
   flex: 1;
-  /* equal width */
-  align-items: end;
-  padding: 0.45rem;
-  border-left: 0.35rem;
+  padding: 0.6rem;
   border: 1px solid transparent;
-  font-size: 0.75rem;
-  border-radius: .5rem;
+  font-size: 0.8rem;
+  border-radius: 0.5rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  text-align: left;
-  justify-content: first baseline;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* Logout (Neutral Primary) */
@@ -223,6 +216,7 @@
 
 .logoutBtn:hover {
   background: #30363d;
+  color: #f8fafc;
 }
 
 /* Delete (Danger - subtle) */
@@ -239,28 +233,25 @@
   transform: scale(1.05);
 }
 
+/* RESPONSIVE MEDIA QUERIES */
 @media (max-width: 768px) {
   .profileContainer {
-    width: 100%; /* instead of auto */
-    max-width: 18rem; /* control size */
-    height: auto; /* avoid cut UI */
+    width: 100%;
+    max-width: 18rem;
+    height: auto;
     padding: 1rem;
-    margin-top: 0;
   }
-
   .profileCard {
-    width: 100%; /* responsive width */
-    font-size: 0.82rem; /* slight reduction only */
+    width: 100%;
+    font-size: 0.82rem;
   }
-
   .avatar {
     font-size: 1.6rem;
-  }
-
-  .title {
-    font-size: 0.85rem;
+    width: 50px;
+    height: 50px;
   }
 }
+
 @media (max-width: 480px) {
   .profileContainer {
     width: 100%;
@@ -269,44 +260,24 @@
     padding: 0.9rem;
     border-radius: 0.6rem;
   }
-
   .profileCard {
     width: 100%;
     font-size: 0.78rem;
   }
-
   .profileCard p {
-    padding: 0.5rem 0; /* keep spacing clean */
+    padding: 0.5rem 0;
   }
-
   .avatar {
     font-size: 1.5rem;
     margin: 0.8rem 0;
   }
-
   .actionBtns {
     flex-direction: column;
     gap: 0.4rem;
   }
-
   .logoutBtn,
   .deleteBtn {
     font-size: 0.72rem;
-    padding: 0.45rem;
-  }
-}
-
-@media (max-width: 360px) {
-  .profileContainer {
-    max-width: 12.5rem;
-    padding: 0.7rem;
-  }
-
-  .profileCard {
-    font-size: 0.75rem;
-  }
-
-  .title {
-    font-size: 0.8rem;
+    padding: 0.5rem;
   }
 }

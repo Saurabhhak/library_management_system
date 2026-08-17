@@ -3,17 +3,15 @@
 const pool = require("../../config/db");
 const bcrypt = require("bcrypt");
 const generateOtp = require("../../utils/generateOtp");
-const { sendOtpEmail } = require("../../services/mail/email.service");
+const { sendOtpEmail, sendMail } = require("../../services/mail/email.service");
 
 const OTP_EXPIRY_MINUTES = 10;
 
-/* ── Table + password column map ──────────────────────────────── */
 const TABLES = [
   { userType: "admin", table: "admin", pwdCol: "password_hash" },
   { userType: "member", table: "members", pwdCol: "password" },
 ];
 
-/** Find which table (admin or members) has this email. */
 const findAccount = async (lEmail) => {
   const [adminRes, memberRes] = await Promise.all(
     TABLES.map((t) =>
@@ -28,21 +26,16 @@ const findAccount = async (lEmail) => {
   return null;
 };
 
-/* ════════════════════════════════════════════════════════════════
-   POST /api/auth/forgot-password   (public)
-   Body: { email }   ← NO role. Backend searches both tables.
-   Never reveals whether account exists (security).
-════════════════════════════════════════════════════════════════ */
+/* ── 1. FORGOT PASSWORD (Unified for Admin & Members) ── */
 exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
   if (!email)
-    return res.status(400).json({ success: false, message: "email required" });
+    return res.status(400).json({ success: false, message: "Email required" });
 
   try {
     const lEmail = email.toLowerCase();
     const account = await findAccount(lEmail);
 
-    // Always return success — don't leak which emails are registered
     if (!account)
       return res.json({
         success: true,
@@ -66,11 +59,7 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
-/* ════════════════════════════════════════════════════════════════
-   POST /api/auth/reset-password   (public)
-   Body: { email, otp, password }   ← NO role. Backend re-detects
-   the table by matching email + otp together (both must agree).
-════════════════════════════════════════════════════════════════ */
+/* ── 2. RESET PASSWORD ── */
 exports.resetPassword = async (req, res) => {
   const { email, otp, password } = req.body;
   if (!email || !otp || !password)
@@ -104,7 +93,6 @@ exports.resetPassword = async (req, res) => {
           [hash, lEmail],
         );
 
-        // Revoke all active sessions for this account
         await pool.query(
           "UPDATE refresh_tokens SET is_revoked = true WHERE user_id = $1 AND user_type = $2",
           [rows[0].id, t.userType],
@@ -117,12 +105,57 @@ exports.resetPassword = async (req, res) => {
       }
     }
 
-    // Neither table had a matching email+otp
     return res
       .status(400)
       .json({ success: false, message: "Invalid or expired OTP" });
   } catch (err) {
     console.error("[password:resetPassword]", err.message);
     return res.status(500).json({ success: false, message: "Reset failed" });
+  }
+};
+
+/* ── 3. FORGOT INSTITUTIONAL ID (Specifically for Members) ── */
+exports.forgotInstitutionalId = async (req, res) => {
+  const { email } = req.body;
+  if (!email)
+    return res.status(400).json({ success: false, message: "Email required" });
+
+  try {
+    const lEmail = email.toLowerCase();
+    const { rows } = await pool.query(
+      `SELECT institutional_id, first_name FROM members WHERE LOWER(email) = $1 AND is_deleted = false`,
+      [lEmail],
+    );
+
+    if (rows.length === 0) {
+      // Security: Do not leak if email exists
+      return res.json({
+        success: true,
+        message: "If that email exists, your Institutional ID has been sent.",
+      });
+    }
+
+    const { institutional_id, first_name } = rows[0];
+
+    // Send ID via Email
+    await sendMail({
+      to: email,
+      subject: "Your Institutional ID Recovery — APV Library",
+      html: `<div style="font-family:Arial,sans-serif;padding:20px;">
+              <h2>Hello ${first_name},</h2>
+              <p>You requested your Institutional ID for APV Library.</p>
+              <p>Your Institutional ID is: <strong style="font-size:18px;color:#2563eb;">${institutional_id}</strong></p>
+              <p>Use this ID or your email to access your member dashboard.</p>
+             </div>`,
+      text: `Hello ${first_name}, Your Institutional ID is: ${institutional_id}`,
+    });
+
+    return res.json({
+      success: true,
+      message: "Institutional ID sent to your email.",
+    });
+  } catch (err) {
+    console.error("[password:forgotInstitutionalId]", err.message);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };
